@@ -1,0 +1,33 @@
+import type { Rezult } from '../../services/common/message/rezult.js';
+import type { ColDef } from 'ag-grid-community';
+import type { InputTypes } from '../../services/common/util/dom.utils.js';
+export interface FieldDefinitionInterface<T> {
+    name: string;
+    type: string;
+    key?: string;
+    displayName?: string;
+    regex?: RegExp;
+    regexFlag?: string;
+    minLen: number;
+    maxLen: number;
+    parse: (string: any) => T | null;
+    valueToString: (any: any) => string;
+    documentToValue: (any: any) => any;
+    valueToDocument: (any: any) => any;
+    validateValue: (T: any) => Rezult;
+    validateString: (string: any) => Rezult;
+    canBeNull: boolean;
+    canBeUndefined: boolean;
+    gridColDef?: ColDef;
+    mapValueType?: string;
+    inputType: InputTypes;
+    init: (props: any) => void;
+    validate: () => void;
+    clone: () => FieldDefinitionInterface<T>;
+    chainSetName: (name: string) => FieldDefinitionInterface<T>;
+    gridToString: (gridFields: []) => string;
+    getDisplayName: () => string;
+    getColumnName: () => string;
+    getDescription: () => string;
+    buildColDef: () => ColDef;
+}

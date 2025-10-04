@@ -1,0 +1,1 @@
+export type MoViewMode = 'view' | 'edit' | 'create'
