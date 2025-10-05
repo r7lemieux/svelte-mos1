@@ -16,6 +16,8 @@
   import {goto} from '$app/navigation'
   import {Icon} from 'svelte-icons-pack'
   import {AiOutlineArrowRight} from 'svelte-icons-pack/ai'
+  import {Rezult} from '../../../services/common/message/rezult.js'
+  import {ErrorName} from '../../../services/common/message/index.js'
   
   export let height = '100px'
   export let gridId = 'grid'
@@ -31,23 +33,46 @@
    * Build Grid
    * ----------
    */
+  // Props
+  let {
+    modelReady
+  }: {modelReady: Promise<MoListModel>} = $props()
+  
+  // Svelte Ready
   let resolveSvelte: Function
-  let resolveAggrid: Function
-  let resolveModel: Function
   const svelteReadyPromise = new Promise(resolve => resolveSvelte = resolve)
-  const aggridReadyPromise = new Promise(resolve => resolveAggrid = resolve)
-  const modelReadyPromise  = new Promise(resolve => resolveModel = resolve)
   onMount(() => {
     resolveSvelte()
   })
+  
+  
+  modelReady.then((listModel:MoListModel) => {
+    if (!listModel) return Promise.reject(new Rezult(ErrorName.argument_null))
+    const mos = listModel.mos
+    displayName = listModel.moDef.getDisplayName()
+    emptyGrid = !mos?.length
+    const eGridDiv = window.document.getElementById(gridId)
+    gridOptions = buildGridOptions(model)
+    if (eGridDiv && gridOptions) {
+      try {
+        grid = createGrid(eGridDiv, gridOptions)
+        return true
+      } catch (err) {
+        console.log(`==>ModelGrid.svelte:33 err`, err)
+      }
+    
+  })
+  
+  let resolveAggrid: Function
+  let resolveModel: Function
+  const aggridReadyPromise = new Promise(resolve => resolveAggrid = resolve)
+  const modelReadyPromise  = new Promise(resolve => resolveModel = resolve)
+ 
   const onGridReady = (params: GridReadyEvent) => {
     gridApi = params.api
     resolveAggrid(params.api)
   }
-  export const modelReady = (_listModel: MoListModel): boolean => {
-     listModel = _listModel
-     return true
-  }
+ 
   
   Promise.all([svelteReadyPromise, aggridReadyPromise, modelReadyPromise]).then(
       ([sv, gridApi, listModel]) => {
@@ -102,17 +127,13 @@
       })
   }
   
-  const buildGridOptions = (): GridOptions<any> => {
-    if (!model) return {}
-    let gridFieldDefs = Array.from(model.getFieldDefs().values())
+  const buildGridOptions = (model): GridOptions<any> => {
+    let gridFieldDefs: FieldDefinition<any>[] = Array.from(model.getFieldDefs().values())
     if (model.moDef.gridFieldnames) {
       gridFieldDefs = gridFieldDefs.filter(d => model?.moDef!.gridFieldnames?.indexOf(d.name) !== -1)
     }
     const columnDefs = gridFieldDefs
-      .map((def: FieldDefinition<any>) => {
-        const colDef = def.buildColDef()
-        return colDef
-      })
+      .map((def: FieldDefinition<any>) => def.buildColDef())
     const viewColumnDefs = buildIconColDef(CgArrowRight, goToView)
     columnDefs.push(viewColumnDefs)
     const rowData = model.mos
