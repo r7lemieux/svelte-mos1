@@ -12,7 +12,7 @@ export class ProxyDataSource<M extends MoInterface> implements DataSourceInterfa
     this.target = target
   }
 
-  getMo = async (id: any): Promise<M | undefined> => {
+  getMo = async (id: any): Promise<M> => {
     return this.next.getMo(id)
   }
   saveMo = async (mo) => {

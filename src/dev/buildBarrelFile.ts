@@ -20,16 +20,17 @@ const addSrcDir = (dirPath: string[]) => {
       const fileExtension = filename.split('.').slice(-1)[0]
       if (fileExtension === 'svelte') {
         fileExports.push(`export { default as Sm${fileStem}} from './${filePathStr}'`)
-      } else if (fileExtension === 'ts' && !fileStem.startsWith('+')) {
+      } else if (fileExtension === 'ts' && !fileStem.startsWith('+') && !fileStem.endsWith('.d')) {
         const content = fs.readFileSync('../lib/'+filePathStr, 'utf-8')
         const lines = content.split('\n')
         for (let lineO of lines) {
           const line = lineO.trim()
           if (line.startsWith('export')) {
+            // console.log(`==>buildBarrelFile.ts:29 line`, line)
             const words = line.split(' ')
-            if (words[1] === 'class' || words[1] === 'const') {
+            if (['class', 'const', 'interface', 'enum'].indexOf(words[1]) + 1) {
               const varName = words[2].split(':')[0].split('<')[0]
-              fileExports.push(`export {${varName}} from './${filePathStr.replace('.ts', '.js')}'`)
+              fileExports.push(`export {${(words[1]==='interface')?'type ':''}${varName}} from './${filePathStr.replace('.ts', '.js')}'`)
             }
           }
         }
@@ -37,6 +38,7 @@ const addSrcDir = (dirPath: string[]) => {
     }
   }
 }
+fileExports.push(`import './svelte-mos.css'`)
 
 for (let srcDir of srcDirs) {
   addSrcDir([srcDir])

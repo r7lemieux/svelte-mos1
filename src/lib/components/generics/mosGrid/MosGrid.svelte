@@ -17,104 +17,86 @@
   import {Icon} from 'svelte-icons-pack'
   import {AiOutlineArrowRight} from 'svelte-icons-pack/ai'
   import {Rezult} from '../../../services/common/message/rezult.js'
-  import {ErrorName} from '../../../services/common/message/index.js'
+  import {ErrorName} from '../../../services/common/message/errorName.js'
   
-  export let height = '100px'
-  export let gridId = 'grid'
-  let grid
-  export let model: MoListModel | null = null
-  let displayName = ''
+  let {
+    height = '100px',
+    gridId = 'grid',
+    modelReady
+  }: {height?: string, gridId?: string, modelReady: Promise<MoListModel>} = $props()
+  
+  let displayName = $state()
   let gridOptions: GridOptions
   let emptyGrid = false
   ModuleRegistry.registerModules([AllCommunityModule])
   let gridApi: GridApi | null = null
-  let listModel: MoListModel
-  /* ----------
-   * Build Grid
-   * ----------
-   */
-  // Props
-  let {
-    modelReady
-  }: {modelReady: Promise<MoListModel>} = $props()
-  
-  // Svelte Ready
+
+  // OnMount promise
   let resolveSvelte: Function
   const svelteReadyPromise = new Promise(resolve => resolveSvelte = resolve)
   onMount(() => {
     resolveSvelte()
   })
   
+  // model and svelte are ready
+  Promise.all([modelReady, svelteReadyPromise])
+    .then(([listModel]) => {
+      if (!listModel) return Promise.reject(new Rezult(ErrorName.argument_null))
+      const mos = listModel.mos
+      displayName = listModel.moDef.getDisplayName()
+      emptyGrid = !mos?.length
+      gridOptions = buildGridOptions(listModel)
+      if (!gridOptions) throw new Rezult(ErrorName.missing_value)
+      return gridOptions
+    })
+    .then (gridOptions => {
+      const eGridDiv = window.document.getElementById(gridId)
+      if (!eGridDiv) throw new Rezult(ErrorName.missing_value)
+      return createGrid(eGridDiv, gridOptions)
+    })
+    .then(api => {
+      gridApi = api
+    })
   
-  modelReady.then((listModel:MoListModel) => {
-    if (!listModel) return Promise.reject(new Rezult(ErrorName.argument_null))
-    const mos = listModel.mos
-    displayName = listModel.moDef.getDisplayName()
-    emptyGrid = !mos?.length
-    const eGridDiv = window.document.getElementById(gridId)
-    gridOptions = buildGridOptions(model)
-    if (eGridDiv && gridOptions) {
-      try {
-        grid = createGrid(eGridDiv, gridOptions)
-        return true
-      } catch (err) {
-        console.log(`==>ModelGrid.svelte:33 err`, err)
-      }
-    
-  })
-  
-  let resolveAggrid: Function
-  let resolveModel: Function
-  const aggridReadyPromise = new Promise(resolve => resolveAggrid = resolve)
-  const modelReadyPromise  = new Promise(resolve => resolveModel = resolve)
- 
-  const onGridReady = (params: GridReadyEvent) => {
-    gridApi = params.api
-    resolveAggrid(params.api)
-  }
- 
-  
-  Promise.all([svelteReadyPromise, aggridReadyPromise, modelReadyPromise]).then(
-      ([sv, gridApi, listModel]) => {
-        
-        if (!listModel) return false
-        displayName = listModel.moDef.getDisplayName()
-        emptyGrid = !listModel?.mos?.length
-        // if (model && !replaceId) {
-        if (model && model.getName() === listModel.getName()) {
-          gridApi.setGridOption('rowData', listModel.mos)
-          return true
-        } else {
-          resetGrid()
-        }
-        model = listModel
-        
-    const eGridDiv = window.document.getElementById(gridId)
-    const onGridReady = params => {
-      gridApi = params.api
-      const gridColumnApi = params.columnApi
-      // The ag-grid is not enlarging based on the page height, so dynamically adjusting the height of the grid
-      // gridApi.setDomLayout("autoHeight")
-      
-      gridOptions = buildGridOptions()
-      if (eGridDiv && gridOptions) {
-        try {
-          grid = createGrid(eGridDiv, gridOptions)
-          return true
-        } catch (err) {
-          console.log(`==>ModelGrid.svelte:33 err`, err)
-        }
-      }
-    }
-  })
-  
-  
-
+  // let resolveAggrid: Function
+  // const aggridReadyPromise = new Promise(resolve => resolveAggrid = resolve)
+  // const onGridReady = (params: GridReadyEvent) => {
+  //   gridApi = params.api
+  //   resolveAggrid(params.api)
+  // }
   
   /* ------------
   * Grid Options
   * ------------
   */
+  function onGridSizeChanged(params: GridSizeChangedEvent) {
+    // get the current grids width
+    const gridWrapper = window?.document?.getElementById('grid-wrapper')
+    if (!gridWrapper) { return }
+    const gridWidth = gridWrapper?.offsetWidth
+    // keep track of which columns to hide/show
+    const columnsToShow: string[] = []
+    const columnsToHide: string[] = []
+    // iterate over all columns (visible or not) and work out how many columns can fit (based on their minWidth)
+    let totalColsWidth = 0
+    const allColumns = gridApi?.getColumns()
+    if (allColumns && allColumns.length > 0) {
+      for (let i = 0; i < allColumns.length; i++) {
+        const column: Column = allColumns[i]
+        totalColsWidth += column.getMinWidth() || 0
+        if (!column.isVisible() || (gridWidth && column && totalColsWidth > gridWidth)) {
+          columnsToHide.push(column.getColId())
+        } else {
+          columnsToShow.push(column.getColId())
+        }
+      }
+    }
+    // show/hide columns based on current grid width
+    gridApi?.setColumnsVisible(columnsToShow, true)
+    // fill out any available space to ensure there are no gaps
+    gridApi?.sizeColumnsToFit()
+  }
+  
   const goToView = (mo) => {
     goto(`/mo/${mo.moMeta.name}/${mo.id}`)
       .then(r => {
@@ -129,8 +111,11 @@
   
   const buildGridOptions = (model): GridOptions<any> => {
     let gridFieldDefs: FieldDefinition<any>[] = Array.from(model.getFieldDefs().values())
+    if (!gridFieldDefs.length) {
+      gridFieldDefs = Array.from(model.moDef.fieldDefs.values())
+    }
     if (model.moDef.gridFieldnames) {
-      gridFieldDefs = gridFieldDefs.filter(d => model?.moDef!.gridFieldnames?.indexOf(d.name) !== -1)
+      gridFieldDefs = gridFieldDefs.filter(d => model.moDef.gridFieldnames?.indexOf(d.name) !== -1)
     }
     const columnDefs = gridFieldDefs
       .map((def: FieldDefinition<any>) => def.buildColDef())
@@ -145,60 +130,34 @@
       params.api.sizeColumnsToFit()
     }
     
-    function onGridSizeChanged(params: GridSizeChangedEvent) {
-      // get the current grids width
-      const gridWidth = window?.document?.getElementById('grid-wrapper')?.offsetWidth
-      // keep track of which columns to hide/show
-      const columnsToShow: string[] = []
-      const columnsToHide: string[] = []
-      // iterate over all columns (visible or not) and work out how many columns can fit (based on their minWidth)
-      let totalColsWidth = 0
-      const allColumns = gridApi.columnApi.getColumns()
-      if (allColumns && allColumns.length > 0) {
-        for (let i = 0; i < allColumns.length; i++) {
-          const column: Column = allColumns[i]
-          totalColsWidth += column.getMinWidth() || 0
-          if (!column.isVisible() || (gridWidth && column && totalColsWidth > gridWidth)) {
-            columnsToHide.push(column.getColId())
-          } else {
-            columnsToShow.push(column.getColId())
-          }
-        }
-      }
-      // show/hide columns based on current grid width
-      gridApi.setColumnsVisible(columnsToShow, true)
-      // fill out any available space to ensure there are no gaps
-      gridApi.sizeColumnsToFit()
-    }
-    
     const components = {
       btnCellRenderer: BtnCellRenderer,
       iconCellRenderer: IconCellRenderer
     }
     
-    return {defaultColDef, columnDefs, rowData, onFirstDataRendered, onGridSizeChanged, onGridReady, components}
+    const resetGrid = () => {
+      emptyGrid = !model?.mos?.length
+      const height = emptyGrid ? '200px' : '100%'
+      const grid = window.document.getElementById(gridId)
+      const wrapper = grid!.parentElement
+      grid!.remove()
+      const newGrid = window.document.createElement('div')
+      newGrid.setAttribute('id', gridId)
+      newGrid.classList.add('grid')
+      newGrid.classList.add('ag-theme-alpine')
+      newGrid.setAttribute('style', `height: ${height};`)
+      // newGrid.setAttribute('class', 'grid ag-theme-alpine')
+      wrapper!.appendChild(newGrid)
+    }
+    return {defaultColDef, columnDefs, rowData, onFirstDataRendered, onGridSizeChanged, components}
     // return {columnDefs, rowData, components}
-  }
-  const resetGrid = () => {
-    emptyGrid = !model?.mos?.length
-    const height = emptyGrid ? '200px' : '100%'
-    const grid = window.document.getElementById(gridId)
-    const wrapper = grid!.parentElement
-    grid!.remove()
-    const newGrid = window.document.createElement('div')
-    newGrid.setAttribute('id', gridId)
-    newGrid.classList.add('grid')
-    newGrid.classList.add('ag-theme-alpine')
-    newGrid.setAttribute('style', `height: ${height};`)
-    // newGrid.setAttribute('class', 'grid ag-theme-alpine')
-    wrapper!.appendChild(newGrid)
   }
 
 </script>
 
 <svelte:head>
   <title>Profile</title>
-  <meta name='description' content='{displayName}'/>
+<!--  <meta name="description" content={displayName}/>-->
 </svelte:head>
 
 <!--<GPicker doc={doc}/>-->

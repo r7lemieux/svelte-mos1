@@ -1,0 +1,29 @@
+:root {
+  --field-height: 2rem;
+  --branch-indentation: 12px;
+  --detail-margin: 35px;
+  --field-background-color: transparent;
+  --field-delete-color: #822;
+  --tree-line-color: #88A;
+  --field-value-color: #000;
+  --field-label-color: #002;
+  --field-border-color: #DDE;
+  --field-edit-background-color: #E1E2FF;
+  --field-bottom-line-color: #E1E2FF;
+  --button-color: #110;
+  --button-background-color: #AA9;
+  --button-padding: 1rem 1.5rem;
+  --button-font-weight: 200;
+}
+.button-bar {
+  display: flex;
+  margin: 2rem 0;
+  justify-content: flex-end;
+}
+button {
+  padding: var(--button-padding);
+  font-weight: var(--button-font-weight);
+  color: var(--button-color);
+  background-color: var(--button-background-color);
+  margin: 0 0 0 1rem;
+}

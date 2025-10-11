@@ -14,7 +14,7 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
     this.moDef = moDef
   }
 
-  getMo = async (key: any): Promise<M | undefined> => {
+  getMo = async (key: any): Promise<M> => {
       return this.records[key]
   }
   saveMo = async (mo) => {

@@ -19,9 +19,11 @@ export class CacheDataSource<M extends MoInterface> implements DataSourceInterfa
     this.ds = ds
   }
 
-  getMo = async (id: any): Promise<M | undefined> => {
+  getMo = async (id: any): Promise<M> => {
     if (this.records.has(id)) {
-      return this.records.get(id)
+      const record = this.records.get(id)
+      if (!record) throw new Rezult(ErrorName.db_notFound)
+      return record
     } else {
       const mo = await this.ds.getMo(id)
       if (mo) {

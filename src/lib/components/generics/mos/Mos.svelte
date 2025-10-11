@@ -7,32 +7,40 @@
   import {goto} from '$app/navigation'
   import {type MoMetaInterface} from '../../../models/managedObjects/MoMetaInterface.js'
   
+  let {mos, moMeta, title = null, topButtons = false}: {
+    mos: Mo[],
+    moMeta: MoMetaInterface,
+    title?: string | null,
+    topButtons?: boolean
+  } = $props()
   
-  export let mos: Mo[] = []
-  export let moMeta: MoMetaInterface
+  if (title === null) {
+    title = moMeta.name
+  }
   moMeta = moMeta || mos[0]?.moMeta
   if (moMeta && !mos) {
     moMeta.dataSource?.getMos()
       .then(allMos => {
-				mos = allMos
-			})
+        mos = allMos
+      })
   }
-  let displayName = moMeta?.moDef.getDisplayName()
-  let modelReady: (model: MoListModel) => boolean
+  let displayName = $state(moMeta?.moDef.getDisplayName())
+  let modelReadyResolve: (MoListModel) => void
+  let modelReady: Promise<MoListModel> = new Promise(resolve => modelReadyResolve = resolve)
   // export class Mos extends SvelteComponentTyped<{propertyName: string;}> {
   const moListModel = new MoListModel(moMeta)
   moListModel.mos = mos
-
+  
   const createMo = () => {
     goto(`/mo/${moMeta.name}/create`)
   }
-
-  const f2 = (k, v) => (k && v) && (k == 'dataSource' || typeof v !== "number") ? "" + v : v
-  let names: string[] = []
+  
+  const f2 = (k, v) => (k && v) && (k == 'dataSource' || typeof v !== 'number') ? '' + v : v
+  let names: string[] = $state([])
   onMount(() => {
     displayName = moMeta.moDef?.getDisplayName()
-    names = mos.map( m => `moMeta: ${m.moMeta.name} moDef ${m.moMeta.moDef?.name} dataSource ${m.moMeta.dataSource?.constructor.name}`)
-     modelReady(moListModel)
+    names = mos.map(m => `moMeta: ${m.moMeta.name} moDef ${m.moMeta.moDef?.name} dataSource ${m.moMeta.dataSource?.constructor.name}`)
+    modelReadyResolve(moListModel)
   })
 
 
@@ -44,26 +52,32 @@
 </svelte:head>
 
 <div class="grid-top">
-  {#if moMeta?.moDef.canCreate}
+  {#if title}
+    <span class="title">{title}</span>
+  {/if}
+  <span class="button-bar">
+  {#if moMeta?.moDef.canCreate && topButtons}
     <button onclick={createMo}>Create {displayName}</button>
   {/if}
+</span>
 </div>
-
-<div>Mos.svelte</div>
-<div>{names}</div>
-<!--<div>moListModel: {JSON.stringify(moListModel, null, 2)}</div>-->
-<MosGrid bind:modelReady/>
+<MosGrid modelReady={modelReady}/>
 
 <style>
   .grid-top {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 0.2rem;
-    
-    button {
-      height: 2.8rem;
-      padding: 0 1rem;
+    justify-content: space-between;
+    .title {
+      font-size: 2rem;
+      margin: 1rem 1rem 1rem 0;
+      align-content: center;
     }
+  }
+  
+  .button-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 1rem 0;
   }
 </style>
 

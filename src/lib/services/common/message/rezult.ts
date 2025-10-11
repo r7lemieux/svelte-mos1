@@ -1,4 +1,4 @@
-import {ErrorName} from './errorName.js'
+import {ErrorName, type ErrorEnum} from './errorName.js'
 import { jsonToDisplayString } from '../util/string.utils.js'
 
 export type RezultStatus = 'message' | 'error'
@@ -11,7 +11,7 @@ export class Rezult extends Error {
   static mode: 'test' | 'app' = 'test'
 
 
-  constructor( errorName:ErrorName = ErrorName.ok, data?:any, context?:string) {
+  constructor( errorName:ErrorEnum = ErrorName.ok, data?:any, context?:string) {
     super()
     this.setName(errorName)
     this.data = data
@@ -20,7 +20,7 @@ export class Rezult extends Error {
     //   console.trace(`==>rezult.ts:19 `, this.toString())
   }
 
-  setName = (errorName: ErrorName) => {
+  setName = (errorName: ErrorEnum) => {
     this.name = ErrorName[errorName]
   }
 

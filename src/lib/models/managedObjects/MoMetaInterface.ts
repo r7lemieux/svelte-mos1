@@ -7,9 +7,15 @@ export interface MoMetaInterface {
 	dbName: string
 	moDef: MoDefinitionInterface
 	dataSource: DataSourceInterface<MoInterface>
-	newMo?: () => MoInterface
+	newMo: () => MoInterface
 	objToMo: (any) => MoInterface
-	documentToMo?: (any) => MoInterface
+	documentToMo: (any) => MoInterface
+	init: () => void
+	setName: (name?: string) => void
+	getDisplayName: () => string
+	moToObj: (mo: MoInterface) => any
+	moToDocument: (mo: MoInterface) => any
+	toDocument: () => string
 
 	/*  ---------
 	 *  Accessors

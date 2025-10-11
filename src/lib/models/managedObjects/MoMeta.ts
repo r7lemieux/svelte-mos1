@@ -13,12 +13,11 @@ import {HeapDataSource} from '../../services/db/Heap.dataSource.js'
 export class MoMeta implements MoMetaInterface {
   name: string = ''
   dbName: string = ''
-  moDef: MoDefinition
+  moDef: MoDefinitionInterface
   dataSource: DataSourceInterface<MoInterface>
 
-  constructor(moDef: MoDefinition, dbName?: string) {
+  constructor(moDef: MoDefinitionInterface, dbName?: string) {
     if (!moDef) {
-      console.trace(`==>MoMeta.ts:21 dbName`, dbName || '')
       throw new Rezult(ErrorName.argument_null, {name})
     }
     this.moDef = moDef
@@ -77,11 +76,11 @@ export class MoMeta implements MoMetaInterface {
     this.dataSource.addMo(mo)
     return mo
   }
-  moToObj = (mo: any): any => this.moDef.moToObj(mo)
-  moToDocument = mo => this.moDef.moToDocument(mo)
-  objToMo = (obj: any): MoInterface => this.moDef.objToMo(obj, this)
-  toDocument = () => {
-    //Todo
+  moToObj = (mo: MoInterface): any => this.moDef.moToObj(mo)
+  moToDocument = (mo: MoInterface): any => this.moDef.moToDocument(mo)
+  objToMo = (obj: any): MoInterface => this.moDef.objToMo(obj)
+  toDocument = (): string => {
+    return '' //todo
   }
   documentToMo = (doc: any): MoInterface => {
     const mo = this.newMo()

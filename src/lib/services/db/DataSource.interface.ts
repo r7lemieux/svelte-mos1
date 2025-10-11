@@ -1,8 +1,7 @@
 // Prototype
-import type {Mo} from '../../models/managedObjects/Mo.js'
 import type { MoInterface } from '../../models/managedObjects/MoInterface.js'
 export interface DataSourceInterface<M extends MoInterface> {
-  getMo: (id: any) => Promise<M | undefined>
+  getMo: (id: any) => Promise<M>
   saveMo: (mo: M) => Promise<M>
   updateMo: (mo: M) => Promise<M>
   addMo: (mo: M) => Promise<M>

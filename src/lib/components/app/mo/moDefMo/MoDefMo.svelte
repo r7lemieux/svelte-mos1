@@ -9,8 +9,8 @@
   import type {MoDefinitionMo} from '../../../../models/managedObjects/MoDefinitionMo.js'
   import Field from '../../../generics/field/Field.svelte'
   
-  
-  let {mo}: {mo:MoDefinitionMo} = $props()
+  let {moDefMo}: {moDefMo:MoDefinitionMo} = $props()
+  const mo = moDefMo
   let viewMode: MoViewMode = $derived(extractViewMode(page))
   let disabled = $derived(viewMode === 'view')
   let moDef = mo.moDef

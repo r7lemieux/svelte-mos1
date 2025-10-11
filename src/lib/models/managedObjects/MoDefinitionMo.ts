@@ -17,6 +17,7 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   keyFieldnames: string[][] = []
   fieldDefs: Map<string, FieldDefinitionInterface<any>> = new Map()
   gridFieldnames?: string[]
+  showFieldnames: string[]
   moClass: any
   hasId: boolean = true
   idType: 'number' | 'string' = 'string'
@@ -35,7 +36,7 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[] = (fd:string[]) => []
   extractFieldnamesFromMo: () => string[] = () => []
   newMo: (moMeta?: MoMetaInterface) => MoInterface = () => new Mo()
-  objToMo: (obj: object, moMeta: MoMetaInterface) => MoInterface = (o: object, mm: MoMetaInterface)=> new Mo()
+  objToMo: (obj: object) => MoInterface = (o: object)=> new Mo()
   moToObj: (mo: MoInterface) => object = (mo: MoInterface) => { return {}}
   moToDocument: (mo: MoInterface) => any = (mo: MoInterface) => {}
   documentToMo: (doc: any) => MoInterface = () => new Mo()
@@ -46,6 +47,7 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
     this.moDef = moDef
     this.id = this.name = this.dbName = moDef.name
     this.getDisplayName = this.moDef.getDisplayName
+    this.showFieldnames = Array.from(moDef.fieldDefs.keys())
     Object.assign(this, this.moDef)
   }
   // getDisplayName = () => this.moDef.getDisplayName()

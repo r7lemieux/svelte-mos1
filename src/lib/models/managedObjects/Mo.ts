@@ -2,6 +2,7 @@
 import type {MoMetaInterface} from './MoMetaInterface.js'
 import {getDefaultMoMeta} from './moMetaInstances.js'
 import type {MoInterface} from './MoInterface.js'
+// import {initMoDefDef} from './MoDefinition.js'
 
 export class Mo implements MoInterface {
 
@@ -51,4 +52,5 @@ export class Mo implements MoInterface {
     Object.assign(this, partial)
   }
 }
+// initMoDefDef()
 //1 defaultMoMeta.moDef.moClass = Mo

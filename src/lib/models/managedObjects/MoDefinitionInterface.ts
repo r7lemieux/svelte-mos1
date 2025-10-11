@@ -6,10 +6,11 @@ export interface MoDefinitionInterface {
 	id: string
 	name: string
 	dbName: string //todo remove
-	displayName?: string | undefined
-	keyFieldnames: string[][]
+	displayName?: string
 	fieldDefs: Map<string, FieldDefinitionInterface<any>>
+	keyFieldnames: string[][]
 	gridFieldnames?: string[]
+	showFieldnames: string[]
 	moClass: any
 	hasId: boolean
 	idType: 'number' | 'string'
@@ -43,7 +44,7 @@ export interface MoDefinitionInterface {
 	 *  --
 	 */
 	newMo: (moMeta?: MoMetaInterface) => MoInterface
-	objToMo: (obj: object, moMeta: MoMetaInterface) => MoInterface
+	objToMo: (obj: object) => MoInterface
 	moToObj: (mo: MoInterface) => object
 	moToDocument: (mo: MoInterface) => any
 	documentToMo: (doc: any) => MoInterface

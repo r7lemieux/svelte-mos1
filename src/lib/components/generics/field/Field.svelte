@@ -8,6 +8,7 @@
   import {sizeLabels} from '../../../services/common/util/dom.utils.js'
   import ObjectField from './ObjectField.svelte'
   import {moDefDef} from '../../../models/managedObjects/MoDefinition.js'
+  import './field.css'
   
   let {
     fieldDef,

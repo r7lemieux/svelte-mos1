@@ -18,10 +18,15 @@ export class NoDataSource<M extends MoInterface> implements DataSourceInterface<
   }
 
     // getMo = async (key: any): Promise<M | undefined> => {
-    getMo = async (id: any): Promise<M | undefined> => {
+    getMo = async (id: any): Promise<M> => {
     return Promise.reject(new Rezult(ErrorName.not_implemented_in_default))
     if (this.records.has(id)) {
-      return this.records.get(id)
+      const record = this.records.get(id)
+      if (!record) {
+        return Promise.reject(new Rezult(ErrorName.db_notFound))
+      } else {
+        return record as M
+      }
     } else {
       const mo = await this.db.getMo(this.moDef.dbName, id) as M
       if (mo) {

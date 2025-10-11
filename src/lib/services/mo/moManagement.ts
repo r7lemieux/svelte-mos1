@@ -12,7 +12,7 @@ import {ErrorName} from '../common/message/errorName.js'
 export const moMetas: {[name:string]: MoMetaInterface} = {}
 export const moDefs: {[name:string]: MoDefinitionInterface} = {}
 
-export const registerMoMeta = (moMeta: MoMetaInterface) => {
+export const registerMoMeta = (moMeta: MoMetaInterface):  MoMetaMo => {
 	const name = moMeta.name
 	if (!name) throw new Rezult(ErrorName.missing_param)
 	const moDefMo = registerMoDef(moMeta.moDef)
@@ -27,6 +27,7 @@ export const registerMoMeta = (moMeta: MoMetaInterface) => {
 
 	moMetas[name] = moMeta
 	moMetaMoMeta.dataSource?.saveMo(moMetaMo)
+	return moMetaMo
 }
 
 export const registerMoDef = (moDef: MoDefinitionInterface): MoDefinitionMo => {
@@ -38,10 +39,10 @@ export const registerMoDef = (moDef: MoDefinitionInterface): MoDefinitionMo => {
 	return moDefMo
 }
 
-export const getMoMetaMo = (name): MoMeta => {
+export const getMoMeta = (name): MoMeta => {
 	const moMeta = moMetas[name]
-	if (!moMeta) throw new Rezult(ErrorName.missing_param)
-	return new MoMetaMo(moMeta)
+	if (!moMeta) throw new Rezult(ErrorName.resource_not_found)
+	return moMeta
 }
 
 // export const getMoDefMo = (name): MoDefinition => {
