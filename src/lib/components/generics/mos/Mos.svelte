@@ -53,7 +53,7 @@
 
 <div class="grid-top">
   {#if title}
-    <span class="title">{title}</span>
+    <h2 class="title">{title}</h2>
   {/if}
   <span class="button-bar">
   {#if moMeta?.moDef.canCreate && topButtons}
@@ -62,22 +62,23 @@
 </span>
 </div>
 <MosGrid modelReady={modelReady}/>
-
 <style>
   .grid-top {
     display: flex;
     justify-content: space-between;
     .title {
-      font-size: 2rem;
       margin: 1rem 1rem 1rem 0;
       align-content: center;
     }
   }
-  
+
   .button-bar {
-    display: flex;
-    justify-content: flex-end;
-    margin: 1rem 0;
+  /*  display: flex;*/
+  /*  justify-content: flex-end;*/
+    margin: 1rem 2rem  1rem 0;
+    @media(max-width: 800px) {
+      margin-right: 0.8rem;
+    }
   }
 </style>
 

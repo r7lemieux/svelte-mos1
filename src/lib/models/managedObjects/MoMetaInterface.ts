@@ -11,7 +11,7 @@ export interface MoMetaInterface {
 	objToMo: (any) => MoInterface
 	documentToMo: (any) => MoInterface
 	init: () => void
-	setName: (name?: string) => void
+	setName: (name?: string) => MoMetaInterface
 	getDisplayName: () => string
 	moToObj: (mo: MoInterface) => any
 	moToDocument: (mo: MoInterface) => any

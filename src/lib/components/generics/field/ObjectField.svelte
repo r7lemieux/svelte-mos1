@@ -1,5 +1,6 @@
 <script lang="ts">
-  import {setHeightToParent, sizeLabels} from '../../../services/common/util/dom.utils.js'
+  import {setHeightToParent} from '../../../services/common/util/dom.utils.js'
+  import {sizeLabels}         from '../../../services/common/util/dom.utils.js'
   // import Field from './Field.svelte'
   import './field.css'
   

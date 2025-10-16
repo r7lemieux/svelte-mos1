@@ -30,6 +30,6 @@ import {ErrorName} from '../../services/common/message/errorName.js'
 
 export const getMoMetaMo = (name): Promise<MoMetaMo> => {
   const moMetaMo = moMetaMoMeta.dataSource.getMo(name) as Promise<MoMetaMo>
-  if (!moMetaMo) throw new Rezult(ErrorName.missing_param)
+  if (!moMetaMo) throw new Rezult(ErrorName.missing_param, {name})
   return moMetaMo
 }

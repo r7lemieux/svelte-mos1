@@ -12,7 +12,7 @@ export class Rezult extends Error {
 
 
   constructor( errorName:ErrorEnum = ErrorName.ok, data?:any, context?:string) {
-    super()
+    super(Rezult.toMessage(errorName, data))
     this.setName(errorName)
     this.data = data
     this.context = context
@@ -37,31 +37,70 @@ export class Rezult extends Error {
   serialize = () => JSON.stringify(this.toObj())
   toString = () => this.toDisplayString()
 
-  toDisplayString = () => {
-    let data = this.data
+  static toMessage = (name, data) => {
+    let dataStr: string = this.dataToString(data)
+    if (data == undefined) {
+      dataStr = ''
+    } else {
     try {
-      data = JSON.stringify(this.data)}
+      dataStr = JSON.stringify(data)}
     catch (err) {
       try {
-        data = this.stringifyOneLevel(this.data)
+        dataStr = Rezult.stringifyOneLevel(data)
       }
       catch(err) {
         try {
-          data = this.data.toString()
+          dataStr = data.toString()
         } catch (err) {
-          data = this.data
+          dataStr = ' not printable data '
         }
       }
     }
+    }
 
-    return `${this.status} ${this.context || ''} ${this.name} ${this.message} ${data?JSON.stringify(data):''}`
+    return `${this.name} ${dataStr}`
   }
 
-  toDetailString = () => jsonToDisplayString({
-    status: this.status, data: this.data, context: this.context
-  })
+  static dataToString = (data:any): string => {
+    let dataStr: string
+    if (data == undefined) {
+      return ''
+    } else {
+      try {
+        return JSON.stringify(data)}
+      catch (err) {
+        try {
+          return Rezult.stringifyOneLevel(data)
+        }
+        catch(err) {
+          try {
+            return data.toString()
+          } catch (err) {
+            return ' not printable data '
+          }
+        }
+      }
+    }
+  }
 
-  stringifyOneLevel = obj => JSON.stringify(obj, function (k, v) { return k && v && typeof v !== "number" ? (Array.isArray(v) ? "[object Array]" : "" + v) : v; });
+
+
+  toDisplayString = () => {
+    let str = Rezult.dataToString(this.data)
+    const dataStr = (str !== undefined)? ': '+str : ''
+
+    return `${this.status} ${this.context || ''}: ${this.name} ${this.message} ${dataStr}}`
+  }
+
+  toDetailString = () => {
+    const fields: any = {
+      status: this.status, data: this.data
+    }
+    if (this.context) fields['context'] = this.context
+    return jsonToDisplayString(fields)
+  }
+
+  static stringifyOneLevel = obj => JSON.stringify(obj, function (k, v) { return k && v && typeof v !== "number" ? (Array.isArray(v) ? "[object Array]" : "" + v) : v; });
 
   print = (str: string) => {
     this.context = str

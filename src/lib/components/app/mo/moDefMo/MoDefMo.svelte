@@ -90,14 +90,5 @@
       flex-direction: column;
     }
   }
-  .button-bar {
-    display: flex;
-    margin: 1rem 0;
-    justify-content: flex-end;
-    
-    button {
-      height: 2rem;
-    }
-  }
 
 </style>

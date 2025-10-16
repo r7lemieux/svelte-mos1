@@ -9,7 +9,7 @@ export type InputTypes = 'button' | 'checkbox' | 'color' | 'date' | 'datetime-lo
   'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit' | 'tel' | 'text' |
   'time' | 'url' | 'week'
 
-export const sizeLabels = () => {
+  export const sizeLabels = () => {
   const elems = Array.from(document.getElementsByTagName('label'))
   for (const elem of elems) {
     const txt = elem.innerText

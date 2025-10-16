@@ -1,21 +1,14 @@
 <script lang='ts'>
-  import type {Column} from 'ag-grid-community'
-  import {createGrid} from 'ag-grid-community'
-  
+  import type {Column, FirstDataRenderedEvent, GridOptions, GridSizeChangedEvent} from 'ag-grid-community'
+  import {AllCommunityModule, createGrid, type GridApi, ModuleRegistry} from 'ag-grid-community' // does it work here? I had to put that in the app
   import 'ag-grid-community/styles/ag-theme-alpine.css'
   import {onMount} from 'svelte'
-  import {ModuleRegistry, AllCommunityModule} from 'ag-grid-community' // does it work here? I had to put that in the app
-  import {type GridReadyEvent, type GridApi} from 'ag-grid-community'
-  import type {FirstDataRenderedEvent, GridSizeChangedEvent} from 'ag-grid-community'
-  import type {GridOptions} from 'ag-grid-community'
   import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import type {MoListModel} from '../../../models/managedObjects/MoList.model.js'
   import {BtnCellRenderer} from '../../../components/common/BtnCellRenderer.js'
   import {buildIconColDef, IconCellRenderer} from '../../common/IconCellRenderer.js'
   import {CgArrowRight} from 'svelte-icons-pack/cg'
   import {goto} from '$app/navigation'
-  import {Icon} from 'svelte-icons-pack'
-  import {AiOutlineArrowRight} from 'svelte-icons-pack/ai'
   import {Rezult} from '../../../services/common/message/rezult.js'
   import {ErrorName} from '../../../services/common/message/errorName.js'
   
@@ -57,13 +50,6 @@
     .then(api => {
       gridApi = api
     })
-  
-  // let resolveAggrid: Function
-  // const aggridReadyPromise = new Promise(resolve => resolveAggrid = resolve)
-  // const onGridReady = (params: GridReadyEvent) => {
-  //   gridApi = params.api
-  //   resolveAggrid(params.api)
-  // }
   
   /* ------------
   * Grid Options
@@ -169,15 +155,18 @@
 
 <style>
   .grid-wrapper {
-    margin: 0;
+    margin: 0 0.8rem 0 0;
     padding: 0;
     left: 0;
-    width: 100%;
+    width: calc(100% - 2rem);
     height: 100%;
+    @media(max-width: 800px) {
+      width: calc(100% - 0.8rem);
+    }
   }
   
   .grid-wrapper-full {
-    margin: 0;
+    margin: 0 0.8rem 0 0;
     padding: 0;
     position: absolute;
     left: 0;

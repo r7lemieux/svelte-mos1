@@ -3,6 +3,7 @@
   display: flex;
   align-items: start;
   background: var(--field-background-color);
+  width: calc(100% - 0.7rem);
   
   .tree-line {
     border-left: 2px solid var(--tree-line-color);
@@ -20,20 +21,20 @@
   
   .tree-branch {
     border-bottom: 2px solid var(--tree-line-color);
-    width: var(--branch-indentation);
+    width: var(--tree-branch-indentation);
     position: relative;
     left: 2px;
   }
   
   label {
-    color: var(--field-label-color);
     flex: 120px 1 0;
-    display: flex;
     margin: 0 8px 7px 0;
     justify-content: flex-end;
     width: 120px;
     align-self: center;
+    display: flex;
     text-wrap: balance;
+    color: var(--field-label-color);
   }
   
   .value {
@@ -73,7 +74,7 @@
       height: var(--field-height);
       align-self: center;
       margin: 0 0.5rem 0 0.4rem;
-      width: var(--detail-margin);
+      width: var(--tree-detail-margin);
       font-family: "Courier 10 Pitch", serif;
       font-size: smaller;
       

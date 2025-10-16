@@ -37,7 +37,7 @@ export class MoMeta implements MoMetaInterface {
   init() {
   }
 
-  setName = (given_name?: string) => {
+  setName = (given_name?: string): MoMeta => {
     let name = ''
     if (given_name) {
       if (!given_name.match(/[A-Za-z-1-9]/)) throw new Rezult(ErrorName.field_invalid, {
@@ -54,6 +54,7 @@ export class MoMeta implements MoMetaInterface {
     }
     //Todo ensure name is unique
     this.name = name
+    return this
   }
 
   /*  ---------
@@ -73,7 +74,6 @@ export class MoMeta implements MoMetaInterface {
   newMo = () => {
     const mo: MoInterface = this.moDef.newMo()
     mo.moMeta = this
-    this.dataSource.addMo(mo)
     return mo
   }
   moToObj = (mo: MoInterface): any => this.moDef.moToObj(mo)

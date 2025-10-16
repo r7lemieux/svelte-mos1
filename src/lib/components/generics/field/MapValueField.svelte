@@ -81,6 +81,6 @@
 <style>
 
 .count {
-    width: var(--detail-margin) + 15px;
+    width: var(--tree-detail-margin) + 15px;
   }
 </style>

@@ -10,14 +10,18 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
   records: {[key:string]: M} = {}
   keyname = 'id'
 
+  nextId: number = 0
+
   constructor(moDef: MoDefinitionInterface) {
     this.moDef = moDef
+    this.nextId = 1
   }
 
   getMo = async (key: any): Promise<M> => {
       return this.records[key]
   }
   saveMo = async (mo) => {
+    // console.log(`==>Heap.dataSource.ts:saveMo mo.id`, mo.id, this.nextId)
     if (!mo) throw new Rezult(ErrorName.missing_param)
     this.records[mo[this.keyname!]] = mo
     return mo
@@ -31,7 +35,9 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
 
   addMo = async (mo) => {
     if (!mo) throw new Rezult(ErrorName.missing_param)
-    this.records[mo[this.keyname!]] = mo
+    mo[this.keyname] = this.nextId
+    this.nextId = this.nextId + 1
+    this.records[mo[this.keyname]] = mo
     return mo
   }
 

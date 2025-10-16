@@ -25,7 +25,7 @@ export class MoMetaMo extends Mo implements MoMetaInterface {
     this.dbName = moMeta.dbName || this.name
   }
   init = () => {}
-  setName = (name?: string): void => {}
+  setName = (name?: string): MoMetaInterface => {return this}
 
   toDisplayString = () => this.name || this.moDef.name
   newMo = (): MoInterface => {

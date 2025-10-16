@@ -39,9 +39,9 @@ export const registerMoDef = (moDef: MoDefinitionInterface): MoDefinitionMo => {
 	return moDefMo
 }
 
-export const getMoMeta = (name): MoMeta => {
+export const getMoMeta = (name): MoMetaInterface => {
 	const moMeta = moMetas[name]
-	if (!moMeta) throw new Rezult(ErrorName.resource_not_found)
+	if (!moMeta) throw new Rezult(ErrorName.resource_not_found, {name})
 	return moMeta
 }
 

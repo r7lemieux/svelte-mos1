@@ -1,7 +1,9 @@
 :root {
+  --page-background-color: #668;
+  --title-label-color: var(--field-label-color);
+  --tree-branch-indentation: 12px;
+  --tree-detail-margin: 35px;
   --field-height: 2rem;
-  --branch-indentation: 12px;
-  --detail-margin: 35px;
   --field-background-color: transparent;
   --field-delete-color: #822;
   --tree-line-color: #88A;
@@ -11,19 +13,25 @@
   --field-edit-background-color: #E1E2FF;
   --field-bottom-line-color: #E1E2FF;
   --button-color: #110;
+  --button-border-color: #886;
+  --button-border-radius: 10px;
   --button-background-color: #AA9;
+  --button-margin-left: 0.5rem;
   --button-padding: 1rem 1.5rem;
   --button-font-weight: 200;
 }
 .button-bar {
   display: flex;
-  margin: 2rem 0;
+  margin: 1rem 0;
   justify-content: flex-end;
-}
-button {
-  padding: var(--button-padding);
-  font-weight: var(--button-font-weight);
-  color: var(--button-color);
-  background-color: var(--button-background-color);
-  margin: 0 0 0 1rem;
+  
+  button {
+    padding: var(--button-padding);
+    font-weight: var(--button-font-weight);
+    color: var(--button-color);
+    border-radius: var(--button-border-radius);
+    border: 2px solid var(--button-border-color);
+    background-color: var(--button-background-color);
+    margin: 0 0 0 var(--button-margin-left);
+  }
 }

@@ -1,5 +1,26 @@
 <script lang="ts">
-  // import {contactData} from "../index.js"
+  // import MO from '../lib/components/generics/mo/MO.svelte'
+  // import {type MoInterface} from '../lib/models/managedObjects/MoInterface.js'
+  
+  import type {PageProps} from './$types.js'
+  // import {Contact} from '../example/models/Contact.js'
+  // import {contactData} from '../example/models/contact.data.js'
+  
+  let {data}: PageProps = $props()
+  // const moProm: MoInterface = data?.mo as unknown as MoInterface
+  // const contact = new Contact()
+  // contact.hydrate(contactData[0])
 </script>
-<h1>Welcome to your svelte-mos</h1>
-<!--<div>{contactData}</div>-->
+
+<svelte:head>
+  <title>MoDefs</title>
+  <meta name="contact" content="contact"/>
+</svelte:head>
+
+<div>
+  <!--{#await moProm then mo}-->
+<!--    <MO {mo}/>-->
+<!--  {/await}-->
+</div>
+<style>
+</style>
