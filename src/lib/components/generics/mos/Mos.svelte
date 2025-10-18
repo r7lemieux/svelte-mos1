@@ -14,6 +14,7 @@
     topButtons?: boolean
   } = $props()
   
+  const dmos = $derived(mos)
   if (title === null) {
     title = moMeta.name
   }
@@ -25,22 +26,30 @@
       })
   }
   let displayName = $state(moMeta?.moDef.getDisplayName())
+  let readyResolve: () => void
+  let ready: Promise<void> = new Promise(resolve => readyResolve = resolve)
   let modelReadyResolve: (MoListModel) => void
   let modelReady: Promise<MoListModel> = new Promise(resolve => modelReadyResolve = resolve)
   // export class Mos extends SvelteComponentTyped<{propertyName: string;}> {
-  const moListModel = new MoListModel(moMeta)
-  moListModel.mos = mos
+ 
   
   const createMo = () => {
     goto(`/mo/${moMeta.name}/create`)
   }
-  
+  const meta = $state(moMeta)
+  let listModel = $derived(new MoListModel(moMeta))
+  $effect(() => {
+    console.log(`==>Mos.svelte:42 dmos`, dmos.length)
+    listModel = new MoListModel(moMeta)
+    listModel.mos = dmos
+  } )
   const f2 = (k, v) => (k && v) && (k == 'dataSource' || typeof v !== 'number') ? '' + v : v
   let names: string[] = $state([])
   onMount(() => {
     displayName = moMeta.moDef?.getDisplayName()
     names = mos.map(m => `moMeta: ${m.moMeta.name} moDef ${m.moMeta.moDef?.name} dataSource ${m.moMeta.dataSource?.constructor.name}`)
-    modelReadyResolve(moListModel)
+    // modelReadyResolve(listModel)
+    readyResolve()
   })
 
 
@@ -50,10 +59,9 @@
   <title>Mos</title>
   <meta name='description' content={displayName}/>
 </svelte:head>
-
 <div class="grid-top">
   {#if title}
-    <h2 class="title">{title}</h2>
+    <h2 class="title">AAA{title}</h2>
   {/if}
   <span class="button-bar">
   {#if moMeta?.moDef.canCreate && topButtons}
@@ -61,7 +69,8 @@
   {/if}
 </span>
 </div>
-<MosGrid modelReady={modelReady}/>
+<div> - in lib: {mos.length} dmos.length</div>
+<MosGrid {listModel} {ready}/>
 <style>
   .grid-top {
     display: flex;

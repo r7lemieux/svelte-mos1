@@ -32,14 +32,14 @@ export const registerMoMeta = (moMeta: MoMetaInterface):  MoMetaMo => {
 
 export const registerMoDef = (moDef: MoDefinitionInterface): MoDefinitionMo => {
 	const name = moDef.name
-	if (!name) throw new Rezult(ErrorName.missing_param)
+	if (!name) throw new Rezult(ErrorName.missing_param, {param: 'moDef.name' }, 'moManagement.registerMoDef')
 	moDefs[name] = moDef
 	const moDefMo = new MoDefinitionMo(moDef)
 	moDefMoMeta.dataSource?.saveMo(moDefMo)
 	return moDefMo
 }
 
-export const getMoMeta = (name): MoMetaInterface => {
+export const getMoMeta = (name: string): MoMeta => {
 	const moMeta = moMetas[name]
 	if (!moMeta) throw new Rezult(ErrorName.resource_not_found, {name})
 	return moMeta

@@ -11,19 +11,22 @@
   import {goto} from '$app/navigation'
   import {Rezult} from '../../../services/common/message/rezult.js'
   import {ErrorName} from '../../../services/common/message/errorName.js'
+  import {page} from '$app/state'
   
   let {
     height = '100px',
     gridId = 'grid',
-    modelReady
-  }: {height?: string, gridId?: string, modelReady: Promise<MoListModel>} = $props()
-  
+    listModel, ready
+  }: { height?: string, gridId?: string, listModel: MoListModel, ready: Promise<void> } = $props()
+  const model = $derived(listModel)
   let displayName = $state()
   let gridOptions: GridOptions
   let emptyGrid = false
   ModuleRegistry.registerModules([AllCommunityModule])
   let gridApi: GridApi | null = null
-
+  let dmos = $derived(listModel.mos)
+  let smos = $state(listModel.mos)
+  let moname = $derived(page.params.moname)
   // OnMount promise
   let resolveSvelte: Function
   const svelteReadyPromise = new Promise(resolve => resolveSvelte = resolve)
@@ -32,17 +35,19 @@
   })
   
   // model and svelte are ready
-  Promise.all([modelReady, svelteReadyPromise])
-    .then(([listModel]) => {
-      if (!listModel) return Promise.reject(new Rezult(ErrorName.argument_null))
-      const mos = listModel.mos
-      displayName = listModel.moDef.getDisplayName()
-      emptyGrid = !mos?.length
-      gridOptions = buildGridOptions(listModel)
-      if (!gridOptions) throw new Rezult(ErrorName.missing_value)
-      return gridOptions
+  $effect(() => {
+    console.log(`==>MosGrid.svelte:37 `, smos.length, listModel?.mos?.length, dmos?.length, moname)
+    const gridOptions = createGridOptions()
+    if (gridApi) gridApi.updateGridOptions(gridOptions)
+  })
+  
+  Promise.all([ready, svelteReadyPromise])
+    .then(() => {
+      smos = model.mos
+      if (!model) return Promise.reject(new Rezult(ErrorName.argument_null))
+      return createGridOptions()
     })
-    .then (gridOptions => {
+    .then(gridOptions => {
       const eGridDiv = window.document.getElementById(gridId)
       if (!eGridDiv) throw new Rezult(ErrorName.missing_value)
       return createGrid(eGridDiv, gridOptions)
@@ -50,6 +55,15 @@
     .then(api => {
       gridApi = api
     })
+  
+  const createGridOptions = () => {
+    const mos = model.mos
+    displayName = model.moDef.getDisplayName()
+    emptyGrid = !dmos?.length
+    gridOptions = buildGridOptions(model)
+    if (!gridOptions) throw new Rezult(ErrorName.missing_value)
+    return gridOptions
+  }
   
   /* ------------
   * Grid Options
@@ -143,13 +157,10 @@
 
 <svelte:head>
   <title>Profile</title>
-<!--  <meta name="description" content={displayName}/>-->
+  <!--  <meta name="description" content={displayName}/>-->
 </svelte:head>
-
-<!--<GPicker doc={doc}/>-->
+<div>MosGrid dmos {dmos.length} smos {smos.length} moname {moname}</div>
 <div id="grid-wrapper" class={(height == '100%')?'grid-wrapper-full':'grid-wrapper'}>
-  <!--  <div id="grid-wrapper" class={(height == '100%')?'grid-wrapper-full':'grid-wrapper'} style="height:{height}">-->
-  <!--  <div id="grid-wrapper" class="grid-wrapper-full">-->
   <div id="{gridId}" class="grid ag-theme-alpine"></div>
 </div>
 
@@ -160,7 +171,7 @@
     left: 0;
     width: calc(100% - 2rem);
     height: 100%;
-    @media(max-width: 800px) {
+    @media (max-width: 800px) {
       width: calc(100% - 0.8rem);
     }
   }

@@ -33,7 +33,8 @@ export class MoDefinition implements MoDefinitionInterface {
       method: 'MoDefinition.extractFieldnamesFromMo',
       name: name
     })
-    this.displayName = this.name = this.dbName = this.id = name
+    const aname = this.name = this.dbName = this.id = name
+    this.displayName = toDisplayString(aname)
     this.moClass = moClass || {} as MoInterface
     this.showFieldnames = []
     // if (this.name !== 'moDef') this.moMeta = moDefMeta
@@ -51,6 +52,7 @@ export class MoDefinition implements MoDefinitionInterface {
     // if (!props.name || ! props.moClass) throw new Rezult(ErrorName.missing_param, {class: 'static DefMo', method: 'fromProps', props })
     const moDef = new MoDefinition(props.name, props.moClass)
     Object.assign(moDef, props)
+    if (!moDef.id) moDef.id = moDef.name
     if (!props.fieldDefs) {
       if (props.fieldNames) {
         moDef.addFieldDefsFromNames(props.fieldnames)
@@ -98,8 +100,7 @@ export class MoDefinition implements MoDefinitionInterface {
 
   deriveFieldDefsFromMo() {
     const fieldnames = this.extractFieldnamesFromMo()
-    const fieldDefs = this.deriveFieldDefsFromFieldnames(fieldnames)
-    return fieldDefs
+    return this.deriveFieldDefsFromFieldnames(fieldnames)
   }
 
   deriveFieldDefsFromFieldnames = (fieldnames: string[]) => {
