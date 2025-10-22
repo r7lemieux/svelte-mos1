@@ -91,7 +91,7 @@
   <title>{title}</title>
 </svelte:head>
 <h2 class="pageHeader">
-  <a class="label" href="/mo/{moMeta.name}">{moMeta.name}</a>
+  <a class="label" href="/mo/{moMeta.name}">{title}</a>
   <span class="separator"></span>
   <span class="displayName">
   {#if viewMode !== 'create'}

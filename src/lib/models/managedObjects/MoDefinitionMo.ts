@@ -8,6 +8,8 @@ import { moDefDef, MoDefinition } from './MoDefinition.js'
 import { HeapDataSource } from '../../services/db/Heap.dataSource.js'
 import type {FieldDefinitionInterface} from '../fields/FieldDefinition.interface.js'
 import type {MoInterface} from './MoInterface.js'
+import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
+import {Moid} from './Moid.js'
 
 export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   id: string
@@ -40,7 +42,7 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   moToObj: (mo: MoInterface) => object = (mo: MoInterface) => { return {}}
   moToDocument: (mo: MoInterface) => any = (mo: MoInterface) => {}
   documentToMo: (doc: any) => MoInterface = () => new Mo()
-
+  moToMoid: (mo:MoInterface) => MoidInterface = (mo:MoInterface) => new Moid(mo.moMeta, mo.id!, mo.getDisplayName())
   moDef: MoDefinitionInterface
   constructor(moDef: MoDefinitionInterface) {
     super(moDefMoMeta)

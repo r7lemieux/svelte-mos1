@@ -8,6 +8,8 @@ import {ErrorName} from '../../services/common/message/errorName.js'
 import {Rezult} from '../../services/common/message/rezult.js'
 import type {MoDefinitionInterface} from './MoDefinitionInterface.js'
 import type {MoInterface} from './MoInterface.js'
+import {Moid} from './Moid.js'
+import type {MoidInterface} from './MoidInterface.js'
 // import { defaultMoMeta } from './moMetaInstances.js'
 // import type { MoMetaInterface } from './MoMetaInterface.js'
 // import { defaultMoMeta } from './MoMeta.js'
@@ -154,6 +156,11 @@ export class MoDefinition implements MoDefinitionInterface {
   }
   moToObj = (mo: any): any => mo.toObj()
   moToDocument = mo => mo.toDocument()
+
+  moToMoid = (mo: MoInterface): MoidInterface => {
+    if (!mo.id) throw new Rezult(ErrorName.missing_id, {mo})
+    return new Moid(mo.moMeta, mo.id, mo.getDisplayName())
+  }
 }
 
 let moDefDef

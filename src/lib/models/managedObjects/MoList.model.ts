@@ -16,11 +16,12 @@ export class MoListModel {
   mos: Mo[] = []
   fieldDefs: Map<string, FieldDefinition<any>> = new Map()
 
-  constructor(moMeta: MoMetaInterface) {
+  constructor(moMeta: MoMetaInterface, mos?:Mo[]) {
     if (!moMeta) console.trace(`==>MoList.model.ts:20 no moMeta`)
     if (!moMeta) throw new Rezult(ErrorName.missing_param)
     this.moMeta = moMeta
     this.moDef = moMeta.moDef
+    if (mos) this.mos = mos
   }
   errors: Rezult[] = []
 

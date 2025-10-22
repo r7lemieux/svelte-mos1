@@ -2,6 +2,8 @@
 import type {MoMetaInterface} from './MoMetaInterface.js'
 import {getDefaultMoMeta} from './moMetaInstances.js'
 import type {MoInterface} from './MoInterface.js'
+import {toDisplayString, toWords} from '../../services/common/util/string.utils.js'
+import type {MoidInterface} from './MoidInterface.js'
 // import {initMoDefDef} from './MoDefinition.js'
 
 export class Mo implements MoInterface {
@@ -13,7 +15,10 @@ export class Mo implements MoInterface {
     this.moMeta = moMeta || getDefaultMoMeta()
   }
 
-  getDisplayName = () => '' + this.id
+  getDisplayName = () => {
+    const fieldText: string = '' + (this['name'] || this.id)
+    return toDisplayString(fieldText)
+  }
 
   setProps = (props: any): Mo => {
     for (const key of Object.getOwnPropertyNames(props)) {
@@ -47,6 +52,9 @@ export class Mo implements MoInterface {
     }
     return data
   }
+  toMoid = (): MoidInterface => this.moMeta.moDef.moToMoid(this)
+  toMo = () => new Promise<MoInterface>((r) => r(this))
+
   hydrate(partial: Partial<Mo>) {
     // noinspection TypeScriptValidateTypes
     Object.assign(this, partial)
