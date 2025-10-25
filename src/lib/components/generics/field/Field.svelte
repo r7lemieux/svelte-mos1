@@ -38,12 +38,12 @@
   $effect(sizeLabels)
 
 </script>
-
+<h2>fd.type {fd.type}</h2>
 {#if fd.type === 'array'}
   <ArrayField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else if fd.type === 'map'}
   <MapField {fieldDef} {value} {viewMode} {level} {onChange}/>
-{:else if fd.type === 'object'}
+{:else if fd.type === 'object' || fd.type === 'mo' }
   <ObjectField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else}
   <SimpleField {fieldDef} {value} {viewMode} {level} {onChange}/>

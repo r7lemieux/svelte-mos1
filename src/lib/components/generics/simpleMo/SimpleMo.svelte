@@ -10,7 +10,7 @@
   import Field from '../field/Field.svelte'
   import { enhance } from '$app/forms';
   
-  let {mo, autoSave = false}: { mo: Mo, autoSave: boolean } = $props()
+  let {mo, autoSave = false}: { mo: Mo, autoSave?: boolean } = $props()
   let viewMode: MoViewMode = $state(extractViewMode())
   // let disabled = $derived(viewMode === 'view')
   let moMeta = mo.moMeta

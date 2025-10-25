@@ -127,6 +127,12 @@ export const BaseFieldDefs: { [name: string]: FieldDefinition<any> } = {
   Object: new FieldDefinition({
     type: 'object',
   }),
+  Mo: new FieldDefinition({
+    type: 'mo',
+  }),
+  MoArray: new FieldDefinition({
+    type: 'moArray',
+  }),
   Array: new FieldDefinition({
     type: 'array',
   }),
@@ -193,7 +199,8 @@ export const CommonFieldDefs = {
   jobTitle: from(BaseFieldDefs.Name),
   time: from(BaseFieldDefs.Date),
   link: from(BaseFieldDefs.URL),
-  mo: from(BaseFieldDefs.Object),
+  mo: from(BaseFieldDefs.Mo),
+  moArray: from(BaseFieldDefs.MoArray),
   id: from(BaseFieldDefs.Id),
   url: from(BaseFieldDefs.URL),
   icon: from(BaseFieldDefs.Icon),
@@ -219,7 +226,7 @@ for (const [key, fd] of Object.entries(BaseFieldDefs)) {
   const name = key[0].toLowerCase() + key.slice(1)
   if (!CommonFieldDefs[name]) CommonFieldDefs[name] = from(BaseFieldDefs[key])
 }
-export const getFieldDef = (name: string): FieldDefinition<any> => {
+export const buildFieldDef = (name: string): FieldDefinition<any> => {
   return CommonFieldDefs[name]?.clone() || from(BaseFieldDefs.Default, {name})
 }
 

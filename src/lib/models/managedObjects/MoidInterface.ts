@@ -1,8 +1,20 @@
 import type {MoMetaInterface} from './MoMetaInterface.js'
-import type {MoInterface} from './MoInterface.js'
 
-export interface MoidInterface<T extends MoInterface> extends MoInterface{
+export interface MoidInterface {
 
-  proxyMoMeta: MoMetaInterface
 
+  moMeta: MoMetaInterface
+  id: number | string
+  displayName: string
+  getDisplayName: () => string
+  // setDisplayName: (displayName: string) => MoidInterface
+  // setProps: (props: any) => MoInterface
+  //
+  // toObj: () => any
+  // toMoid: () => MoidInterface
+  // toMo: () => Promise<MoInterface>
+  //
+  // hydrate(partial: Partial<MoInterface>): void
+  //
+  // toDocument: () => {}
 }

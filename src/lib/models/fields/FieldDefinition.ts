@@ -6,7 +6,6 @@ import type {ColDef} from 'ag-grid-community'
 import {copyOwnProperties} from  '../../services/common/util/ts.utils.js'
 import type {InputTypes} from  '../../services/common/util/dom.utils.js'
 // import type { ValueFormatterFunc } from 'ag-grid-community/dist/lib/entities/colDef.js'
-
 // Singleton
 export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
 
@@ -14,6 +13,7 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
   type = 'string'
   description?: string
   displayName?: string
+  moname?: string
   example?: string
   regex?: RegExp
   regexFlag?: string
@@ -39,7 +39,7 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
   validate() {
     if (!this.name) throw new Rezult(ErrorName.missing_field, {type: 'FieldDefinition', fieldname: 'name'})
   }
-
+  static objectToMo = (obj: any): any => {} // registered at init time
   static from = (fieldDef0: FieldDefinition<any>, props: Partial<FieldDefinitionInterface<any>> = {}): FieldDefinition<any> => {
     const newFieldDef = new FieldDefinition()
     copyOwnProperties(fieldDef0, newFieldDef)
@@ -135,21 +135,25 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
     }
   }
 
-  documentToValue(v) {
-    if (v === undefined || v === 'undefined' && this.canBeUndefined) return v
-    if (v === null || v === 'null' && this.canBeNull) return null
+  documentToValue(o: any) {
+    if (o === undefined || o === 'undefined' && this.canBeUndefined) return o
+    if (o === null || o === 'null' && this.canBeNull) return null
+
     switch (this.type) {
+      case 'mo':
+        return FieldDefinition.objectToMo(o)
       case 'map':
-        return new Map(Object.entries(v))
+        return new Map(Object.entries(o))
+      case 'object':
+      case 'array':
+      case 'date':
+        return structuredClone(o)
       case 'boolean':
       case 'string':
       case 'int':
       case 'float':
-      case 'date':
-      case 'object':
-      case 'array':
       default:
-        return v
+        return o
     }
   }
 

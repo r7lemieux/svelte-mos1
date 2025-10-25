@@ -1,6 +1,9 @@
 import type { MoInterface } from './MoInterface.js'
 import type { DataSourceInterface } from '../../services/db/DataSource.interface.js'
 import type { MoDefinitionInterface } from './MoDefinitionInterface.js'
+import type {MoidInterface} from './MoidInterface.js'
+import {Rezult} from '../../services/common/message/rezult.js'
+import {ErrorName} from '../../services/common/message/errorName.js'
 
 export interface MoMetaInterface {
 	name: string
@@ -8,6 +11,7 @@ export interface MoMetaInterface {
 	moDef: MoDefinitionInterface
 	dataSource: DataSourceInterface<MoInterface>
 	newMo: () => MoInterface
+	objToMoid: (any) => MoidInterface
 	objToMo: (any) => MoInterface
 	documentToMo: (any) => MoInterface
 	init: () => void
@@ -16,6 +20,8 @@ export interface MoMetaInterface {
 	moToObj: (mo: MoInterface) => any
 	moToDocument: (mo: MoInterface) => any
 	toDocument: () => string
+	moToMoid: (mo: MoInterface) => MoidInterface
+	moidToMo: (moid: MoidInterface) => Promise<MoInterface>
 
 	/*  ---------
 	 *  Accessors

@@ -60,7 +60,7 @@ export const toDisplayString = (str0: string): string => {
 }
 
 const alphaRegex = new RegExp(/[A-Za-z]/)
-export const alphaFromStr = str => {
+export const alphaFromStr = (str: string): string => {
   let alpha = ''
   if (str) {
     let i = str.length
@@ -86,7 +86,7 @@ export const jsonToDisplayString = (json: any): string => {
     })
     .join(', ')
 }
-export const objectReplacer = (k, v) => {
+export const objectReplacer = (k: any, v: any): any => {
   console.log(`==>string.utils.ts:90  k`, k)
   console.log(`==>string.utils.ts:90  v`, v)
   if (v && typeof v === 'object') {
@@ -96,7 +96,7 @@ export const objectReplacer = (k, v) => {
     return v
   }
 }
-export const objectToString = (o: any) => {
+export const objectToString = (o: any): any => {
   if (o && typeof o === 'object') {
     if (o.getDisplayName) return o.getDisplayName()
     return o.displayName || o.name || o.constructor?.name || o.toString()

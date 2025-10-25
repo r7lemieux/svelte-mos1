@@ -23,7 +23,9 @@
   } = $props()
   
   moMeta = moMeta || mos[0]?.moMeta
-  title = title || moMeta.name
+  let stitle = $state(title)
+  let sname = $state(moMeta.name)
+  let dtitle = $derived(stitle || sname)
   
   const gridId = 'grid'
   let gridApi: GridApi
@@ -120,7 +122,7 @@
 </svelte:head>
 <div class="grid-top">
   {#if title}
-    <h2 class="title">{title}</h2>
+    <h2 class="title">{dtitle}</h2>
   {/if}
   <span class="button-bar">
   {#if moMeta?.moDef.canCreate && topButtons}

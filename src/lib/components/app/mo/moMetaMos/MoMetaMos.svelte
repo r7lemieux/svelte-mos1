@@ -1,6 +1,6 @@
 <script lang="ts">
   import {MoListModel} from '../../../../models/managedObjects/MoList.model.js'
-  import {moMetaMoMeta} from '../../../../models/managedObjects/MoMetaMo.js'
+  import {moMetaMoMeta} from '../../../../models/managedObjects/MoMetaMoDef.js'
   import Mos from '../../../generics/mos/Mos.svelte'
   
   export let mos

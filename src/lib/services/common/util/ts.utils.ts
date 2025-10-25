@@ -1,3 +1,5 @@
+import type {MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
+import type {MoInterface} from '../../../models/managedObjects/MoInterface.js'
 
 export const bindFunctions = (obj, props=obj) => {
   for (const prop of Object.values(props)) {
@@ -21,3 +23,4 @@ export const copyOwnProperties = (source, target, topTarget=target) => {
   }
   bindFunctions(topTarget, target)
 }
+

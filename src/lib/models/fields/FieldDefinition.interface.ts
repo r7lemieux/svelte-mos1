@@ -8,7 +8,8 @@ export interface FieldDefinitionInterface<T> {
   name: string
   type: string
   key?: string
-  displayName?: string
+  displayName?: string,
+  moname?: string,
   // columnName?: string
   regex?: RegExp
   regexFlag?: string

@@ -1,5 +1,5 @@
 // Prototype
-import {CommonFieldDefs, getFieldDef} from '../fields/CommonFieldDefinition.js'
+import {CommonFieldDefs, buildFieldDef} from '../fields/CommonFieldDefinition.js'
 import {FieldDefinition} from '../fields/FieldDefinition.js'
 import {Rezult} from  '../../services/common/message/rezult.js'
 import {getClosestFieldName} from '../fields/FieldMatcher.js'

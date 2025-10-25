@@ -1,14 +1,12 @@
-import { Mo } from './Mo.js'
-import { defaultDbService } from '../../config/config.js'
-import { ErrorName } from '../../services/common/message/errorName.js'
-import { Rezult } from '../../services/common/message/rezult.js'
-import { CacheDataSource } from '../../services/db/Cache.dataSource.js'
-import type { MoMetaInterface } from './MoMetaInterface.js'
-import type { DataSourceInterface } from '../../services/db/DataSource.interface.js'
-import type { MoDefinitionInterface } from './MoDefinitionInterface.js'
-import type { MoInterface } from './MoInterface.js'
-import { MoDefinition } from './MoDefinition.js'
+import {ErrorName} from '../../services/common/message/errorName.js'
+import {Rezult} from '../../services/common/message/rezult.js'
+import type {MoMetaInterface} from './MoMetaInterface.js'
+import type {DataSourceInterface} from '../../services/db/DataSource.interface.js'
+import type {MoDefinitionInterface} from './MoDefinitionInterface.js'
+import type {MoInterface} from './MoInterface.js'
+import {MoDefinition} from './MoDefinition.js'
 import {HeapDataSource} from '../../services/db/Heap.dataSource.js'
+import type {MoidInterface} from './MoidInterface.js'
 
 export class MoMeta implements MoMetaInterface {
   name: string = ''
@@ -78,6 +76,7 @@ export class MoMeta implements MoMetaInterface {
   }
   moToObj = (mo: MoInterface): any => this.moDef.moToObj(mo)
   moToDocument = (mo: MoInterface): any => this.moDef.moToDocument(mo)
+  objToMoid = (obj: any): MoidInterface => this.moDef.objToMoid(obj)
   objToMo = (obj: any): MoInterface => this.moDef.objToMo(obj)
   toDocument = (): string => {
     return '' //todo
@@ -89,5 +88,7 @@ export class MoMeta implements MoMetaInterface {
     }
     return mo
   }
+  moidToMo = (moid: MoidInterface): Promise<MoInterface> => this.dataSource.getMo(moid.id)
+  moToMoid = (mo: MoInterface): MoidInterface => mo
 }
 

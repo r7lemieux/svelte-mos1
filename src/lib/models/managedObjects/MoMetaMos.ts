@@ -1,6 +1,7 @@
 
 import { MoMeta } from './MoMeta.js'
-import {MoMetaMo, moMetaMoMeta} from './MoMetaMo.js'
+import {MoMetaMo} from './MoMetaMo.js'
+import {moMetaMoMeta} from './MoMetaMoDef.js'
 import type { MoMetaInterface } from './MoMetaInterface.js'
 import {Rezult} from '../../services/common/message/rezult.js'
 import {ErrorName} from '../../services/common/message/errorName.js'
@@ -28,8 +29,8 @@ import {ErrorName} from '../../services/common/message/errorName.js'
 //     })
 // }
 
-export const getMoMetaMo = (name): Promise<MoMetaMo> => {
-  const moMetaMo = moMetaMoMeta.dataSource.getMo(name) as Promise<MoMetaMo>
-  if (!moMetaMo) throw new Rezult(ErrorName.missing_param, {name})
-  return moMetaMo
-}
+// export const getMoMetaMo = (name): Promise<MoMetaMo> => {
+//   const moMetaMo = moMetaMoMeta.dataSource.getMo(name) as Promise<MoMetaMo>
+//   if (!moMetaMo) throw new Rezult(ErrorName.missing_param, {name})
+//   return moMetaMo
+// }

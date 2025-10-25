@@ -1,21 +1,21 @@
-import { Mo } from './Mo.js'
-import { from } from '../fields/FieldDefinition.js'
-import { BaseFieldDefs } from '../fields/CommonFieldDefinition.js'
-import type { MoDefinitionInterface } from './MoDefinitionInterface.js'
-import type { MoMetaInterface } from './MoMetaInterface.js'
-import { MoMeta } from './MoMeta.js'
-import { moDefDef, MoDefinition } from './MoDefinition.js'
-import { HeapDataSource } from '../../services/db/Heap.dataSource.js'
+import {Mo} from './Mo.js'
+import {from} from '../fields/FieldDefinition.js'
+import {BaseFieldDefs} from '../fields/CommonFieldDefinition.js'
+import type {MoDefinitionInterface} from './MoDefinitionInterface.js'
+import type {MoMetaInterface} from './MoMetaInterface.js'
+import {MoMeta} from './MoMeta.js'
+import {MoDefinition} from './MoDefinition.js'
+import {HeapDataSource} from '../../services/db/Heap.dataSource.js'
 import type {FieldDefinitionInterface} from '../fields/FieldDefinition.interface.js'
 import type {MoInterface} from './MoInterface.js'
-import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
+import type {MoidInterface} from './MoidInterface.js'
 import {Moid} from './Moid.js'
 
 export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   id: string
   name: string
   dbName: string
-  displayName?: string
+  displayName: string = '-'
   keyFieldnames: string[][] = []
   fieldDefs: Map<string, FieldDefinitionInterface<any>> = new Map()
   gridFieldnames?: string[]
@@ -38,8 +38,9 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[] = (fd:string[]) => []
   extractFieldnamesFromMo: () => string[] = () => []
   newMo: (moMeta?: MoMetaInterface) => MoInterface = () => new Mo()
+  objToMoid: (obj: object) => MoidInterface = (o: object)=> new Mo()
   objToMo: (obj: object) => MoInterface = (o: object)=> new Mo()
-  moToObj: (mo: MoInterface) => object = (mo: MoInterface) => { return {}}
+  moToObj: (mo: MoidInterface) => object = (mo: MoidInterface) => { return {}}
   moToDocument: (mo: MoInterface) => any = (mo: MoInterface) => {}
   documentToMo: (doc: any) => MoInterface = () => new Mo()
   moToMoid: (mo:MoInterface) => MoidInterface = (mo:MoInterface) => new Moid(mo.moMeta, mo.id!, mo.getDisplayName())

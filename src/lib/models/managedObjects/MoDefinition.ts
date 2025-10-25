@@ -1,7 +1,7 @@
 // import { Mo } from './Mo.js'
 // import { MoInterface } from './MoInterface.js'
 import {FieldDefinition, from} from '../fields/FieldDefinition.js'
-import {BaseFieldDefs, getFieldDef} from '../fields/CommonFieldDefinition.js'
+import {BaseFieldDefs, buildFieldDef} from '../fields/CommonFieldDefinition.js'
 import {getClosestFieldName} from '../fields/FieldMatcher.js'
 import {toDisplayString} from '../../services/common/util/string.utils.js'
 import {ErrorName} from '../../services/common/message/errorName.js'
@@ -10,6 +10,8 @@ import type {MoDefinitionInterface} from './MoDefinitionInterface.js'
 import type {MoInterface} from './MoInterface.js'
 import {Moid} from './Moid.js'
 import type {MoidInterface} from './MoidInterface.js'
+import {getMoDef} from '../../services/mo/moManagement.js'
+import {objectToMo, objectToMoid} from '../../services/common/util/mo.utils.js'
 // import { defaultMoMeta } from './moMetaInstances.js'
 // import type { MoMetaInterface } from './MoMetaInterface.js'
 // import { defaultMoMeta } from './MoMeta.js'
@@ -87,7 +89,11 @@ export class MoDefinition implements MoDefinitionInterface {
    */
   initFieldDefs() {
     this.deriveFieldDefsFromMo()
-      .forEach(fd => this.fieldDefs.set(fd.name, fd))
+      .forEach(fd => {
+        if (!this.fieldDefs.has(fd.name)) {
+          this.fieldDefs.set(fd.name, fd)
+        }
+      })
     this.showFieldnames = Array.from(this.fieldDefs.keys()).filter(name => name !== 'id')
   }
 
@@ -108,7 +114,7 @@ export class MoDefinition implements MoDefinitionInterface {
   deriveFieldDefsFromFieldnames = (fieldnames: string[]) => {
     return fieldnames
       .map(getClosestFieldName)
-      .map(getFieldDef)
+      .map(buildFieldDef)
       .map((fd, i) => from(fd, {name: fieldnames[i]}))
   }
 
@@ -144,9 +150,10 @@ export class MoDefinition implements MoDefinitionInterface {
     // @ts-ignore
     return new moClass() as MoInterface
   }
-  objToMo = (obj: object): MoInterface => {
-    return this.newMo().setProps(obj)
-  }
+
+  objToMoid = objectToMoid
+  objToMo = objectToMo
+
   documentToMo = (doc: any): MoInterface => {
     const mo = this.newMo()
     for (const [fname, fDef] of Array.from(this.fieldDefs.entries())) {
@@ -157,10 +164,6 @@ export class MoDefinition implements MoDefinitionInterface {
   moToObj = (mo: any): any => mo.toObj()
   moToDocument = mo => mo.toDocument()
 
-  moToMoid = (mo: MoInterface): MoidInterface => {
-    if (!mo.id) throw new Rezult(ErrorName.missing_id, {mo})
-    return new Moid(mo.moMeta, mo.id, mo.getDisplayName())
-  }
 }
 
 let moDefDef

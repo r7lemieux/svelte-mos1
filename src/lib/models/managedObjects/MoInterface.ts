@@ -1,13 +1,12 @@
 import type {MoMetaInterface} from './MoMetaInterface.js'
 import type {MoidInterface} from './MoidInterface.js'
 
-export interface MoInterface {
+export interface MoInterface extends MoidInterface {
 
 
-  moMeta: MoMetaInterface
-  id?: number | string
-
-  getDisplayName: () => string
+  // moMeta: MoMetaInterface
+  // id: number | string
+  // getDisplayName: () => string
 
   setProps: (props: any) => MoInterface
 

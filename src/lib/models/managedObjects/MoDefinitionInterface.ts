@@ -1,7 +1,7 @@
 import type { MoInterface } from './MoInterface.js';
 import type { FieldDefinitionInterface } from '../fields/FieldDefinition.interface.js';
 import type { MoMetaInterface } from './MoMetaInterface.js';
-import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
+import type {MoidInterface} from './MoidInterface.js'
 
 export interface MoDefinitionInterface {
 	id: string
@@ -45,10 +45,10 @@ export interface MoDefinitionInterface {
 	 *  --
 	 */
 	newMo: (moMeta?: MoMetaInterface) => MoInterface
+	objToMoid: (obj: object) => MoidInterface
 	objToMo: (obj: object) => MoInterface
-	moToObj: (mo: MoInterface) => object
+	moToObj: (mo: MoidInterface) => object
 	moToDocument: (mo: MoInterface) => any
 	documentToMo: (doc: any) => MoInterface
 	// toDocument: () => any
-	moToMoid: (mo: MoInterface) => MoidInterface
 }
