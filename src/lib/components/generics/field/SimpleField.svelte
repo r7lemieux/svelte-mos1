@@ -15,7 +15,7 @@
   // export let fieldDef: FieldDefinition<any>
   // export let value
   // export let level: number = 1
-  // export let viewMode: MoViewMode
+  // export let viewMode: MoViewModeEnum
   
   let disabled = $derived(viewMode === 'view')
   const fd = fieldDef
@@ -32,7 +32,7 @@
     height = ele!.offsetHeight
   })
 </script>
-<div class="field SimpleField" style="margin-left:{level*12}px;">
+<div class="field SimpleField" data-fdtype={fieldDef.type} style="margin-left:{level*12}px;">
   <label for={fname}>{fd.getDisplayName()} </label>
   <span class=" tree-line"></span>
   <span class="value simple-value">

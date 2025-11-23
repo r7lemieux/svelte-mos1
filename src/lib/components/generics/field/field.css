@@ -1,141 +1,154 @@
 
 .field {
-  display: flex;
-  align-items: start;
-  background: var(--field-background-color);
-  width: calc(100% - 0.7rem);
-  
-  .tree-line {
-    border-left: 2px solid var(--tree-line-color);
-    display: block;
-    height: 2.5rem;
-    width: 5px;
-  }
-  
-  .tree-line.open {
-    border-bottom: 2px solid var(--tree-line-color);
-    width: 10px;
-    position: relative;
-    left: 1px;
-  }
-  
-  .tree-branch {
-    border-bottom: 2px solid var(--tree-line-color);
-    width: var(--tree-branch-indentation);
-    position: relative;
-    left: 2px;
-  }
-  
-  label {
-    flex: 120px 1 0;
-    margin: 0 8px 7px 0;
-    justify-content: flex-end;
-    width: 120px;
-    align-self: center;
     display: flex;
-    text-wrap: balance;
-    color: var(--field-label-color);
-  }
-  
-  .value {
-    color: var(--field-value-color);
-    flex: 200px 4 2;
-    margin-left: 3px;
-    
-    input:disabled {
-      color: var(--field-value-color);
+    align-items: start;
+    background: var(--field-background-color);
+    width: calc(100% - 0.7rem);
+
+    .tree-line {
+        border-left: 2px solid var(--tree-line-color);
+        display: block;
+        height: 2.5rem;
+        width: 5px;
     }
-    
-    input {
-      height: var(--field-height);
-      border: none;
-      border-bottom: 1px solid var(--field-bottom-line-color);
-      background-color: var(--field-edit-background-color);
-      padding: 0 0.3rem;
-      width: 100%;
+
+    .tree-line.open {
+        border-bottom: 2px solid var(--tree-line-color);
+        width: 10px;
+        position: relative;
+        left: 1px;
     }
-    
-    input[disabled] {
-      background: transparent;
+
+    .tree-branch {
+        border-bottom: 2px solid var(--tree-line-color);
+        width: var(--tree-branch-indentation);
+        position: relative;
+        left: 2px;
     }
-    
-    .delete-x {
-      color: var(--field-delete-color);
-      font-weight: bold;
-      margin: 0 -30px;
-      position: relative;
-      right: -15px;
-    }
-    
-    .count {
-      display: inline-flex;
-      justify-content: flex-end;
-      align-items: center;
-      height: var(--field-height);
-      align-self: center;
-      margin: 0 0.5rem 0 0.4rem;
-      width: var(--tree-detail-margin);
-      font-family: "Courier 10 Pitch", serif;
-      font-size: smaller;
-      
-      .detail-arrow::after {
-        display: inline-block;
-        content: '\25B7';
-        font-weight: bold;
-        font-size: x-large;
-        color: var(--tree-line-color);
+
+    label {
+        flex: 120px 1 0;
+        margin: 0 8px 7px 0;
+        justify-content: flex-end;
+        width: 120px;
         align-self: center;
-        margin: 0 0 4px 5px;
-      }
-      
-      .detail-arrow.open::after {
-        margin-bottom: 0;
-        transform: rotate(90deg);
-      }
+        display: flex;
+        text-wrap: balance;
+        text-align: right;
+        color: var(--field-label-color);
     }
-    
-    .empty-value {
-      height: var(--field-height);
-      margin: 0 0 6px 0;
-      display: block;
+
+    .value {
+        color: var(--field-value-color);
+        display: flex;
+        flex: 200px 4 2;
+        margin-left: 3px;
+
+        input:disabled {
+            color: var(--field-value-color);
+        }
+
+        input {
+            height: var(--field-height);
+            border: none;
+            border-bottom: 1px solid var(--field-bottom-line-color);
+            background-color: var(--field-edit-background-color);
+            padding: 0 0.3rem;
+            width: 100%;
+        }
+
+        input[disabled] {
+            background: transparent;
+        }
+
+        .delete-x {
+            color: var(--field-delete-color);
+            font-weight: bold;
+            margin: 0 -30px;
+            position: relative;
+            right: -15px;
+        }
+
+        .count {
+            display: inline-flex;
+            justify-content: flex-end;
+            align-items: center;
+            height: var(--field-height);
+            align-self: center;
+            margin: 0 0.5rem 0 0.4rem;
+            /*width: var(--tree-detail-margin);*/
+            font-family: "Courier 10 Pitch", serif;
+            font-size: smaller;
+
+            .detail-arrow::after {
+                display: inline-block;
+                content: '\25B7';
+                font-weight: bold;
+                font-size: x-large;
+                color: var(--tree-line-color);
+                align-self: center;
+                margin: 0 0 4px 5px;
+            }
+
+            .detail-arrow.open::after {
+                margin-bottom: 0;
+                transform: rotate(90deg);
+            }
+        }
+
+        .size {
+            color: var(--button-border-color);
+            align-self: center;
+            bottom: 1rem;
+            margin: 0 0 0.3rem 0;
+
+        }
+
+        .empty-value {
+            height: var(--field-height);
+            margin: 0 0 6px 0;
+            display: block;
+        }
     }
-  }
-  
-  .detail-icon {
-    position: relative;
-  }
-  
-  input.array-item {
-    height: var(--field-height);
-    width: 100%;
-  }
-  
-  .array-value {
-    border: 1px solid var(--field-border-color);
-    margin: 0;
-    padding: 0;
-    width: 100%;
-  }
-  
-  .array-value.single {
-    margin: 1px 0 0 0;
-  }
-  
-  .array-value input {
-    border: none;
-  }
-  
-  .map-detail-icon {
-    position: relative;
-    top: 4px;
-    right: -8px;
-    margin: 0 -30px;
-  }
+
+    .detail-icon {
+        position: relative;
+    }
+
+    input.array-item {
+        height: var(--field-height);
+        width: 100%;
+    }
+
+    .array-value {
+        border: 1px solid var(--field-border-color);
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .array-value.single {
+        margin: 1px 0 0 0;
+    }
+
+    .array-value input {
+        border: none;
+    }
+
+    .map-detail-icon {
+        position: relative;
+        top: 4px;
+        right: -8px;
+        margin: 0 -30px;
+    }
+
+    .loading {
+        color: var(--tree-line-color)
+    }
 }
 
 @supports (-webkit-transform: rotate(90deg)) {
-  .field .count .detail-arrow.open::after {
-    -webkit-transform: rotate(90deg);
-  }
+    .field .count .detail-arrow.open::after {
+        -webkit-transform: rotate(90deg);
+    }
 }
-  

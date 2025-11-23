@@ -10,6 +10,7 @@ import type {FieldDefinitionInterface} from '../fields/FieldDefinition.interface
 import type {MoInterface} from './MoInterface.js'
 import type {MoidInterface} from './MoidInterface.js'
 import {Moid} from './Moid.js'
+import { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
 
 export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   id: string
@@ -32,8 +33,11 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   getDbName: () => string = () => ''
   getFieldNames: () => string[] = ()=> []
   getMoClass: () => any = () => null
-  initFieldDefs: () => void = () => {}
+  createFieldDefs: () => void = () => { }
+  initFieldDef: (fd: FieldDefinitionInterface<any>) => void = () => {}
   addFieldDefsFromNames: (fieldnames: string[]) => void = (fn: string[]) => {}
+  addMoFieldDefFromName: (name: string, moClass?: any) => MoFieldDefinition = (name: string, moname: string) => new MoFieldDefinition(moname)
+  addMoArrayFieldDefFromName: (name: string, moClass?: any) => MoFieldDefinition = (name: string, moname: string) => new MoFieldDefinition(moname)
   deriveFieldDefsFromMo: () => FieldDefinitionInterface<any>[] = () => []
   deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[] = (fd:string[]) => []
   extractFieldnamesFromMo: () => string[] = () => []
@@ -55,7 +59,7 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   }
   // getDisplayName = () => this.moDef.getDisplayName()
 }
-export const moDefMoDef = new MoDefinition('moDef')
+export const moDefMoDef = new MoDefinition('moDef', {} as MoInterface)
 moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('name'))
 moDefMoDef.addFieldDef(from(BaseFieldDefs.Id).chainSetName('id'))
 moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('name'))

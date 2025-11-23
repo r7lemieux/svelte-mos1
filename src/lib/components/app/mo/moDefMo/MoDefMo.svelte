@@ -1,6 +1,6 @@
 <script lang="ts">
   import {toDisplayString} from '../../../../services/common/util/string.utils.js'
-  import type {MoViewMode} from '../../../../constants/ui.js'
+  import type { MoViewMode, MoViewModeEnum } from '../../../../constants/ui.js'
   import {goto} from '$app/navigation'
   import {page} from '$app/state'
   import {Rezult} from '../../../../services/common/message/rezult.js'
@@ -11,7 +11,7 @@
   
   let {moDefMo}: {moDefMo:MoDefinitionMo} = $props()
   const mo = moDefMo
-  let viewMode: MoViewMode = $derived(extractViewMode(page))
+  let viewMode: MoViewModeEnum = $derived(extractViewMode())
   let disabled = $derived(viewMode === 'view')
   let moDef = mo.moDef
   const title = toDisplayString(moDef.name)

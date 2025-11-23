@@ -7,6 +7,7 @@ export interface MoidInterface {
   id: number | string
   displayName: string
   getDisplayName: () => string
+  _isLoaded: boolean
   // setDisplayName: (displayName: string) => MoidInterface
   // setProps: (props: any) => MoInterface
   //

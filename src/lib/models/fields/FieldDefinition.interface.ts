@@ -40,5 +40,5 @@ export interface FieldDefinitionInterface<T> {
   getDisplayName: () => string
   getColumnName: () => string
   getDescription: () => string
-  buildColDef: () => ColDef
+  buildColDef: (index?: number) => ColDef
 }

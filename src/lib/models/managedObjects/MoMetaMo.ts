@@ -21,6 +21,7 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
   dbName: string
   moDef: MoDefinitionInterface
   dataSource: DataSourceInterface<MoInterface>
+  _isLoaded = true
 
   constructor(moMeta: MoMetaInterface) {
     this.moMeta = MoMetaMo.moMeta

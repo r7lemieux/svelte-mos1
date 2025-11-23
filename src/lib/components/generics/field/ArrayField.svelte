@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type {MoViewMode} from  '../../../constants/ui.js'
+  import type { MoViewMode, MoViewModeEnum } from '../../../constants/ui.js'
   import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
 	// import { AiOutlineCaretDown } from 'svelte-icons-pack/ai'
 	// import { AiOutlineCaretRight } from 'svelte-icons-pack/ai'
@@ -10,7 +10,7 @@
 
   export let fieldDef: FieldDefinition<any>
   export let value
-  export let viewMode: MoViewMode
+  export let viewMode: MoViewModeEnum
   $: disabled = viewMode === 'view'
   const fd = fieldDef
   const fname = fieldDef.name
@@ -44,10 +44,10 @@
   <span class=" tree-line {showDetails?'open':'closed'}"></span>
   <span class="value">
     <span class="count" onclick={toogle} onkeydown={toogle} role="button" tabindex="0">
-      <span>{size}</span>
       <span class="detail-icon detail-arrow {showDetails?'open':'closed'}">
 <!--      <Icon src={showDetails?AiOutlineCaretDown:AiOutlineCaretRight}/>-->
       </span>
+      <span class="size">{size}</span>
     </span>
   </span>
 </div>

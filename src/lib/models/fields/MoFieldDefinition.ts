@@ -1,10 +1,19 @@
-import {FieldDefinition, from} from './FieldDefinition.js'
-import {BaseFieldDefs} from './CommonFieldDefinition.js'
+import { FieldDefinition } from './FieldDefinition.js'
+import type { MoMetaInterface } from '../managedObjects/MoMetaInterface.js'
+import { getDefaultMoMeta } from '../managedObjects/moMetaInstances.js'
 
-// export const BaseFieldDefs: { [name: string]: FieldDefinition<any> } = {
-
-export const MoFieldDefinition: FieldDefinition<any> = from(BaseFieldDefs.Object)
-MoFieldDefinition.type = 'MO'
-MoFieldDefinition.gridColDef = {
+export class MoFieldDefinition extends FieldDefinition<any> {
+  moName: string
+  type = 'MO'
+  gridColDef = {
     type: 'object'
   }
+  constructor(moName: string, props: Partial<FieldDefinition<any>> = {}) {
+    super(props)
+    this.moName = moName
+  }
+  chainSetMoName = (moName: string) => {
+    this.moName = moName
+    return this
+  }
+}

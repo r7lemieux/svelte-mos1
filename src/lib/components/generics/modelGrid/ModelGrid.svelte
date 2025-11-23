@@ -71,8 +71,8 @@
       gridFieldDefs = gridFieldDefs.filter(d => model?.moDef!.gridFieldnames?.indexOf(d.name) !== -1)
     }
     const columnDefs = gridFieldDefs
-      .map((def: FieldDefinition<any>) => {
-        const colDef = def.buildColDef()
+      .map((def: FieldDefinition<any>, index) => {
+        const colDef = def.buildColDef(index)
         return colDef
       })
     const rowData = model.mos

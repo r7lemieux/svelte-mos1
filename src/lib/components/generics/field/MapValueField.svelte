@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type {MoViewMode} from  '../../../constants/ui.js'
+  import {MoViewMode} from  '../../../constants/ui.js'
   import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   // import Icon from 'svelte-icons-pack/Icon.svelte'
   // import AiOutlineCaretDown from 'svelte-icons-pack/ai/AiOutlineCaretDown'
   // import AiOutlineCaretRight from 'svelte-icons-pack/ai/AiOutlineCaretRight'
 	import { AiOutlineCaretDown } from 'svelte-icons-pack/ai'
 	import { AiOutlineCaretRight } from 'svelte-icons-pack/ai'
-  import MO from  '../mo/MO.svelte'
+  import SimpleMo from  '../simpleMo/SimpleMo.svelte'
   import ObjectField from  './ObjectField.svelte'
   import { onMount } from 'svelte'
   import './field.css'
@@ -19,7 +19,7 @@
     valueType,
     onChange,
     deleteItem,
-    viewMode = 'view',
+    viewMode = MoViewMode.view,
   } = $props()
   let disabled = $derived(!!viewMode)
   const fd = fieldDef
@@ -67,7 +67,7 @@
   </span>
 </div>
 {#if valueType === 'mo' && showDetails}
-  <MO mo={value} />
+  <SimpleMo mo={value} />
 {:else if valueType === 'object' && showDetails}
   <ObjectField {fieldDef} {value} {level} {viewMode} {onChange} />
 {/if}

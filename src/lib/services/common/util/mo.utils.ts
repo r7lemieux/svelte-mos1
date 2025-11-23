@@ -69,9 +69,12 @@ export const objectToMoid = (obj: any): MoidInterface => {
       if (value instanceof Object) {
         if (value._moname) {
           mo[fname] = objectToMoid(value)
+          // FieldDef for an mo
         } else if (fDef.name === 'mo' || fDef.moname) {
           if (!value._moname) value._moname = fDef.name
           mo[fname] = objectToMoid(value)
+        } else if (Array.isArray(value)) {
+          mo[fname] = value.map(v => objectToMoid(v))
         } else {
           mo[fname] = fDef.documentToValue(value)
         }

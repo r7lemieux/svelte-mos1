@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { MoViewMode } from '../../../constants/ui.js'
+  import type { MoViewMode, MoViewModeEnum } from '../../../constants/ui.js'
   import type { FieldDefinition } from '../../../models/fields/FieldDefinition.js'
   import { onMount } from 'svelte'
   import './field.css'
 
   export let fieldDef: FieldDefinition<never>
   export let value
-  export let viewMode: MoViewMode
+  export let viewMode: MoViewModeEnum
   export let single = false
   $: disabled = viewMode === 'view'
   const fd = fieldDef

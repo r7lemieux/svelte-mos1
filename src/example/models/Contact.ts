@@ -33,7 +33,7 @@ export class Contact extends Mo {
   static {
     const moDef = Contact.moMeta.moDef
     moDef.moClass = Contact
-    moDef.initFieldDefs()
+    moDef.createFieldDefs()
     // moDef.showFieldNames = moDef.fieldDefs.values().map(fd => fd.name).filter(name => name !== 'id')
   }
 

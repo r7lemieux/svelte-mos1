@@ -104,3 +104,8 @@ export const objectToString = (o: any): any => {
     return o
   }
 }
+export const plural = (str: string) => {
+  if (str.endsWith('s')) return str
+  if (str.endsWith('y')) return str.slice(0,str.length -1 ) + 'ies'
+  return str + 's'
+}

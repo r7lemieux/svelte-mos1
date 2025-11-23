@@ -1,4 +1,6 @@
 import {FieldDefinition, from} from './FieldDefinition.js'
+import { MoFieldDefinition } from './MoFieldDefinition.js'
+// import { MoFieldDefinition } from './MoFieldDefinition.js'
 //ref some regex from https://owasp.org/www-community/OWASP_Validation_Regex_Repository
 export const BaseFieldDefs: { [name: string]: FieldDefinition<any> } = {
   Id: new FieldDefinition<string>({
@@ -76,6 +78,10 @@ export const BaseFieldDefs: { [name: string]: FieldDefinition<any> } = {
       type: 'date',
       gridColDef: {
         cellRenderer: params => {
+          if (!params.value.toLocaleString) {
+            console.log(`==> CommonFieldDefinition.ts:80 params.value `, params.value)
+            return 'invalid date'
+          }
           return params.value?.toLocaleDateString('en-US', {dateStyle: 'medium'})
         },
         minWidth: 130,
@@ -129,9 +135,14 @@ export const BaseFieldDefs: { [name: string]: FieldDefinition<any> } = {
   }),
   Mo: new FieldDefinition({
     type: 'mo',
+    gridColDef: {
+      cellRenderer: params => {
+        return params.value?.getDisplayName()
+      }
+    },
   }),
-  MoArray: new FieldDefinition({
-    type: 'moArray',
+  MoArray: new MoFieldDefinition('Mo', {
+    type: 'moArray'
   }),
   Array: new FieldDefinition({
     type: 'array',

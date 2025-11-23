@@ -2,6 +2,7 @@ import type { MoInterface } from './MoInterface.js';
 import type { FieldDefinitionInterface } from '../fields/FieldDefinition.interface.js';
 import type { MoMetaInterface } from './MoMetaInterface.js';
 import type {MoidInterface} from './MoidInterface.js'
+import type { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
 
 export interface MoDefinitionInterface {
 	id: string
@@ -34,12 +35,14 @@ export interface MoDefinitionInterface {
 	 * Field Definitions
 	 * -----------------
 	 */
-	initFieldDefs: () => void
+	createFieldDefs: () => void
+  initFieldDef: (fd: FieldDefinitionInterface<any>) => void
 	addFieldDefsFromNames: (fieldnames: string[]) => void
+  addMoFieldDefFromName: (name: string, moname?:string) => MoFieldDefinition
+  addMoArrayFieldDefFromName: (name: string, moname?: string) => MoFieldDefinition
 	deriveFieldDefsFromMo: () => FieldDefinitionInterface<any>[]
 	deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[]
 	extractFieldnamesFromMo: () => string[]
-
 	/*  --
 	 *  Mo
 	 *  --

@@ -7,8 +7,8 @@
   --field-background-color: transparent;
   --field-delete-color: #822;
   --tree-line-color: #88A;
-  --field-value-color: #000;
-  --field-label-color: #002;
+  --field-value-color: #222;
+  --field-label-color: #235;
   --field-border-color: #DDE;
   --field-edit-background-color: #E1E2FF;
   --field-bottom-line-color: #E1E2FF;
@@ -19,6 +19,7 @@
   --button-margin-left: 0.5rem;
   --button-padding: 1rem 1.5rem;
   --button-font-weight: 200;
+    font-family: 'Roboto', sans-serif;
 }
 .button-bar {
   display: flex;

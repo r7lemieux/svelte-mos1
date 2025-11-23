@@ -1,17 +1,15 @@
 // import { Mo } from './Mo.js'
 // import { MoInterface } from './MoInterface.js'
-import {FieldDefinition, from} from '../fields/FieldDefinition.js'
-import {BaseFieldDefs, buildFieldDef} from '../fields/CommonFieldDefinition.js'
-import {getClosestFieldName} from '../fields/FieldMatcher.js'
-import {toDisplayString} from '../../services/common/util/string.utils.js'
-import {ErrorName} from '../../services/common/message/errorName.js'
-import {Rezult} from '../../services/common/message/rezult.js'
-import type {MoDefinitionInterface} from './MoDefinitionInterface.js'
-import type {MoInterface} from './MoInterface.js'
-import {Moid} from './Moid.js'
-import type {MoidInterface} from './MoidInterface.js'
-import {getMoDef} from '../../services/mo/moManagement.js'
-import {objectToMo, objectToMoid} from '../../services/common/util/mo.utils.js'
+import { FieldDefinition, from } from '../fields/FieldDefinition.js'
+import { BaseFieldDefs, buildFieldDef, CommonFieldDefs } from '../fields/CommonFieldDefinition.js'
+import { getClosestFieldName } from '../fields/FieldMatcher.js'
+import { plural, toDisplayString } from '../../services/common/util/string.utils.js'
+import { ErrorName } from '../../services/common/message/errorName.js'
+import { Rezult } from '../../services/common/message/rezult.js'
+import type { MoDefinitionInterface } from './MoDefinitionInterface.js'
+import type { MoInterface } from './MoInterface.js'
+import { objectToMo, objectToMoid } from '../../services/common/util/mo.utils.js'
+import type { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
 // import { defaultMoMeta } from './moMetaInstances.js'
 // import type { MoMetaInterface } from './MoMetaInterface.js'
 // import { defaultMoMeta } from './MoMeta.js'
@@ -24,7 +22,7 @@ export class MoDefinition implements MoDefinitionInterface {
   keyFieldnames: string[][] = []
   fieldDefs = new Map<string, FieldDefinition<any>>()
   gridFieldnames?: string[]
-  showFieldnames: string[]
+  showFieldnames: string[] = []
   moClass: MoInterface
   hasId = false
   idType: 'number' | 'string' = 'string'
@@ -61,7 +59,7 @@ export class MoDefinition implements MoDefinitionInterface {
       if (props.fieldNames) {
         moDef.addFieldDefsFromNames(props.fieldnames)
       } else if (props.moClass) {
-        moDef.initFieldDefs()
+        moDef.createFieldDefs()
       }
     }
     return moDef
@@ -87,19 +85,40 @@ export class MoDefinition implements MoDefinitionInterface {
    * Field Definitions
    * -----------------
    */
-  initFieldDefs() {
+  createFieldDefs() {
     this.deriveFieldDefsFromMo()
-      .forEach(fd => {
-        if (!this.fieldDefs.has(fd.name)) {
-          this.fieldDefs.set(fd.name, fd)
-        }
-      })
-    this.showFieldnames = Array.from(this.fieldDefs.keys()).filter(name => name !== 'id')
+      .forEach(fd => this.initFieldDef(fd))
+  }
+
+  initFieldDef(fd: FieldDefinition<any>) {
+    if (!this.fieldDefs.has(fd.name)) {
+      this.fieldDefs.set(fd.name, fd)
+    }
+    if (fd.name != 'id') {
+      this.showFieldnames.push(fd.name)
+    }
   }
 
   addFieldDef = fieldDef => {
     this.fieldDefs.set(fieldDef.name, fieldDef)
     return fieldDef
+  }
+  addMoFieldDefFromName(name: string, moname?: string): MoFieldDefinition {
+    const moFieldDef = CommonFieldDefs.mo.clone() as MoFieldDefinition
+    // moFieldDef.type = 'mo'
+    moFieldDef.moName = moname || plural(name)
+    moFieldDef.name = name
+    this.fieldDefs.set(name, moFieldDef)
+    return moFieldDef
+  }
+
+  addMoArrayFieldDefFromName(name: string, moname?: string): MoFieldDefinition {
+    const moFieldDef = CommonFieldDefs.moArray.clone() as MoFieldDefinition
+    moFieldDef.type = 'moArray'
+    moFieldDef.moName = moname || plural(name)
+    moFieldDef.name = name
+    this.fieldDefs.set(name, moFieldDef)
+    return moFieldDef
   }
   addFieldDefsFromNames = (fieldnames: string[]) => {
     this.deriveFieldDefsFromFieldnames(fieldnames)
@@ -113,6 +132,7 @@ export class MoDefinition implements MoDefinitionInterface {
 
   deriveFieldDefsFromFieldnames = (fieldnames: string[]) => {
     return fieldnames
+      .filter(fn => !fn.startsWith('_'))
       .map(getClosestFieldName)
       .map(buildFieldDef)
       .map((fd, i) => from(fd, {name: fieldnames[i]}))
@@ -122,7 +142,7 @@ export class MoDefinition implements MoDefinitionInterface {
     // const moClass: typeof Mo = this.moClass || Mo
     const moClass = this.moClass || Object
     const mo: MoInterface = this.newMo()
-    const fieldnames = Object.getOwnPropertyNames(mo).filter(n => typeof mo[n] !== 'function' && n !== 'moMeta')
+    const fieldnames = Object.getOwnPropertyNames(mo).filter(n => typeof mo[n] !== 'function' && n !== 'moMeta' && !n.startsWith('_'))
     return fieldnames
   }
 
@@ -223,5 +243,5 @@ export const initMoDefDef = () => {
 }
 setTimeout(initMoDefDef, 0)
 // initMoDefDef()
-export {moDefDef}
+export { moDefDef }
 

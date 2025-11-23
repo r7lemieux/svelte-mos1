@@ -201,12 +201,13 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
     return OK
   }
 
-  buildColDef(): ColDef {
+  buildColDef(sortIndex: number = 0): ColDef {
     const colDef = this.gridColDef || {}
     colDef.field = colDef.field || this.name
     colDef.cellClass = colDef.cellClass || this.name
     colDef.headerName = colDef?.headerName || this.displayName || toDisplayString(this.name)
     colDef.valueFormatter = this.gridToString.bind(this)
+    colDef.sortIndex = sortIndex
     return colDef
   }
 

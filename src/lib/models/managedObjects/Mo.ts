@@ -15,6 +15,7 @@ export class Mo implements MoInterface {
   moMeta: MoMetaInterface
   id: number | string = 0
   displayName: string = ''
+  _isLoaded = true
 
   constructor(moMeta?: MoMetaInterface, name?: string) {
     // super(Moid.moMeta)

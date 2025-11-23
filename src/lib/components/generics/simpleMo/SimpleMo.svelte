@@ -1,7 +1,7 @@
 <script lang="ts">
   import type {Mo} from '../../../models/managedObjects/Mo.js'
   import {toDisplayString} from '../../../services/common/util/string.utils.js'
-  import type {MoViewMode} from '../../../constants/ui.js'
+  import { MoViewMode, type MoViewModeEnum } from '../../../constants/ui.js'
   import {goto} from '$app/navigation'
   import {page} from '$app/state'
   import {Rezult} from '../../../services/common/message/rezult.js'
@@ -9,24 +9,21 @@
   import {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import Field from '../field/Field.svelte'
   import { enhance } from '$app/forms';
-  
+  import { extractViewMode } from '../../../services/common/util/dom.utils.js'
+  let paa = page;
   let {mo, autoSave = false}: { mo: Mo, autoSave?: boolean } = $props()
-  let viewMode: MoViewMode = $state(extractViewMode())
+  let viewMode: MoViewModeEnum = $state(extractViewMode())
   // let disabled = $derived(viewMode === 'view')
-  let moMeta = mo.moMeta
-  let moDef = mo.moMeta.moDef
-  const title = toDisplayString(moDef.name)
-  const fieldDefs: FieldDefinition<any>[] = Array.from(moDef.fieldDefs.values()) as FieldDefinition<any>[]
-  const fieldnames = moDef.showFieldnames
+  let smo = $state(mo)
+  let moMeta = $derived(mo.moMeta)
+  let moDef = $derived(moMeta.moDef)
+  console.log(`==> SimpleMo.svelte:16 moMeta.name `, moMeta.name);
+  let title = $derived(toDisplayString(moMeta.moDef.name))
+  console.log(`==> SimpleMo.svelte:21 title `, title);
+  let fieldDefs: FieldDefinition<any>[] = $derived(Array.from(moMeta.moDef.fieldDefs.values()) as FieldDefinition<any>[])
+  let fieldnames = $derived(moMeta.moDef.showFieldnames)
   const ui = {}
   
-  function extractViewMode(): MoViewMode {
-    const pathParts = page.url.pathname.split('/')
-    const pathTail = pathParts[pathParts.length - 1]
-    if (pathTail === 'edit') return 'edit'
-    if (pathTail === 'create') return 'create'
-    return 'view'
-  }
   async function enhancedSave({ form, data, action, cancel }) {
     // 'data' contains the FormData object
     const formData = new FormData(form);
@@ -56,6 +53,10 @@
       save()
     }
   }
+  $effect(() => {
+    console.log(`==> SimpleMo.svelte:57 title `, title);
+    }
+  )
   const cancel = () => {
     if (viewMode === 'edit') {
       viewMode = 'view'

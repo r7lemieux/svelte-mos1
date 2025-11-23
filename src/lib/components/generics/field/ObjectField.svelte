@@ -3,6 +3,11 @@
   import {sizeLabels}         from '../../../services/common/util/dom.utils.js'
   // import Field from './Field.svelte'
   import './field.css'
+  import type { MoInterface } from '../../../models/managedObjects/MoInterface.js'
+  import type { MoViewMode, MoViewModeEnum } from '../../../constants/ui.js'
+  import type { FieldDefinition } from '../../../models/fields/FieldDefinition.js'
+  import type { MoidInterface } from '../../../models/managedObjects/MoidInterface.js'
+  import type { FieldDefinitionInterface } from '../../../models/fields/FieldDefinition.interface.js'
   
   let {
     fieldDef,
@@ -10,13 +15,13 @@
     level = 1,
     viewMode = 'view',
     onChange
-  } = $props()
+  }: {fieldDef?: FieldDefinitionInterface<any>, value: any, level: number, viewMode: MoViewModeEnum, onChange: any} = $props()
   // export let name
   // export let fieldDef: FieldDefinition<any>
   // export let value: any
   // export let level: number = 1
-  // export let viewMode: MoViewMode
-  const fd = fieldDef
+  // export let viewMode: MoViewModeEnum
+  const fd = fieldDef || value.moMeta.fieldDef
   
   let disabled = $derived(!!viewMode)
   const size = value ? Object.keys(value).length : 0
@@ -28,7 +33,7 @@
   }
   let showDetails = $state(false)
   
-  const displayName = value ? (value.getDisplayName()) : (value.name || value.constructor.name)
+  const displayName = (value.getDisplayName) ? (value.getDisplayName()) : (value.name || value.constructor.name)
   const toogle = () => {
     showDetails = !showDetails
     sizeLabels()

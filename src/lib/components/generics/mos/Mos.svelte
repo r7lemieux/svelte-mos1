@@ -8,7 +8,7 @@
   import {createGrid, type GridApi} from 'ag-grid-community' // does it work here? I had to put that in the app
   import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import {MoListModel} from '../../../models/managedObjects/MoList.model.js'
-  import {BtnCellRenderer} from '../../../components/common/BtnCellRenderer.js'
+  import {BtnCellRenderer} from '../../common/BtnCellRenderer.js'
   import {buildIconColDef, IconCellRenderer} from '../../common/IconCellRenderer.js'
   import {CgArrowRight} from 'svelte-icons-pack/cg'
   import {Rezult} from '../../../services/common/message/rezult.js'
@@ -21,24 +21,26 @@
     topButtons?: boolean,
     height?: string
   } = $props()
-  
-  moMeta = moMeta || mos[0]?.moMeta
+  if (!mos) {
+    throw new Rezult(ErrorName.argument_null, {name: 'mos'})
+  }
+  let smoMeta = $state(moMeta)
+  // smoMeta = moMeta || mos[0]?._isLoaded
+  const dmoMeta = $derived(smoMeta)
   let stitle = $state(title)
-  let sname = $state(moMeta.name)
+  let sname = $state(smoMeta.name)
   let dtitle = $derived(stitle || sname)
-  
   const gridId = 'grid'
   let gridApi: GridApi
-  let listModel = $derived(new MoListModel(moMeta, mos))
-  let displayName = $state(moMeta?.moDef.getDisplayName())
-  
-  const createMo = () => goto(`/mo/${moMeta.name}/create`)
+  let listModel = $derived(new MoListModel(dmoMeta, mos))
+  let displayName = $derived(smoMeta?.moDef.getDisplayName())
+  const createMo = () => goto(`/mo/${smoMeta.name}/create`)
 
-  let names: string[] = $state([])
+  // let names: string[] = $state([])
   let eGridDiv
   onMount(() => {
     displayName = moMeta.moDef?.getDisplayName()
-    names = mos.map(m => `moMeta: ${m.moMeta.name} moDef ${m.moMeta.moDef?.name} dataSource ${m.moMeta.dataSource?.constructor.name}`)
+    // names = mos.map(m => `moMeta: ${m.moMeta.name} moDef ${m.moMeta.moDef?.name} dataSource ${m.moMeta.dataSource?.constructor.name}`)
     eGridDiv = window.document.getElementById(gridId)
     if (!eGridDiv) throw new Rezult(ErrorName.missing_value)
     gridApi = createGrid(eGridDiv, gridOptions)
@@ -79,15 +81,21 @@
   const goToView = (mo) => goto(`/mo/${mo.moMeta.name}/${mo.id}`)
   
   const buildGridOptions = (model): GridOptions<any> => {
-    let gridFieldDefs: FieldDefinition<any>[] = Array.from(model.getFieldDefs().values())
-    if (!gridFieldDefs.length) {
-      gridFieldDefs = Array.from(model.moDef.fieldDefs.values())
-    }
+    let gridFieldDefs: FieldDefinition<any>[] = []
+    // if (!gridFieldDefs.length) {
+    //   gridFieldDefs = Array.from(model.moDef.fieldDefs.values())
+    // }
     if (model.moDef.gridFieldnames) {
-      gridFieldDefs = gridFieldDefs.filter(d => model.moDef.gridFieldnames?.indexOf(d.name) !== -1)
+      gridFieldDefs = model.moDef.gridFieldnames.map(fn => {
+        const fd = model.moDef.fieldDefs.get(fn)
+        if (!fd) console.log(`==> Mos.svelte:93 missing ${moMeta.name} field definition for `, fn);
+        return fd
+      }).filter(fd => !!fd)
+    } else {
+      gridFieldDefs = Array.from(model.getFieldDefs().values())
     }
     const columnDefs = gridFieldDefs
-      .map((def: FieldDefinition<any>) => def.buildColDef())
+      .map((def: FieldDefinition<any>, index) => def.buildColDef(index))
     const viewColumnDefs = buildIconColDef(CgArrowRight, goToView)
     columnDefs.push(viewColumnDefs)
     const rowData = model.mos
@@ -109,10 +117,19 @@
   
   let gridOptions: GridOptions = $derived(buildGridOptions(listModel))
 
+  let etitle = title
   $effect(() => {
     if (gridApi && mos) {
-      gridApi.setGridOption('rowData', mos);
+      // createGrid(eGridDiv, gridOptions)
+      const elistModel = $derived(new MoListModel(moMeta, mos))
+      const gridOptions = buildGridOptions((() => elistModel)())
+      gridApi.setGridOption('columnDefs', gridOptions.columnDefs )
+      gridApi.setGridOption('rowData', gridOptions.rowData);
     }
+    etitle = title
+    stitle = title || sname
+    displayName = moMeta?.moDef.getDisplayName()
+    // console.log(`==> Mos.svelte:116 title s d e`, title, stitle, dtitle, etitle);
   })
 </script>
 
@@ -122,7 +139,8 @@
 </svelte:head>
 <div class="grid-top">
   {#if title}
-    <h2 class="title">{dtitle}</h2>
+<!--    s {stitle} d {dtitle} e {etitle}-->
+    <h2 class="title">{stitle}</h2>
   {/if}
   <span class="button-bar">
   {#if moMeta?.moDef.canCreate && topButtons}
@@ -146,29 +164,29 @@
   .button-bar {
   /*  display: flex;*/
   /*  justify-content: flex-end;*/
-    margin: 1rem 2rem  1rem 0;
-    @media(max-width: 800px) {
-      margin-right: 0.8rem;
-    }
+   margin: 0.5rem 0;
+     @media(max-width: 800px) {
+      /*margin-right: 0.8rem;*/
+     }
   }
   
   .grid-wrapper {
-    margin: 0 0.8rem 0 0;
+    /*margin: 0 0.8rem 0 0;*/
     padding: 0;
     left: 0;
-    width: calc(100% - 2rem);
+    /*width: calc(100% - 2rem);*/
     height: 100%;
     @media (max-width: 800px) {
-      width: calc(100% - 0.8rem);
+      /*width: calc(100% - 0.8rem);*/
     }
   }
   
   .grid-wrapper-full {
-    margin: 0 0.8rem 0 0;
+    /*margin: 0 0.8rem 0 0;*/
     padding: 0;
     position: absolute;
     left: 0;
-    width: 100%;
+    /*width: 100%;*/
     height: 100%;
     
     .grid {

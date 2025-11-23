@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type {MoViewMode} from '../../../constants/ui.js'
+  import { MoViewMode, type MoViewModeEnum } from '../../../constants/ui.js'
   import {page} from '$app/state'
   import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import SimpleField from './SimpleField.svelte'
@@ -9,6 +9,9 @@
   import ObjectField from './ObjectField.svelte'
   import {moDefDef} from '../../../models/managedObjects/MoDefinition.js'
   import './field.css'
+  import MoArrayField from './MoArrayField.svelte'
+  import { MoFieldDefinition } from '../../../models/fields/MoFieldDefinition.js'
+  import MoField from './MoField.svelte'
   
   let {
     fieldDef,
@@ -20,30 +23,34 @@
   
   // export let fieldDef: FieldDefinition<any>
   // export let value: string
-  // export let viewMode: MoViewMode = extractViewMode()
+  // export let viewMode: MoViewModeEnum = extractViewMode()
   // export let level: number = 1
   // export let onChange: (fieldId: string, value: any) => void
   viewMode = extractViewMode() // = view
   let disabled = $derived(!!viewMode)
   const fd = fieldDef
   
-  function extractViewMode(): MoViewMode {
+  function extractViewMode(): MoViewModeEnum {
     const pathParts = page.url.pathname.split('/')
     const pathTail = pathParts[pathParts.length - 1]
-    if (pathTail === 'edit') return 'edit'
-    if (pathTail === 'create') return 'create'
-    return 'view'
+    if (pathTail === 'edit') return MoViewMode.edit
+    if (pathTail === 'create') return MoViewMode.create
+    return MoViewMode.view
   }
   
   $effect(sizeLabels)
-
+  const moName = (fd.type === 'moArray')? (fd as MoFieldDefinition).moName : undefined
 </script>
-<h2>fd.type {fd.type}</h2>
+<!--{fd.type}-->
 {#if fd.type === 'array'}
   <ArrayField {fieldDef} {value} {viewMode} {level} {onChange}/>
+{:else if fd.type === 'moArray'}
+  <MoArrayField {fieldDef} {value} {viewMode} {level} {onChange} />
 {:else if fd.type === 'map'}
   <MapField {fieldDef} {value} {viewMode} {level} {onChange}/>
-{:else if fd.type === 'object' || fd.type === 'mo' }
+{:else if fd.type === 'mo'}
+  <MoField {fieldDef} {value} {viewMode} {level} {onChange}/>
+{:else if fd.type === 'object' }
   <ObjectField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else}
   <SimpleField {fieldDef} {value} {viewMode} {level} {onChange}/>

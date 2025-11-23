@@ -118,7 +118,7 @@
       gridFieldDefs = gridFieldDefs.filter(d => model.moDef.gridFieldnames?.indexOf(d.name) !== -1)
     }
     const columnDefs = gridFieldDefs
-      .map((def: FieldDefinition<any>) => def.buildColDef())
+      .map((def: FieldDefinition<any>, index) => def.buildColDef(index))
     const viewColumnDefs = buildIconColDef(CgArrowRight, goToView)
     columnDefs.push(viewColumnDefs)
     const rowData = model.mos
@@ -166,22 +166,22 @@
 
 <style>
   .grid-wrapper {
-    margin: 0 0.8rem 0 0;
+    /*margin: 0 0.8rem 0 0;*/
     padding: 0;
     left: 0;
-    width: calc(100% - 2rem);
+    /*width: calc(100% - 2rem);*/
     height: 100%;
     @media (max-width: 800px) {
-      width: calc(100% - 0.8rem);
+      /*width: calc(100% - 0.8rem);*/
     }
   }
   
   .grid-wrapper-full {
-    margin: 0 0.8rem 0 0;
+    /*margin: 0 0.8rem 0 0;*/
     padding: 0;
     position: absolute;
     left: 0;
-    width: 100%;
+    /*width: 100%;*/
     height: 100%;
     
     .grid {

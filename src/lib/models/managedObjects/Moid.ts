@@ -8,6 +8,7 @@ export class Moid implements MoidInterface {
   moMeta: MoMetaInterface
   id: number | string
   displayName: string
+  _isLoaded = false
 
   constructor(moMeta: MoMetaInterface, id: string | number, name?: string) {
     // super(Moid.moMeta)

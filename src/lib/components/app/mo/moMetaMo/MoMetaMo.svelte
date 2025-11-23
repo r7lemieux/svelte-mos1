@@ -1,6 +1,6 @@
 <script lang="ts">
   import {toDisplayString} from '../../../../services/common/util/string.utils.js'
-  import type {MoViewMode} from '../../../../constants/ui.js'
+  import type { MoViewMode, MoViewModeEnum } from '../../../../constants/ui.js'
   import {goto} from '$app/navigation'
   import {page} from '$app/state'
   import Field from '../../../generics/field/Field.svelte'
@@ -10,7 +10,7 @@
   import type {FieldDefinition} from '../../../../models/fields/FieldDefinition.js'
   
   let {mo} = $props()
-  let viewMode: MoViewMode = $derived(extractViewMode(page))
+  let viewMode: MoViewModeEnum = $derived(extractViewMode())
   let disabled = $derived(viewMode)
   let moMeta = mo //.moMeta
   const title = toDisplayString(moMeta.name)
