@@ -18,7 +18,7 @@
   const fname = fieldDef.name
   const size = (Array.from(value.keys())).length
   const ui = {}
-  const valueType = fieldDef.mapValueType
+  const valueType = fieldDef.itemValueType
   let changed = event => {
     const fieldId = event.srcElement.id
     const value = event.srcElement.value

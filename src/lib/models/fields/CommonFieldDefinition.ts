@@ -145,7 +145,7 @@ export const BaseFieldDefs: { [name: string]: FieldDefinition<any> } = {
     type: 'moArray'
   }),
   Array: new FieldDefinition({
-    type: 'array',
+    type: 'array'
   }),
   Map: new FieldDefinition({
     type: 'map',

@@ -8,10 +8,10 @@ import {MoMetaMo} from './MoMetaMo.js'
 const moMetaMoDef = new MoDefinition('moMeta')
 moMetaMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('name'))
 const moDefFieldDef = from(CommonFieldDefs.mo).chainSetName('moDef')
-moDefFieldDef.mapValueType = 'object'
+moDefFieldDef.itemValueType = 'object'
 moMetaMoDef.addFieldDef(moDefFieldDef)
 const dataSourceFieldDef = from(BaseFieldDefs.Object).chainSetName('dataSource')
-dataSourceFieldDef.mapValueType = 'object'
+dataSourceFieldDef.itemValueType = 'object'
 moMetaMoDef.addFieldDef(dataSourceFieldDef)
 Object.assign(moMetaMoDef, {
   name: 'moMeta',

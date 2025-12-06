@@ -13,6 +13,6 @@ export declare class Contact extends Mo {
     state?: string;
     postalCode?: string;
     constructor();
-    hydrate: (props: Partial<Contact>) => void;
+    hydrate: (props: Partial<Contact>) => MoInterface;
 }
 export declare const getContactMoMeta: () => any;

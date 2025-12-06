@@ -27,7 +27,7 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   gdriveFilePath?: string = ''
   gdriveFileId?: string | null = null
   canCreate: boolean = false
-  init = () => {}
+  init = () => this
   addFieldDef = (fd: FieldDefinitionInterface<any>) => {}
   getDisplayName: () => string = () => ''
   getDbName: () => string = () => ''
@@ -40,10 +40,11 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   addMoArrayFieldDefFromName: (name: string, moClass?: any) => MoFieldDefinition = (name: string, moname: string) => new MoFieldDefinition(moname)
   deriveFieldDefsFromMo: () => FieldDefinitionInterface<any>[] = () => []
   deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[] = (fd:string[]) => []
+  deriveMoItemDefFromMoArrayDef: (moArryDef: MoFieldDefinition) => MoFieldDefinition = (moArrayDef) => new MoFieldDefinition('')
   extractFieldnamesFromMo: () => string[] = () => []
   newMo: (moMeta?: MoMetaInterface) => MoInterface = () => new Mo()
   objToMoid: (obj: object) => MoidInterface = (o: object)=> new Mo()
-  objToMo: (obj: object) => MoInterface = (o: object)=> new Mo()
+  objToMo: (obj: object, moname?: string) => MoInterface = (o: object)=> new Mo()
   moToObj: (mo: MoidInterface) => object = (mo: MoidInterface) => { return {}}
   moToDocument: (mo: MoInterface) => any = (mo: MoInterface) => {}
   documentToMo: (doc: any) => MoInterface = () => new Mo()
@@ -73,7 +74,7 @@ moDefMoDef.addFieldDef(from(BaseFieldDefs.UrlPath).chainSetName('gdriveFilePath'
 moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('gdriveFileId'))
 const moClassFieldDef = from(BaseFieldDefs.Name).chainSetName('moClass')
 const fieldDefsFieldDef = from(BaseFieldDefs.Map).chainSetName('fieldDefs')
-// fieldDefsFieldDef.mapValueType = 'object'
+// fieldDefsFieldDef.itemValueType = 'object'
 moDefMoDef.addFieldDef(fieldDefsFieldDef)
 moClassFieldDef.gridColDef = {
   field: undefined,

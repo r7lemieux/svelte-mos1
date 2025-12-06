@@ -40,6 +40,7 @@ export interface MoDefinitionInterface {
 	addFieldDefsFromNames: (fieldnames: string[]) => void
   addMoFieldDefFromName: (name: string, moname?:string) => MoFieldDefinition
   addMoArrayFieldDefFromName: (name: string, moname?: string) => MoFieldDefinition
+	// deriveMoItemDefFromMoArrayDef: (moArryDef: MoFieldDefinition) => MoFieldDefinition
 	deriveFieldDefsFromMo: () => FieldDefinitionInterface<any>[]
 	deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[]
 	extractFieldnamesFromMo: () => string[]
@@ -48,8 +49,8 @@ export interface MoDefinitionInterface {
 	 *  --
 	 */
 	newMo: (moMeta?: MoMetaInterface) => MoInterface
-	objToMoid: (obj: object) => MoidInterface
-	objToMo: (obj: object) => MoInterface
+	objToMoid: (obj: object, moname?: string) => MoidInterface
+	objToMo: (obj: object, moname?: string) => MoInterface
 	moToObj: (mo: MoidInterface) => object
 	moToDocument: (mo: MoInterface) => any
 	documentToMo: (doc: any) => MoInterface

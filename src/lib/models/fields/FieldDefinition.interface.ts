@@ -17,6 +17,7 @@ export interface FieldDefinitionInterface<T> {
   maxLen: number
   parse: (string) => T | null
   valueToString: (any) => string
+  valueToField: (any) => any
   documentToValue: (any) => any
   valueToDocument: (any) => any
   validateValue: (T) => Rezult
@@ -29,8 +30,8 @@ export interface FieldDefinitionInterface<T> {
   // cellRenderer?: ((params: any) => string) | string
   // cellRendererParams?: any
   gridColDef?: ColDef
-  mapValueType?: string
-
+  itemValueType?: string
+  itemValueFieldDef?: FieldDefinitionInterface<any>
   inputType: InputTypes
   init: (props: any) => void
   validate: () => void

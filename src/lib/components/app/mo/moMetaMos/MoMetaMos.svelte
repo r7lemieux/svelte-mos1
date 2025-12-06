@@ -1,7 +1,7 @@
 <script lang="ts">
   import {MoListModel} from '../../../../models/managedObjects/MoList.model.js'
-  import {moMetaMoMeta} from '../../../../models/managedObjects/MoMetaMoDef.js'
   import Mos from '../../../generics/mos/Mos.svelte'
+  import {moMetaMoMeta} from '../../../../models/managedObjects/MoMetaMoDef.js'
   
   export let mos
   const moMeta = moMetaMoMeta

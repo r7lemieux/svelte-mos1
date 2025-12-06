@@ -1,10 +1,12 @@
 import type {FieldDefinitionInterface} from './FieldDefinition.interface.js'
-import {ErrorName} from  '../../services/common/message/errorName.js'
-import {OK, Rezult} from  '../../services/common/message/rezult.js'
-import { objectReplacer, objectToString, toDisplayString } from '../../services/common/util/string.utils.js'
+import {ErrorName} from '../../services/common/message/errorName.js'
+import {OK, Rezult} from '../../services/common/message/rezult.js'
+import {objectReplacer, objectToString, toDisplayString} from '../../services/common/util/string.utils.js'
 import type {ColDef} from 'ag-grid-community'
-import {copyOwnProperties} from  '../../services/common/util/ts.utils.js'
-import type {InputTypes} from  '../../services/common/util/dom.utils.js'
+import {copyOwnProperties} from '../../services/common/util/ts.utils.js'
+import type {InputTypes} from '../../services/common/util/dom.utils.js'
+import {transp} from '../../services/mo/moTransport.js'
+// import {objectToMoid, valueToField} from '$lib/services/mo/moTransport.implementation.js'
 // import type { ValueFormatterFunc } from 'ag-grid-community/dist/lib/entities/colDef.js'
 // Singleton
 export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
@@ -17,14 +19,15 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
   example?: string
   regex?: RegExp
   regexFlag?: string
-  minLen= 0
-  maxLen= 256
+  minLen = 0
+  maxLen = 256
   key?: string // database or column name
   inputType: InputTypes = 'text'
   gridColDef?: ColDef = {}
   canBeNull = true
   canBeUndefined = true
-  mapValueType?: string // for maps
+  itemValueType?: string // for maps and arrays
+  itemValueFieldDefinition?: FieldDefinitionInterface<any> // for maps and arrays
 
   constructor(props: Partial<FieldDefinition<any>> = {}) {
     this.init(props)
@@ -39,6 +42,7 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
   validate() {
     if (!this.name) throw new Rezult(ErrorName.missing_field, {type: 'FieldDefinition', fieldname: 'name'})
   }
+
   static objectToMo = (obj: any): any => {} // registered at init time
   static from = (fieldDef0: FieldDefinition<any>, props: Partial<FieldDefinitionInterface<any>> = {}): FieldDefinition<any> => {
     const newFieldDef = new FieldDefinition()
@@ -76,14 +80,16 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
     return this
   }
 
-  parse(v: any): any | null {
+  parse(v: string): any | null {
     if (v === undefined && this.canBeUndefined) return v
     if (v === null && this.canBeNull) return null
     switch (this.type) {
+      case 'mo':
+        return FieldDefinition.objectToMo(v)
       case 'string':
         return v
       case 'boolean':
-        return v && ((['y', 'yes', 't', 'true', 'ok'].indexOf(v.toLowerCase()) !== -1) || v.match(/[\d][\d\ .]*/))
+        return v && ((['y', 'yes', 't', 'true', 'ok'].indexOf(v.toLowerCase()) !== -1) || v.match(/[\d][\d .]*/))
       case 'int':
         return Number.parseInt(v)
       case 'float':
@@ -94,10 +100,24 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
         return JSON.parse(v)
       case 'array': {
         if (v && v[0] !== '[') v = `[${v}]`
-        return JSON.parse(v)
+        if (this.itemValueFieldDefinition) {
+          return this.itemValueFieldDefinition.parse(v)
+        } else {
+          return JSON.parse(v)
+        }
+      }
+      case 'moarray': {
+        if (v && v[0] !== '[') v = `[${v}]`
+        const ar = JSON.parse(v)
+        return ar.map(obj => transp.objectToMoid(obj, this.moname))
       }
       case 'map': {
-        const obj = JSON.parse(v)
+        let obj: any
+        if (this.itemValueFieldDefinition) {
+          obj = this.itemValueFieldDefinition.parse(v)
+        } else {
+          obj = JSON.parse(v)
+        }
         return new Map(Object.entries(obj))
       }
       default:
@@ -105,14 +125,134 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
     }
   }
 
-  gridToString(gridFields) {
-      if (!gridFields) return null
-      const data = gridFields.data
-      // if (f === undefined && this.canBeUndefined) return null
-      if (data === undefined) return null
-      const v = data[this.name]
-      return this.valueToString(v)
+  valueToField(v: any): any | null {
+    return transp.valueToField(this, v)
   }
+
+  // valueToField(v: any): any | null {
+  //   const handleError = (message: string) => {
+  //     throw new Rezult(ErrorName.field_invalid, {
+  //       fieldName: this.name,
+  //       fieldDefType: this.type,
+  //       valueType: typeof v,
+  //       value: v?.toString(),
+  //       message
+  //     }, 'FieldDefinition.valueToField')
+  //   }
+  //
+  //   if (v === undefined) {
+  //     if (this.canBeUndefined) {
+  //       return undefined
+  //     } else {
+  //       handleError('undefined')
+  //     }
+  //   } else if (v === null) {
+  //     if (this.canBeNull) {
+  //       return null
+  //     } else {
+  //       handleError('null')
+  //     }
+  //   }
+  //   try {
+  //     switch (this.type) {
+  //       case 'mo':
+  //         return FieldDefinition.objectToMo(v)
+  //       case 'string':
+  //         return v.toString()
+  //       case 'boolean':
+  //         if (typeof v === 'boolean') return v
+  //         if (typeof v === 'string') return v && ((['y', 'yes', 't', 'true', 'ok'].indexOf(v.toLowerCase()) !== -1) || v.match(/[\d][\d\ .]*/))
+  //         handleError('not boolean')
+  //       case 'int':
+  //         if (typeof v === 'number') return Math.floor(v)
+  //         if (typeof v === 'string') return Number.parseInt(v)
+  //         handleError('not number')
+  //       case 'float':
+  //         if (typeof v === 'number') return Math.floor(v)
+  //         if (typeof v === 'string') return Number.parseFloat(v)
+  //         handleError('not number')
+  //       case 'date':
+  //         if (v instanceof Date) return v
+  //         if (typeof v === 'string') return new Date(v)
+  //         handleError('not date')
+  //       case 'mo':
+  //         let json: any
+  //         if (typeof v == 'object') {
+  //           json = v
+  //         } else if (typeof v === 'string') {
+  //           json = JSON.parse(v)
+  //         } else {
+  //           handleError('not object')
+  //         }
+  //         const moFieldMoname: string = this.moname || v._moname
+  //         if (!moFieldMoname) {
+  //           handleError('mo without moname')
+  //         }
+  //         return objectToMoid(json, this.moname)
+  //       case 'object':
+  //         if (typeof v === 'object') return v
+  //         if (typeof v === 'string') {
+  //           return JSON.parse(v)
+  //         }
+  //         handleError('not object')
+  //       case 'array':
+  //         let rawArray: any[] = []
+  //         if (Array.isArray(v)) {
+  //           rawArray = v
+  //         } else if (typeof v === 'string') {
+  //           if (v && v[0] !== '[') v = `[${v}]`
+  //           rawArray = JSON.parse(v)
+  //         } else {
+  //           handleError('not array')
+  //         }
+  //         if (this.itemValueFieldDefinition) {
+  //           return rawArray.map(item => this.itemValueFieldDefinition?.valueToField(item))
+  //         } else {
+  //           return rawArray
+  //         }
+  //       case 'moarray': {
+  //         let rawArray: any[] = []
+  //         if (Array.isArray(v)) {
+  //           rawArray = v
+  //         } else if (typeof v === 'string') {
+  //           if (v && v[0] !== '[') v = `[${v}]`
+  //           rawArray = JSON.parse(v)
+  //         } else {
+  //           handleError('not array')
+  //         }
+  //         return rawArray.map(item => objectToMoid(item, this.moname))
+  //       }
+  //       case 'map': {
+  //         let newMap = new Map()
+  //         let rawMap
+  //         if (v instanceof Map) {
+  //           rawMap = v
+  //         } else if (typeof v === 'string') {
+  //           rawMap = json.parse(v)
+  //         }
+  //         if (!(rawMap instanceof Map)) return handleError('not map')
+  //           for (const key of Object.keys(v)) {
+  //             const val = (this.itemValueFieldDefinition) ? this.itemValueFieldDefinition.valueToField(v[key]) : v[key]
+  //             newMap.set(key, val)
+  //           }
+  //       }
+  //       default:
+  //         return v
+  //     }
+  //   } catch (ex: any) {
+  //     handleError(ex.message)
+  //   }
+  // }
+
+  gridToString(gridFields) {
+    if (!gridFields) return null
+    const data = gridFields.data
+    // if (f === undefined && this.canBeUndefined) return null
+    if (data === undefined) return null
+    const v = data[this.name]
+    return this.valueToString(v)
+  }
+
   valueToString(v) {
     if (v === undefined && this.canBeUndefined) return v
     if (v === null && this.canBeNull) return 'null'
@@ -124,7 +264,6 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
       case 'date':
       case 'object':
       case 'array':
-
         return objectToString(v)
       case 'string':
       case 'int':
@@ -237,7 +376,7 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
   //   Object.assign(this, partial)
   // }
 }
-
-// export const fieldDefinitionMoField = new MoDefinition('FieldDefinition')
+// const objectToMoid = (obj: any, moname: string): any => {}
+// // export const fieldDefinitionMoField = new MoDefinition('FieldDefinition')
 export const from = FieldDefinition.from
 

@@ -1,5 +1,5 @@
 :root {
-  --page-background-color: #668;
+  --page-background-color: #889;
   --title-label-color: var(--field-label-color);
   --tree-branch-indentation: 12px;
   --tree-detail-margin: 35px;
@@ -19,6 +19,9 @@
   --button-margin-left: 0.5rem;
   --button-padding: 1rem 1.5rem;
   --button-font-weight: 200;
+  --link-button-color: #9AB;
+  --link-button-border-color: #999;
+  --link-button-radius: 0.5rem;
     font-family: 'Roboto', sans-serif;
 }
 .button-bar {

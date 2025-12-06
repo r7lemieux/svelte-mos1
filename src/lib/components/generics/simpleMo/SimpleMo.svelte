@@ -1,37 +1,38 @@
 <script lang="ts">
   import type {Mo} from '../../../models/managedObjects/Mo.js'
   import {toDisplayString} from '../../../services/common/util/string.utils.js'
-  import { MoViewMode, type MoViewModeEnum } from '../../../constants/ui.js'
+  import {MoViewMode, type MoViewModeEnum} from '../../../constants/ui.js'
   import {goto} from '$app/navigation'
   import {page} from '$app/state'
   import {Rezult} from '../../../services/common/message/rezult.js'
   import {ErrorName} from '../../../services/common/message/errorName.js'
   import {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import Field from '../field/Field.svelte'
-  import { enhance } from '$app/forms';
-  import { extractViewMode } from '../../../services/common/util/dom.utils.js'
-  let paa = page;
+  import {enhance} from '$app/forms'
+  import {extractViewMode} from '../../../services/common/util/dom.utils.js'
+  
+  let paa = page
   let {mo, autoSave = false}: { mo: Mo, autoSave?: boolean } = $props()
   let viewMode: MoViewModeEnum = $state(extractViewMode())
   // let disabled = $derived(viewMode === 'view')
   let smo = $state(mo)
   let moMeta = $derived(mo.moMeta)
   let moDef = $derived(moMeta.moDef)
-  console.log(`==> SimpleMo.svelte:16 moMeta.name `, moMeta.name);
+  let path = $derived(`/${moMeta.name}/${mo.id}/`)
   let title = $derived(toDisplayString(moMeta.moDef.name))
-  console.log(`==> SimpleMo.svelte:21 title `, title);
   let fieldDefs: FieldDefinition<any>[] = $derived(Array.from(moMeta.moDef.fieldDefs.values()) as FieldDefinition<any>[])
   let fieldnames = $derived(moMeta.moDef.showFieldnames)
   const ui = {}
+  let formElm: HTMLFormElement
   
-  async function enhancedSave({ form, data, action, cancel }) {
+  async function enhancedSave({form, data, action, cancel}) {
     // 'data' contains the FormData object
-    const formData = new FormData(form);
+    const formData: FormData = new FormData(form)
     const payload = Object.fromEntries(formData.entries())
     moMeta.dataSource?.saveMo(mo).then(mo => {
       goto(`/mo/${moMeta.name}/${mo.id}`)
     })
-    cancel();
+    cancel()
   }
   
   const onChange = (fieldId: string, val: any): void => {
@@ -54,7 +55,7 @@
     }
   }
   $effect(() => {
-    console.log(`==> SimpleMo.svelte:57 title `, title);
+      // console.log(`==> SimpleMo.svelte:57 title `, title)
     }
   )
   const cancel = () => {
@@ -72,21 +73,62 @@
     // history.replaceState(history.state, '', `/mo/${moMeta.name}/${mo.id}/edit`);
   }
   const save = () => {
-    moMeta.dataSource?.saveMo(mo).then(mo => {
-      goto(`/mo/${moMeta.name}/${mo.id}`)
-      //viewMode = 'view'
+    // const form = document.getElementById('myForm');
+    const formData = new FormData(formElm)
+    // const uri = formElm.baseURI.split('/').slice(0, -1).join('/') + '/save'
+    fetch(formElm.action, {
+      method: 'PATCH',
+      body: formData
     })
+      .then(response => response.json())
+      .then(responseData => {
+        const newMo = moMeta.moDef.newMo()
+        newMo.hydrate(responseData)
+        mo = newMo
+      })
+      .catch(error => {
+        console.error('Error:', error)
+      })
   }
-  const create = event => {
-    moMeta.dataSource?.addMo(mo).then(mo => {
-      goto(`/mo/${moMeta.name}/${mo.id}`)
-      // viewMode = 'view'
+  const create = () => {
+    // const form = document.getElementById('myForm');
+    const formData = new FormData(formElm)
+    // const uri = formElm.baseURI.split('/').slice(0, -1).join('/') + '/save'
+    fetch(formElm.action, {
+      method: 'POST',
+      body: formData
     })
+      .then(response => response.json())
+      .then(responseData => {
+        const id = responseData['id']
+        if (!id) throw new Rezult(ErrorName.missing_param, {responseData}, 'createMo')
+        //const newMo = moMeta.moDef.newMo()
+        // const fields = {}
+        // formData.forEach((v, k) => fields[k] = v)
+        // newMo.hydrate(fields)
+        // mo = newMo
+        goto(`/mo/${moMeta.name}/${id}`)
+      })
+      .catch(error => {
+        console.error('Error:', error)
+      })
+  }
+  const del = () => {
+    fetch(formElm.action, {
+      method: 'DELETE',
+    })
+      .then(response => {
+        goto(`/mo/${moMeta.name}`)
+      })
+      .catch(error => {
+        console.error('Error:', error)
+      })
   }
   const deleteItem = (fname, i) => {
     mo[fname] = mo[fname].filter((item, index) => index != i)
     goto(`/mo/${moMeta.name}`)
   }
+
 </script>
 <svelte:head>
   <title>{title}</title>
@@ -101,15 +143,15 @@
   </span>
 </h2>
 <!--<form use:enhance={enhancedSave} class="mo">-->
-<form method="POST" class="mo">
+<form method="POST" class="mo" bind:this={formElm}>
   <div class="form-example">
-<!--    <label for="firstName">Enter your name: </label>-->
-<!--    <input type="text" name="firstName" id="firstName" required />-->
-<!--    <label for="lastName">Enter your name: </label>-->
-<!--    <input type="text" name="lastName" id="lastName" required />-->
-<!--    <label for="email1">Email:</label>-->
-<!--    <input type="email" id="email1" name="email1" />-->
-<!--    <button type="submit">Submit</button>-->
+    <!--    <label for="firstName">Enter your name: </label>-->
+    <!--    <input type="text" name="firstName" id="firstName" required />-->
+    <!--    <label for="lastName">Enter your name: </label>-->
+    <!--    <input type="text" name="lastName" id="lastName" required />-->
+    <!--    <label for="email1">Email:</label>-->
+    <!--    <input type="email" id="email1" name="email1" />-->
+    <!--    <button type="submit">Submit</button>-->
   </div>
   <div class="fields">
     {#each fieldnames as fname}
@@ -123,13 +165,13 @@
   <div class="button-bar">
     {#if viewMode === 'view' }
       <button onclick={edit}>Edit</button>
-      <button type="submit" formaction="?/remove" >Delete</button>
+      <button type="button" formaction="delete">Delete</button>
     {:else if viewMode === 'edit' && !autoSave}
-      <button type="submit" formaction="?/save">Save</button>
-      <button type="submit" formaction="?/remove" >Delete</button>
+      <button type="button" onclick={save}>Save</button>
+      <button type="button" onclick={del}>Delete</button>
       <button onclick={cancel}>Cancel</button>
     {:else if viewMode === 'create' && !autoSave}
-      <button type="submit">Save</button>
+      <button type="button" onclick={create}>Save</button>
       <button onclick={cancel}>Cancel</button>
     {/if}
     <!--{#if viewMode === 'view' }-->
@@ -150,6 +192,7 @@
     display: flex;
     justify-content: left;
     justify-items: left;
+    
     .label {
       display: flex;
       flex: 120px 1 0;
@@ -159,6 +202,7 @@
       align-self: center;
       color: var(--title-label-color)
     }
+    
     a {
       text-decoration: none;
       /*flex-basis: 8.4rem;*/
@@ -167,10 +211,12 @@
       /*flex-grow: 0.2;*/
       /*display: inline-block;*/
     }
+    
     .separator {
       display: block;
       width: 7px;
     }
+    
     .displayName {
       flex: 200px 4 2;
       margin-left: 3px;

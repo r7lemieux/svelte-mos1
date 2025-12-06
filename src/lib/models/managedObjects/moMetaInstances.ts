@@ -24,10 +24,10 @@ export const getDefaultMoMeta = (): MoMeta => {
 // moMetaDef.addFieldDef(from(BaseFieldDefs.Id).chainSetName('id'))
 // moMetaDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('name'))
 // const moDefFieldDef = from(BaseFieldDefs.Map).chainSetName('moDef')
-// moDefFieldDef.mapValueType = 'object'
+// moDefFieldDef.itemValueType = 'object'
 // moMetaDef.addFieldDef(moDefFieldDef)
 // const dataSourceFieldDef = from(BaseFieldDefs.Map).chainSetName('dataSource')
-// dataSourceFieldDef.mapValueType = 'object'
+// dataSourceFieldDef.itemValueType = 'object'
 // moMetaDef.addFieldDef(dataSourceFieldDef)
 // Object.assign(moMetaDef, {
 //   name: 'moMeta',

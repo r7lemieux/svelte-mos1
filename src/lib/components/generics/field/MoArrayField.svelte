@@ -32,7 +32,10 @@
   const moName = fd.moName
   const moMeta = getMoMeta(moName)
   const inArray = true
-  let newItem = $state()
+  const moItemFieldDef = fieldDef.clone()
+  moItemFieldDef.type = 'mo'
+  
+  
   const changed = (fieldId, item) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const index = Number.parseInt(fieldId)
@@ -43,7 +46,6 @@
     }
     value = [...value]
     onChange(fieldDef.name, value)
-    newItem = ''
   }
 
   const size = value?.length
@@ -72,7 +74,7 @@
 </div>
 {#if showDetails}
   {#each (values || []) as item, index}
-    <MoField {fieldDef} value={item} {viewMode} level={level + 1} onChange={changed} {inArray} />
+    <MoField fieldDef={moItemFieldDef} value={item} {viewMode} level={level + 1} onChange={changed} {inArray} />
   {/each}
 <!--  <ObjectField fieldDef={moFieldDef} value={newItem} {viewMode} level={level + 1} onChange={changed} />-->
 {/if}

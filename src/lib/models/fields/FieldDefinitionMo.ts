@@ -27,15 +27,7 @@ export class FieldDefinitionMo<Type> extends Mo {
     super({} as MoMetaInterface)
     // super(fieldDefinitionMoMeta)
     this.fieldDef = fieldDefinition
-    this.hydrate()
-  }
-
-  hydrate() {
-    const fieldnames = Object.getOwnPropertyNames(this.fieldDef)
-      .filter(fn => typeof this.fieldDef[fn] !== 'function')
-    for (const fieldname of fieldnames) {
-      this[fieldname] = this.fieldDef[fieldname]
-    }
+    this.hydrate({})
   }
 
   hydrate1() {

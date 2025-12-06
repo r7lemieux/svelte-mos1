@@ -8,7 +8,7 @@ import { ErrorName } from '../../services/common/message/errorName.js'
 import { Rezult } from '../../services/common/message/rezult.js'
 import type { MoDefinitionInterface } from './MoDefinitionInterface.js'
 import type { MoInterface } from './MoInterface.js'
-import { objectToMo, objectToMoid } from '../../services/common/util/mo.utils.js'
+import { objectToMo, objectToMoid } from '../../services/mo/moTransport.implementation.js'
 import type { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
 // import { defaultMoMeta } from './moMetaInstances.js'
 // import type { MoMetaInterface } from './MoMetaInterface.js'
@@ -25,7 +25,7 @@ export class MoDefinition implements MoDefinitionInterface {
   showFieldnames: string[] = []
   moClass: MoInterface
   hasId = false
-  idType: 'number' | 'string' = 'string'
+  idType: 'number' | 'string' = 'number'
   gdriveFilePath?: string
   gdriveFileId?: string | null
   canCreate = true
@@ -120,6 +120,7 @@ export class MoDefinition implements MoDefinitionInterface {
     this.fieldDefs.set(name, moFieldDef)
     return moFieldDef
   }
+
   addFieldDefsFromNames = (fieldnames: string[]) => {
     this.deriveFieldDefsFromFieldnames(fieldnames)
       .forEach(fd => this.fieldDefs.set(fd.name, fd))
@@ -172,7 +173,7 @@ export class MoDefinition implements MoDefinitionInterface {
   }
 
   objToMoid = objectToMoid
-  objToMo = objectToMo
+  objToMo = (obj: any, moname?: string) => objectToMo(obj, moname)
 
   documentToMo = (doc: any): MoInterface => {
     const mo = this.newMo()
@@ -201,7 +202,7 @@ export const initMoDefDef = () => {
   moDefDef.addFieldDef(from(BaseFieldDefs.UrlPath).chainSetName('gdriveFilePath'))
   moDefDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('gdriveFileId'))
   const fieldDefsFieldDef = from(BaseFieldDefs.Map).chainSetName('fieldDefs')
-  fieldDefsFieldDef.mapValueType = 'object'
+  fieldDefsFieldDef.itemValueType = 'object'
   moDefDef.addFieldDef(fieldDefsFieldDef)
   const moClassFieldDef = from(BaseFieldDefs.Name).chainSetName('moClass')
   moClassFieldDef.gridColDef = {

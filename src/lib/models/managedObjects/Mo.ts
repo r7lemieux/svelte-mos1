@@ -4,7 +4,10 @@ import {getDefaultMoMeta} from './moMetaInstances.js'
 import type {MoInterface} from './MoInterface.js'
 import {toDisplayString} from '../../services/common/util/string.utils.js'
 import type {MoidInterface} from './MoidInterface.js'
-import {moToObject} from '../../services/common/util/mo.utils.js'
+import {moToObject} from '../../services/mo/moTransport.implementation.js'
+import type {FieldDefinitionInterface} from '../fields/FieldDefinition.interface.js'
+import {getMoMeta} from '../../services/mo/moManagement.js'
+import {Moid} from './Moid.js'
 
 // import {initMoDefDef} from './MoDefinition.js'
 
@@ -20,10 +23,13 @@ export class Mo implements MoInterface {
   constructor(moMeta?: MoMetaInterface, name?: string) {
     // super(Moid.moMeta)
     this.moMeta = moMeta || getDefaultMoMeta()
-    this.displayName = toDisplayString(name || this.id ? this.id.toString() : '')
+    this.init()
   }
-
-  getDisplayName = () => this.displayName
+  init = () => {
+    // this.displayName = this.displayName || this.id?.toString() || ''
+    return this as MoidInterface
+  }
+  getDisplayName = () => this.displayName || (this.id? this.id.toString() : '')
   // constructor(moMeta?: MoMetaInterface) {
   //   super(moMeta || getDefaultMoMeta(), 0)
   //   //this.moMeta = moMeta || getDefaultMoMeta()
@@ -33,7 +39,6 @@ export class Mo implements MoInterface {
   //   const fieldText: string = '' + (this['name'] || this.id)
   //   return toDisplayString(fieldText)
   // }
-
   setProps = (props: any): Mo => {
     for (const key of Object.getOwnPropertyNames(props)) {
       // if (key != 'fieldDefs') {
@@ -59,9 +64,10 @@ export class Mo implements MoInterface {
   toMoid = (): MoidInterface => this as MoidInterface
   toMo = () => new Promise<MoInterface>((r) => r(this))
 
-  hydrate(partial: Partial<Mo>) {
-    // noinspection TypeScriptValidateTypes
-    Object.assign(this, partial)
+  hydrate = (partial: Partial<Mo>)=> {
+    this.moMeta.moDef.objToMo(partial, this.moMeta.name)
+    this.init()
+    return this
   }
 }
 

@@ -31,7 +31,7 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
     this.displayName = toDisplayString(this.name)
     this.dbName = moMeta.dbName || this.name
   }
-  init = () => {}
+  init = () => this
   setName = (name?: string): MoMetaInterface => {return this}
 
   newMo = (): MoInterface => {

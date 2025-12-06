@@ -10,11 +10,16 @@ export class Moid implements MoidInterface {
   displayName: string
   _isLoaded = false
 
-  constructor(moMeta: MoMetaInterface, id: string | number, name?: string) {
+  constructor(moMeta: MoMetaInterface, id: string | number, displayName?: string) {
     // super(Moid.moMeta)
     this.moMeta = moMeta || getDefaultMoMeta()
     this.id = id
-    this.displayName = toDisplayString(name || id.toString())
+    this.displayName = displayName || ''
+    this.init()
+  }
+  init = () => {
+    this.displayName = this.displayName || this.id.toString()
+    return this
   }
 
   getDisplayName = () => this.displayName

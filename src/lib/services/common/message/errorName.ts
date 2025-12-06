@@ -35,6 +35,7 @@ export const ErrorName = {
   'missing_implementation': 'missing_implementation',
   'missing_param': 'missing_param',
   'missing_value': 'missing_value',
+  'moMeta_notFound': 'moMeta_notFound',
   'not_implemented_in_default': 'not_implemented_in_default',
   'not_implemented_in_subclass': 'not_implemented_in_subclass',
   'req_invalid_action': 'req_invalid_action',
@@ -47,7 +48,8 @@ export const ErrorName = {
 } as const
 export type ErrorEnum = (typeof ErrorName)[keyof typeof ErrorName]
 
-export const ErrorDef = {
+
+export const ErrorDef: {[name:string]: {[httpCode:string]:number}} = {
   ok: {httpCode: 200},
   compute_invalid_ratingSystem: {httpCode: 500},
   db_error: {},
@@ -68,6 +70,7 @@ export const ErrorDef = {
   field_invalid_numberTooSmall: {httpCode: 400},
   field_unknown: {httpCode: 400},
   field_unsupported: {httpCode: 400},
+  moMeta_notFound: {httpCode: 400},
   not_implemented_in_subclass: {httpCode: 500},
   req_invalid_action: {httpCode: 400},
   req_missing_id: {httpCode: 400},
