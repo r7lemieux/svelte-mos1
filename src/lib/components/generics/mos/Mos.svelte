@@ -13,6 +13,7 @@
   import {CgArrowRight} from 'svelte-icons-pack/cg'
   import {Rezult} from '../../../services/common/message/rezult.js'
   import {ErrorName} from '../../../services/common/message/errorName.js'
+  import Init from '../../common/Init.svelte'
   
   let {mos, moMeta, title = null, topButtons = false, height = '100px'}: {
     mos: Mo[],
@@ -137,6 +138,7 @@
   <title>Mos</title>
   <meta name='description' content={displayName}/>
 </svelte:head>
+  <Init />
 <div class="grid-top">
   {#if title}
 <!--    s {stitle} d {dtitle} e {etitle}-->
@@ -197,5 +199,9 @@
   :global(.ag-root-wrapper-body.ag-layout-normal) {
     height: auto;
   }
+  :global(.ag-body) {
+    min-height: 4rem;
+  }
+
 </style>
 

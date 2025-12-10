@@ -6,10 +6,17 @@ import { getClosestFieldName } from '../fields/FieldMatcher.js'
 import { plural, toDisplayString } from '../../services/common/util/string.utils.js'
 import { ErrorName } from '../../services/common/message/errorName.js'
 import { Rezult } from '../../services/common/message/rezult.js'
-import type { MoDefinitionInterface } from './MoDefinitionInterface.js'
+import {
+  DeletePermission,
+  type DeletePermissionEnum,
+  type MoDefinitionInterface,
+} from './MoDefinitionInterface.js'
+import {  type moFieldParameters} from '../fields/MoFieldDefinition.js'
 import type { MoInterface } from './MoInterface.js'
 import { objectToMo, objectToMoid } from '../../services/mo/moTransport.implementation.js'
 import type { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
+import {type objectToMoParameters} from '../../services/mo/moTransport.js'
+import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
 // import { defaultMoMeta } from './moMetaInstances.js'
 // import type { MoMetaInterface } from './MoMetaInterface.js'
 // import { defaultMoMeta } from './MoMeta.js'
@@ -29,6 +36,7 @@ export class MoDefinition implements MoDefinitionInterface {
   gdriveFilePath?: string
   gdriveFileId?: string | null
   canCreate = true
+  deletePermission: DeletePermissionEnum = DeletePermission.ask
 
   constructor(name: string, moClass?: MoInterface) {
     if (name && !name.match(/[A-Za-z0-9]/)) throw new Rezult(ErrorName.field_invalid, {
@@ -69,7 +77,7 @@ export class MoDefinition implements MoDefinitionInterface {
   //   FieldDefinition.from(CommonFieldDefs.name),
   //   FieldDefinition.from(BaseFieldDefs.Array, {name: 'keyFieldNames'}),
   //   FieldDefinition.from(BaseFieldDefs.Object, {name: 'fieldDefs'}),
-  // ]
+  // ]moFieldParameters
 
   /*  ---------
    *  Accessors
@@ -103,19 +111,21 @@ export class MoDefinition implements MoDefinitionInterface {
     this.fieldDefs.set(fieldDef.name, fieldDef)
     return fieldDef
   }
-  addMoFieldDefFromName(name: string, moname?: string): MoFieldDefinition {
+
+
+  addMoFieldDefFromName(name: string, params?: moFieldParameters): MoFieldDefinition {
     const moFieldDef = CommonFieldDefs.mo.clone() as MoFieldDefinition
     // moFieldDef.type = 'mo'
-    moFieldDef.moName = moname || plural(name)
+    moFieldDef.moName = params?.moname || plural(name)
     moFieldDef.name = name
     this.fieldDefs.set(name, moFieldDef)
     return moFieldDef
   }
 
-  addMoArrayFieldDefFromName(name: string, moname?: string): MoFieldDefinition {
+  addMoArrayFieldDefFromName(name: string, params?: moFieldParameters): MoFieldDefinition {
     const moFieldDef = CommonFieldDefs.moArray.clone() as MoFieldDefinition
     moFieldDef.type = 'moArray'
-    moFieldDef.moName = moname || plural(name)
+    moFieldDef.moName = params?.moname || plural(name)
     moFieldDef.name = name
     this.fieldDefs.set(name, moFieldDef)
     return moFieldDef
@@ -140,10 +150,8 @@ export class MoDefinition implements MoDefinitionInterface {
   }
 
   extractFieldnamesFromMo() {
-    // const moClass: typeof Mo = this.moClass || Mo
-    const moClass = this.moClass || Object
     const mo: MoInterface = this.newMo()
-    const fieldnames = Object.getOwnPropertyNames(mo).filter(n => typeof mo[n] !== 'function' && n !== 'moMeta' && !n.startsWith('_'))
+    const fieldnames: string[] = Object.getOwnPropertyNames(mo).filter(n => typeof mo[n] !== 'function' && n !== 'moMeta' && !n.startsWith('_'))
     return fieldnames
   }
 
@@ -172,8 +180,8 @@ export class MoDefinition implements MoDefinitionInterface {
     return new moClass() as MoInterface
   }
 
-  objToMoid = objectToMoid
-  objToMo = (obj: any, moname?: string) => objectToMo(obj, moname)
+  objToMoid = (obj: any, params?: objectToMoParameters): MoidInterface => objectToMoid(obj, params)
+  objToMo = (obj: any, params?: objectToMoParameters): MoInterface => objectToMo(obj, params)
 
   documentToMo = (doc: any): MoInterface => {
     const mo = this.newMo()
@@ -231,7 +239,7 @@ export const initMoDefDef = () => {
     gdriveFileId: null,
     canCreate: false,
   })
-  const moDefDefDef = new MoDefinition('moDefDef')
+// const moDefDefDef = new MoDefinition('moDefDef')
 // const moDefDefMeta =  new MoMeta(moDefDefDef)
 // moDefDef.moMeta = moDefDefMeta
 // moDefMeta.documentToMo  = doc => {

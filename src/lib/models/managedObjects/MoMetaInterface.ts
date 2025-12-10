@@ -11,8 +11,8 @@ export interface MoMetaInterface {
 	moDef: MoDefinitionInterface
 	dataSource: DataSourceInterface<MoInterface>
 	newMo: () => MoInterface
-	objToMoid: (any) => MoidInterface
-	objToMo: (any) => MoInterface
+	objToMoid: (any, MoInterface?) => MoidInterface
+	objToMo: (any, MoInterface?) => MoInterface
 	documentToMo: (any) => MoInterface
 	init: () => void
 	setName: (name?: string) => MoMetaInterface

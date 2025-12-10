@@ -40,8 +40,8 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
     // const mo: Mo = new moClass({moDef: this} as MoMetaInterface)
     return mo
   }
-  objToMoid = (obj: any): MoidInterface => this.newMo().setProps(obj)
-  objToMo = (obj: any): MoInterface => this.newMo().setProps(obj)
+  objToMoid = (obj: any, mo?:MoInterface): MoidInterface => this.newMo().setProps(obj)
+  objToMo = (obj: any, mo?:MoInterface): MoInterface => this.newMo().setProps(obj)
   documentToMo = (doc: any): MoInterface => {
     const mo = this.newMo()
     for (const [fname, fDef] of Array.from(this.moDef.fieldDefs.entries())) {

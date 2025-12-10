@@ -76,8 +76,8 @@ export class MoMeta implements MoMetaInterface {
   }
   moToObj = (mo: MoInterface): any => this.moDef.moToObj(mo)
   moToDocument = (mo: MoInterface): any => this.moDef.moToDocument(mo)
-  objToMoid = (obj: any): MoidInterface => this.moDef.objToMoid(obj, this.name)
-  objToMo = (obj: any): MoInterface => this.moDef.objToMo(obj, this.name)
+  objToMoid = (obj: any, mo?:MoInterface): MoidInterface => this.moDef.objToMoid(obj, {_moname: this.name, mo})
+  objToMo = (obj: any, mo?: MoInterface): MoInterface => this.moDef.objToMo(obj, {_moname: this.name, mo})
   toDocument = (): string => {
     return '' //todo
   }

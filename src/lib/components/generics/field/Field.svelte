@@ -12,6 +12,7 @@
   import MoArrayField from './MoArrayField.svelte'
   import { MoFieldDefinition } from '../../../models/fields/MoFieldDefinition.js'
   import MoField from './MoField.svelte'
+  import Init from '../../common/Init.svelte'
   
   let {
     fieldDef,
@@ -41,6 +42,7 @@
   $effect(sizeLabels)
   const moName = (fd.type === 'moArray')? (fd as MoFieldDefinition).moName : undefined
 </script>
+<Init/>
 <!--{fd.type}-->
 {#if fd.type === 'array'}
   <ArrayField {fieldDef} {value} {viewMode} {level} {onChange}/>

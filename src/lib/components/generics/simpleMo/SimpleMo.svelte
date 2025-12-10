@@ -10,6 +10,7 @@
   import Field from '../field/Field.svelte'
   import {enhance} from '$app/forms'
   import {extractViewMode} from '../../../services/common/util/dom.utils.js'
+  import Init from '../../common/Init.svelte'
   
   let paa = page
   let {mo, autoSave = false}: { mo: Mo, autoSave?: boolean } = $props()
@@ -85,6 +86,8 @@
         const newMo = moMeta.moDef.newMo()
         newMo.hydrate(responseData)
         mo = newMo
+        goto(`/mo/${moMeta.name}/${newMo.id}`)
+        
       })
       .catch(error => {
         console.error('Error:', error)
@@ -133,6 +136,7 @@
 <svelte:head>
   <title>{title}</title>
 </svelte:head>
+<Init/>
 <h2 class="pageHeader">
   <a class="label" href="/mo/{moMeta.name}">{title}</a>
   <span class="separator"></span>
@@ -165,7 +169,7 @@
   <div class="button-bar">
     {#if viewMode === 'view' }
       <button onclick={edit}>Edit</button>
-      <button type="button" formaction="delete">Delete</button>
+      <button type="button" onclick={del}>Delete</button>
     {:else if viewMode === 'edit' && !autoSave}
       <button type="button" onclick={save}>Save</button>
       <button type="button" onclick={del}>Delete</button>

@@ -2,6 +2,7 @@
   import {toDisplayString} from  '../../../services/common/util/string.utils.js'
   import type {MoDefinition} from '../../../models/managedObjects/MoDefinition.js'
   import type {MoMeta} from '../../../models/managedObjects/MoMeta.js'
+  import Init from '../../common/Init.svelte'
 
   export let moMeta: MoMeta
   const title = toDisplayString(moMeta.name)
@@ -19,6 +20,7 @@
 <svelte:head>
   <title>{title}</title>
 </svelte:head>
+<Init/>
 <div class="create">
   {#each fieldDefs as fd}
     <div class="field">

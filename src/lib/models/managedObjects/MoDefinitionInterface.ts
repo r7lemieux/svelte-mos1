@@ -3,6 +3,8 @@ import type { FieldDefinitionInterface } from '../fields/FieldDefinition.interfa
 import type { MoMetaInterface } from './MoMetaInterface.js';
 import type {MoidInterface} from './MoidInterface.js'
 import type { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
+import type {objectToMoParameters} from '../../services/mo/moTransport.js'
+import {  type moFieldParameters} from '../fields/MoFieldDefinition.js'
 
 export interface MoDefinitionInterface {
 	id: string
@@ -30,7 +32,6 @@ export interface MoDefinitionInterface {
 	getDbName: () => string
 	getFieldNames: () => string[]
 	getMoClass: () => any
-
 	/* -----------------
 	 * Field Definitions
 	 * -----------------
@@ -38,8 +39,8 @@ export interface MoDefinitionInterface {
 	createFieldDefs: () => void
   initFieldDef: (fd: FieldDefinitionInterface<any>) => void
 	addFieldDefsFromNames: (fieldnames: string[]) => void
-  addMoFieldDefFromName: (name: string, moname?:string) => MoFieldDefinition
-  addMoArrayFieldDefFromName: (name: string, moname?: string) => MoFieldDefinition
+  addMoFieldDefFromName: (name: string, params?: moFieldParameters) => MoFieldDefinition
+  addMoArrayFieldDefFromName: (name: string, params?: moFieldParameters) => MoFieldDefinition
 	// deriveMoItemDefFromMoArrayDef: (moArryDef: MoFieldDefinition) => MoFieldDefinition
 	deriveFieldDefsFromMo: () => FieldDefinitionInterface<any>[]
 	deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[]
@@ -49,10 +50,20 @@ export interface MoDefinitionInterface {
 	 *  --
 	 */
 	newMo: (moMeta?: MoMetaInterface) => MoInterface
-	objToMoid: (obj: object, moname?: string) => MoidInterface
-	objToMo: (obj: object, moname?: string) => MoInterface
+	objToMoid: (obj: object, params?: objectToMoParameters) => MoidInterface
+	objToMo: (obj: object,  params?: objectToMoParameters) => MoInterface
 	moToObj: (mo: MoidInterface) => object
 	moToDocument: (mo: MoInterface) => any
 	documentToMo: (doc: any) => MoInterface
 	// toDocument: () => any
+
+	deletePermission: DeletePermissionEnum
 }
+
+export const DeletePermission = {
+	no: 'no',
+	go: 'go',
+	ask: 'ask',
+} as const
+export type DeletePermissionEnum = (typeof DeletePermission)[keyof typeof DeletePermission]
+

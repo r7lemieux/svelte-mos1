@@ -6,7 +6,7 @@ import {FieldDefinition} from '../../models/fields/FieldDefinition.js'
 import {ErrorName} from '../common/message/errorName.js'
 import {Rezult} from '../common/message/rezult.js'
 import type {FieldDefinitionInterface} from '../../models/fields/FieldDefinition.interface.js'
-import {transp} from './moTransport.js'
+import {type objectToMoParameters, transp} from './moTransport.js'
 
 export const moidToObj = (mo: MoidInterface) => {
   const obj: any = {}
@@ -48,28 +48,31 @@ export const valueToObject = (value) => {
   }
 }
 
-export const objectToMo = (obj: any, _moname?: string): MoInterface => {
+export const objectToMo = (obj: any, params?: objectToMoParameters): MoInterface => {
   if (obj._moid) throw new Rezult(ErrorName.field_unsupported)
-  return objectToMoid(obj, _moname) as MoInterface
+  return objectToMoid(obj, params) as MoInterface
 }
 
-export const objectToMoid = (obj: any, _moname?: string): MoidInterface => {
-  const moname = _moname || obj._moname
+export const objectToMoid = (obj: any, params?:objectToMoParameters): MoidInterface => {
+  const moname = params?._moname || params?.mo?.moMeta.name || obj._moname
+  if (params?._moname && params?.mo && params?._moname !== params.mo.moMeta.name) throw new Rezult(ErrorName.mo_mismatch)
   if (!moname) {
     throw new Rezult(ErrorName.missing_field, {fieldname: '_moname', method: 'objectToMoid'})
   }
-  const moMeta = getMoMeta(moname)
+  const moMeta = params?.mo?.moMeta || getMoMeta(moname)
   if (!moMeta) {
     throw new Rezult(ErrorName.moMeta_notFound, {moname: obj._moname, method: 'objectToMoid'})
   }
 
   if (obj._moname) delete obj._moname
+  const id = params?.mo?.id || obj.id
+  if (obj.id && params?.mo?.id && obj.id !== params?.mo?.id) throw new Rezult(ErrorName.id_mismatch)
   if (obj._moid) {
-    return new Moid(moMeta, obj.id, obj.displayName)
+    return new Moid(moMeta, id, obj.displayName)
   } else {
     const moDef = moMeta.moDef
-    const mo = moDef.newMo()
-    mo.id = obj.id
+    const mo = params?.mo || moDef.newMo()
+    mo.id = id
     mo.displayName = obj.displayName
     for (let [fname, fDef] of Array.from(moDef.fieldDefs.entries())) {
       const value = obj[fname]
@@ -89,7 +92,63 @@ export const objectToMoid = (obj: any, _moname?: string): MoidInterface => {
           mo[fname] = objectToMoid(value)
         } else if (Array.isArray(value)) {
           if (fDef.type == 'moArray') {
-            mo[fname] = value.map(v => objectToMoid(v, fDef.moname))
+            mo[fname] = value.map(v => objectToMoid(v, {_moname: fDef.moname}))
+          } else {
+            if (fDef.itemValueFieldDef) {
+              mo[fname] = value.map(v => fDef.itemValueFieldDef?.valueToField(v))
+            }
+          }
+        } else {
+          mo[fname] = fDef.documentToValue(value)
+        }
+      } else {
+        mo[fname] = fDef.documentToValue(value)
+      }
+    }
+    return mo
+  }
+}
+
+export const objectOrStringToMoid = (obj: any, params: objectToMoParameters): MoidInterface => {
+  const moname = params?._moname || params?.mo?.moMeta.name || obj._moname
+  if (!moname) {
+    throw new Rezult(ErrorName.missing_field, {fieldname: '_moname', method: 'objectToMoid'})
+  }
+  const moMeta = params?.mo?.moMeta || getMoMeta(moname)
+  if (!moMeta) {
+    throw new Rezult(ErrorName.moMeta_notFound, {moname: obj._moname, method: 'objectToMoid'})
+  }
+
+  if (obj._moname) delete obj._moname
+  const id = params?.mo?.id || obj.id
+  if (obj.id && params?.mo?.id && obj.id !== params?.mo?.id) throw new Rezult(ErrorName.id_mismatch)
+
+  if (obj._moid) {
+    return new Moid(moMeta, obj.id, obj.displayName)
+  } else {
+    const moDef = moMeta.moDef
+    const mo = params?.mo || moDef.newMo()
+    mo.id = id
+    mo.displayName = obj.displayName
+    for (let [fname, fDef] of Array.from(moDef.fieldDefs.entries())) {
+      const value = obj[fname]
+      if (value instanceof Object) {
+        if (fDef.type === 'mo') {
+          const moFieldMoname: string = value._moname || fDef.name
+          if (!moFieldMoname) {
+            console.log(`==>Mo.ts:objectToMoid: missing moname for mo field`, `${moMeta.name}.${fDef.name}`)
+            continue
+          }
+          const moFieldMoMeta = getMoMeta(moFieldMoname)
+          if (!moFieldMoMeta) {
+            console.log(`==>Mo.ts:objectToMoid: missing moMeta for mo field`, `${moMeta.name}.${fDef.name}`)
+            continue
+          }
+          value._moname = moFieldMoname
+          mo[fname] = objectToMoid(value)
+        } else if (Array.isArray(value)) {
+          if (fDef.type == 'moArray') {
+            mo[fname] = value.map(v => objectToMoid(v, {_moname: fDef.moname}))
           } else {
             if (fDef.itemValueFieldDef) {
               mo[fname] = value.map(v => fDef.itemValueFieldDef?.valueToField(v))
@@ -163,7 +222,7 @@ export const valueToField = (fDef: FieldDefinitionInterface<any>, v: any): any |
         if (!moFieldMoname) {
           handleError('mo without moname')
         }
-        return objectToMoid(json, fDef.moname)
+        return objectToMoid(json, {_moname: fDef.moname})
       case 'object':
         if (typeof v === 'object') return v
         if (typeof v === 'string') {
@@ -195,7 +254,7 @@ export const valueToField = (fDef: FieldDefinitionInterface<any>, v: any): any |
         } else {
           handleError('not array')
         }
-        return rawArray.map(item => objectToMoid(item, fDef.moname))
+        return rawArray.map(item => objectToMoid(item, {_moname: fDef.moname}))
       }
       case 'map': {
         let newMap = new Map()

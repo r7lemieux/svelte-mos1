@@ -1,7 +1,12 @@
 import {Mo} from './Mo.js'
 import {from} from '../fields/FieldDefinition.js'
 import {BaseFieldDefs} from '../fields/CommonFieldDefinition.js'
-import type {MoDefinitionInterface} from './MoDefinitionInterface.js'
+import {
+  DeletePermission,
+  type DeletePermissionEnum,
+  type MoDefinitionInterface,
+} from './MoDefinitionInterface.js'
+import {  type moFieldParameters} from '../fields/MoFieldDefinition.js'
 import type {MoMetaInterface} from './MoMetaInterface.js'
 import {MoMeta} from './MoMeta.js'
 import {MoDefinition} from './MoDefinition.js'
@@ -11,6 +16,7 @@ import type {MoInterface} from './MoInterface.js'
 import type {MoidInterface} from './MoidInterface.js'
 import {Moid} from './Moid.js'
 import { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
+import type {objectToMoParameters} from '$lib/services/mo/moTransport.js'
 
 export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   id: string
@@ -27,6 +33,7 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   gdriveFilePath?: string = ''
   gdriveFileId?: string | null = null
   canCreate: boolean = false
+  deletePermission: DeletePermissionEnum = DeletePermission.ask
   init = () => this
   addFieldDef = (fd: FieldDefinitionInterface<any>) => {}
   getDisplayName: () => string = () => ''
@@ -36,15 +43,15 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   createFieldDefs: () => void = () => { }
   initFieldDef: (fd: FieldDefinitionInterface<any>) => void = () => {}
   addFieldDefsFromNames: (fieldnames: string[]) => void = (fn: string[]) => {}
-  addMoFieldDefFromName: (name: string, moClass?: any) => MoFieldDefinition = (name: string, moname: string) => new MoFieldDefinition(moname)
-  addMoArrayFieldDefFromName: (name: string, moClass?: any) => MoFieldDefinition = (name: string, moname: string) => new MoFieldDefinition(moname)
+  addMoFieldDefFromName: (name: string, params?: moFieldParameters) => MoFieldDefinition = (name: string, params?: moFieldParameters) => new MoFieldDefinition(name)
+  addMoArrayFieldDefFromName: (name: string, params?: moFieldParameters) => MoFieldDefinition = (name: string, params?: moFieldParameters) => new MoFieldDefinition(name)
   deriveFieldDefsFromMo: () => FieldDefinitionInterface<any>[] = () => []
   deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[] = (fd:string[]) => []
   deriveMoItemDefFromMoArrayDef: (moArryDef: MoFieldDefinition) => MoFieldDefinition = (moArrayDef) => new MoFieldDefinition('')
   extractFieldnamesFromMo: () => string[] = () => []
   newMo: (moMeta?: MoMetaInterface) => MoInterface = () => new Mo()
-  objToMoid: (obj: object) => MoidInterface = (o: object)=> new Mo()
-  objToMo: (obj: object, moname?: string) => MoInterface = (o: object)=> new Mo()
+  objToMoid: (obj: object, params?: objectToMoParameters) => MoidInterface = (o: object)=> new Mo()
+  objToMo: (obj: object, params?: objectToMoParameters) => MoInterface = (o: object)=> new Mo()
   moToObj: (mo: MoidInterface) => object = (mo: MoidInterface) => { return {}}
   moToDocument: (mo: MoInterface) => any = (mo: MoInterface) => {}
   documentToMo: (doc: any) => MoInterface = () => new Mo()

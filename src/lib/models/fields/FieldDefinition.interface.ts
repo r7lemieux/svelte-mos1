@@ -16,6 +16,7 @@ export interface FieldDefinitionInterface<T> {
   minLen: number
   maxLen: number
   parse: (string) => T | null
+  stringToValue: (string) => T | null
   valueToString: (any) => string
   valueToField: (any) => any
   documentToValue: (any) => any

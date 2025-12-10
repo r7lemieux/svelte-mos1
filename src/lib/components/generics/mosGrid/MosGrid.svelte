@@ -12,6 +12,7 @@
   import {Rezult} from '../../../services/common/message/rezult.js'
   import {ErrorName} from '../../../services/common/message/errorName.js'
   import {page} from '$app/state'
+  import Init from '../../common/Init.svelte'
   
   let {
     height = '100px',
@@ -159,6 +160,7 @@
   <title>Profile</title>
   <!--  <meta name="description" content={displayName}/>-->
 </svelte:head>
+<Init/>
 <div>MosGrid dmos {dmos.length} smos {smos.length} moname {moname}</div>
 <div id="grid-wrapper" class={(height == '100%')?'grid-wrapper-full':'grid-wrapper'}>
   <div id="{gridId}" class="grid ag-theme-alpine"></div>

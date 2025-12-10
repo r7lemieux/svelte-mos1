@@ -11,6 +11,8 @@
   import { type GridReadyEvent, type GridApi } from 'ag-grid-community'
   import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import type {MoListModel} from '../../../models/managedObjects/MoList.model.js'
+  import Init from '../../common/Init.svelte'
+  
   export let height = '100px'
   export let gridId = 'grid'
   let grid
@@ -159,6 +161,7 @@
   <title>Profile</title>
   <meta name='description' content='User Profile'/>
 </svelte:head>
+<Init/>
 <!--<GPicker doc={doc}/>-->
 <div id="grid-wrapper" class={(height == '100%')?'grid-wrapper-full':'grid-wrapper'}>
   <!--  <div id="grid-wrapper" class={(height == '100%')?'grid-wrapper-full':'grid-wrapper'} style="height:{height}">-->

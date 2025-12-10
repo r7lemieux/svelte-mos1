@@ -57,71 +57,50 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
     return newFieldDef
   }
 
-  /// delete
-  // clone1 = () => {
-  //   const propnames = Object.getOwnPropertyNames(this).filter(pn => typeof (this[pn]) != 'function')
-  //   // const propnames = Object.keys(this).filter(pn => typeof(this[pn]) != 'function')
-  //   const props = propnames.reduce((ps, f) => {
-  //     ps[f] = this[f]
-  //     return ps
-  //   }, {})
-  //   const copy = new FieldDefinition(props)
-  //   // bindFunctions(copy, props)
-  //   const funcnames = Object.getOwnPropertyNames(this).filter(pn => typeof (this[pn]) == 'function')
-  //   for (const funcname of funcnames) {
-  //     copy[funcname] = this[funcname]
-  //     copy[funcname].bind(copy)
-  //   }
-  //   copy.parse = this.parse
-  //   return copy
-  // }
   chainSetName(name: string): FieldDefinition<any> {
     this.name = name
     return this
   }
 
-  parse(v: string): any | null {
-    if (v === undefined && this.canBeUndefined) return v
-    if (v === null && this.canBeNull) return null
+  parse(s: string): any | null { this.stringToValue(s) }
+
+  stringToValue(s: string): any | null {
+    if (s === undefined && this.canBeUndefined) return s
+    if (s === null && this.canBeNull) return null
     switch (this.type) {
-      case 'mo':
-        return FieldDefinition.objectToMo(v)
       case 'string':
-        return v
+        return s
       case 'boolean':
-        return v && ((['y', 'yes', 't', 'true', 'ok'].indexOf(v.toLowerCase()) !== -1) || v.match(/[\d][\d .]*/))
+        return s && ((['y', 'yes', 't', 'true', 'ok'].indexOf(s.toLowerCase()) !== -1) || s.match(/[\d][\d .]*/))
       case 'int':
-        return Number.parseInt(v)
+        return Number.parseInt(s)
       case 'float':
-        return Number.parseInt(v)
+        return Number.parseInt(s)
       case 'date':
-        return new Date(v)
+        return new Date(s)
+      case 'mo':
       case 'object':
-        return JSON.parse(v)
-      case 'array': {
-        if (v && v[0] !== '[') v = `[${v}]`
-        if (this.itemValueFieldDefinition) {
-          return this.itemValueFieldDefinition.parse(v)
-        } else {
-          return JSON.parse(v)
-        }
-      }
+        return JSON.parse(s)
+      case 'array':
       case 'moarray': {
-        if (v && v[0] !== '[') v = `[${v}]`
-        const ar = JSON.parse(v)
-        return ar.map(obj => transp.objectToMoid(obj, this.moname))
+        if (s && s[0] !== '[') s = `[${s}]`
+        if (this.itemValueFieldDefinition) {
+          return this.itemValueFieldDefinition.stringToValue(s)
+        } else {
+          return JSON.parse(s)
+        }
       }
       case 'map': {
         let obj: any
         if (this.itemValueFieldDefinition) {
-          obj = this.itemValueFieldDefinition.parse(v)
+          obj = this.itemValueFieldDefinition.stringToValue(s)
         } else {
-          obj = JSON.parse(v)
+          obj = JSON.parse(s)
         }
         return new Map(Object.entries(obj))
       }
       default:
-        return v
+        return s
     }
   }
 
