@@ -4,6 +4,7 @@ export const ErrorName = {
   'compute_invalid_ratingSystem': 'compute_invalid_ratingSystem',
   'db_delete_no_id': 'db_delete_no_id',
   'db_delete_fail': 'db_delete_fail',
+  'db_delete_not_allowed': 'db_delete_not_allowed',
   'db_error': 'db_error',
   'db_fail_create': 'db_fail_create',
   'db_fail_delete': 'db_fail_delete',
@@ -54,6 +55,7 @@ export type ErrorEnum = (typeof ErrorName)[keyof typeof ErrorName]
 export const ErrorDef: {[name:string]: {[httpCode:string]:number}} = {
   ok: {httpCode: 200},
   compute_invalid_ratingSystem: {httpCode: 500},
+  db_delete_not_allowed: {httpCode: 400},
   db_error: {},
   db_fail_create: {},
   db_fail_delete: {},

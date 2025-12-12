@@ -1,5 +1,11 @@
 :root {
   --page-background-color: #889;
+  --ok-background-color: #AFA;
+  --warning-background-color: #FFA;
+  --error-background-color: #FAA;
+  --ok-color: #2A2;
+  --warning-color: #BB3;
+  --error-color: #A22;
   --title-label-color: var(--field-label-color);
   --tree-branch-indentation: 12px;
   --tree-detail-margin: 35px;

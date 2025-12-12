@@ -1,6 +1,7 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
+ 
 </script>
 
 <svelte:head>
@@ -10,7 +11,7 @@
 
 <div>
 	<h2>Error</h2>
-	<p>{$page.status}: {$page.error?.message}</p>
+	<p>{page.status}: {page.error?.message}</p>
 	<br/>
-	<p>{JSON.stringify($page, null, 2)}</p>
+	<p>{JSON.stringify(page, null, 2)}</p>
 </div>

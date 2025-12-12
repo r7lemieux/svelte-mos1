@@ -1,11 +1,10 @@
 import {ErrorName, type ErrorEnum} from './errorName.js'
 import { jsonToDisplayString } from '../util/string.utils.js'
-
-export type RezultStatus = 'message' | 'error'
+import {RezultStatus, type RezultStatusEnum} from './RezultStatus.js'
 
 export class Rezult extends Error {
 
-  status: RezultStatus = 'error'
+  status: RezultStatusEnum = RezultStatus.error
   data: any
   context: string | undefined
   static mode: 'test' | 'app' = 'test'

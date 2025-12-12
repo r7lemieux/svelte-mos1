@@ -4,13 +4,14 @@
   import {MoViewMode, type MoViewModeEnum} from '../../../constants/ui.js'
   import {goto} from '$app/navigation'
   import {page} from '$app/state'
-  import {Rezult} from '../../../services/common/message/rezult.js'
+  import {OK, Rezult} from '../../../services/common/message/rezult.js'
   import {ErrorName} from '../../../services/common/message/errorName.js'
   import {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import Field from '../field/Field.svelte'
   import {enhance} from '$app/forms'
   import {extractViewMode} from '../../../services/common/util/dom.utils.js'
   import Init from '../../common/Init.svelte'
+  import Status from '../../common/Status.svelte'
   
   let paa = page
   let {mo, autoSave = false}: { mo: Mo, autoSave?: boolean } = $props()
@@ -25,6 +26,8 @@
   let fieldnames = $derived(moMeta.moDef.showFieldnames)
   const ui = {}
   let formElm: HTMLFormElement
+  let sfetchError = $state(OK)
+  let fetchError = $derived(sfetchError)
   
   async function enhancedSave({form, data, action, cancel}) {
     // 'data' contains the FormData object
@@ -89,8 +92,8 @@
         goto(`/mo/${moMeta.name}/${newMo.id}`)
         
       })
-      .catch(error => {
-        console.error('Error:', error)
+      .catch(err => {
+        console.error('Error:', err)
       })
   }
   const create = () => {
@@ -112,19 +115,29 @@
         // mo = newMo
         goto(`/mo/${moMeta.name}/${id}`)
       })
-      .catch(error => {
-        console.error('Error:', error)
+      .catch(err => {
+        console.error('Error:', err)
       })
   }
-  const del = () => {
-    fetch(formElm.action, {
+  const del = async() => {
+    fetchError = await fetch(formElm.action, {
       method: 'DELETE',
     })
       .then(response => {
-        goto(`/mo/${moMeta.name}`)
+        if (response.ok) {
+          goto(`/mo/${moMeta.name}`)
+          return OK
+        } else {
+          return response.json()
+            .then(json => {
+              console.log(`==>SimpleMo.svelte:130 json`, json)
+              return json
+            })
+        }
       })
-      .catch(error => {
-        console.error('Error:', error)
+      .catch(err => {
+        console.error('Error:', err)
+        // $fetchError = err
       })
   }
   const deleteItem = (fname, i) => {
@@ -146,6 +159,8 @@
   {/if}
   </span>
 </h2>
+{fetchError?.status} {fetchError?.message}
+<Status error={fetchError}></Status>
 <!--<form use:enhance={enhancedSave} class="mo">-->
 <form method="POST" class="mo" bind:this={formElm}>
   <div class="form-example">
@@ -190,6 +205,10 @@
   </div>
 </form>
 <style>
+  h2 {
+    margin-block-end: 0;
+  }
+  
   .pageHeader {
     max-width: 40rem;
     padding: 0 1rem 0 0;
