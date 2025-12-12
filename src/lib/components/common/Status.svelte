@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/state';
   import {RezultStatus, type RezultStatusEnum} from '../../services/common/message/RezultStatus.js'
-  import {Rezult} from '../../services/common/message/rezult.js'
+	import {OK, Rezult} from '../../services/common/message/rezult.js'
 
   let {error}: {error?:any} = $props()
-  console.log(`==>Status.svelte:7 error`, error)
-  let status: string  =  $state(RezultStatus.ok)
-  let message = $state('error. no data')
+  console.log(`==>Status.svelte:13`)
+  let status: string = $state((error instanceof Rezult)? error.status : RezultStatus.error)
+  let serr  =  $state(error)
+	let derr = $derived(serr)
+  let smessage = $state(error?.message)
+  let message = $derived(smessage)
   let code = $state(page.status)
-  const err = $state(error || page.error)
+  // const err = $derived(serr)
   const httpCodeToStatusText = (code: number) => {
     if (status === RezultStatus.error) {
       if (code >= 400 && code < 500) {
@@ -19,19 +22,16 @@
     }
     return ''
   }
-  
-  if (err instanceof Rezult) {
-    status = err.status
-    message = err.message
-  } else if (err?.message) {
-    status = RezultStatus.error
-    message = err.message
-  // } else {
-  //   status = RezultStatus.error
-  //   message = 'error: ' + typeof page.error
-  }
-  const statusText = $derived(httpCodeToStatusText(page.status))
 
+  let statusText = $derived(httpCodeToStatusText(page.status))
+  let statusLine = $state('')
+  $effect(() => {
+	  // statusLine = derr?.status + ' : ' + derr?.name + ' : ' + derr?.message
+	  // statusText = error?.status + ' : ' + error?.name + ' : ' + error?.message
+	  statusLine = error?.status + ' : ' + error?.name + ' : ' + error?.message
+	  // statusText = httpCodeToStatusText(page.status)
+	  console.log(`==>Status.svelte:$effect `, statusLine)
+  })
 </script>
 
 <svelte:head>
@@ -40,7 +40,9 @@
 </svelte:head>
 
 <div class="message {status}">
-  <span class="status">{statusText}</span> {code} {message}
+	<span class="status {error?.status}">{statusText} - </span> {code} {message}
+	<div class="status">{statusLine}</div>
+	<div class="status">{error?.code} {error?.name} {error?.message} - {error?.toString()}</div>
 </div>
 
 <style>
@@ -56,7 +58,7 @@
     background-color: var(--ok-background-color);
     border: var(--ok-color);
     .status {
-      color: var(--ok-color);
+      /*color: var(--ok-color);*/
     }
   }
   &.warning {
@@ -64,7 +66,7 @@
     background-color: var(--warning-background-color);
     border: var(--warning-color);
     .status {
-      color: var(--warning-color);
+      /*color: var(--warning-color);*/
     }
   }
   &.error {
@@ -72,7 +74,7 @@
     background-color: var(--error-background-color);
     border: var(--error-color);
     .status {
-      color: var(--error-color);
+      /*color: var(--error-color);*/
     }
   }
 }
