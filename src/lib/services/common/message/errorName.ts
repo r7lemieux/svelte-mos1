@@ -41,6 +41,7 @@ export const ErrorName = {
   'moMeta_notFound': 'moMeta_notFound',
   'not_implemented_in_default': 'not_implemented_in_default',
   'not_implemented_in_subclass': 'not_implemented_in_subclass',
+  'not_rezult': 'not_rezult',
   'req_invalid_action': 'req_invalid_action',
   'req_missing_id': 'req_missing_id',
   'req_no_id': 'req_no_id',

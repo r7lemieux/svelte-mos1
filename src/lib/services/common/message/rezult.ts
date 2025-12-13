@@ -18,9 +18,14 @@ export class Rezult extends Error {
     // if (errorName != ErrorName.ok)
     //   console.trace(`==>rezult.ts:19 `, this.toString())
   }
-
   setName = (errorName: ErrorEnum) => {
     this.name = ErrorName[errorName]
+    return this
+  }
+
+  setStatus = (status: RezultStatusEnum) => {
+    this.status = status
+    return this
   }
 
   toObj = () => {
@@ -33,6 +38,15 @@ export class Rezult extends Error {
     return obj
   }
 
+  static fromObj = (obj:any): Rezult => {
+    const errorName = obj.name || ErrorName.not_rezult
+    const rezult:Rezult = new Rezult(errorName, obj.data, obj.context)
+    if (Object.keys(RezultStatus).includes(obj.status)) {
+      rezult.status = obj.status
+    }
+    if (obj.message && rezult.name === ErrorName.not_rezult) rezult.message = obj.message
+    return rezult
+  }
   serialize = () => JSON.stringify(this.toObj())
   toString = () => this.toDisplayString()
 
@@ -85,10 +99,10 @@ export class Rezult extends Error {
 
 
   toDisplayString = () => {
-    let str = Rezult.dataToString(this.data)
-    const dataStr = (str !== undefined)? ': '+str : ''
+    // let str = Rezult.dataToString(this.data)
+    // const dataStr = (str !== undefined)? ': '+str : ''
 
-    return `${this.status} ${this.context || ''}: ${this.name} ${this.message} ${dataStr}}`
+    return `${this.status} ${this.context || ''}: ${this.name} ${this.message} `
   }
 
   toDetailString = () => {
@@ -122,4 +136,4 @@ export class Rezult extends Error {
   }
 }
 
-export const OK = new Rezult(ErrorName.ok)
+export const OK = new Rezult(ErrorName.ok).setStatus(RezultStatus.ok)

@@ -128,8 +128,9 @@
             goto(`/mo/${moMeta.name}`)
         } else {
             const json = await response.json()
-            console.log(`==>SimpleMo.svelte:130 json`, json)
-            sfetchError = json
+            const rezult = Rezult.fromObj(json)
+            console.log(`==>SimpleMo.svelte:130 rezult`, rezult)
+            sfetchError = rezult
         }
         console.log(`==>SimpleMo.svelte:del:142 fetchError`, fetchError())
         // console.log(`==>SimpleMo.svelte:del:142 fetchError`, $state.snapshot(fetchError))
@@ -156,7 +157,6 @@
   {/if}
   </span>
 </h2>
-{fetchError()?.status} {fetchError()?.name} {fetchError()?.message}
 <Status error={fetchError()}></Status>
 <!--<form use:enhance={enhancedSave} class="mo">-->
 <form method="POST" class="mo" bind:this={formElm}>
