@@ -69,7 +69,11 @@ export class Mo implements MoInterface {
     this.init()
     return this
   }
+
+  isSameAs = (mo: MoidInterface ) => this.moMeta.name === mo.moMeta.name && this.id === mo.id
+
 }
+
 
 // initMoDefDef()
 //1 defaultMoMeta.moDef.moClass = Mo

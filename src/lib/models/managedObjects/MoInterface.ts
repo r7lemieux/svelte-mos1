@@ -11,7 +11,6 @@ export interface MoInterface extends MoidInterface {
   setProps: (props: any) => MoInterface
 
   toObj: () => any
-  toMoid: () => MoidInterface
   toMo: () => Promise<MoInterface>
 
   hydrate(partial: Partial<MoInterface>): MoInterface

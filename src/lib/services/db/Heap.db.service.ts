@@ -43,7 +43,22 @@ export class HeapDbService implements DbService {
 
   deleteMo = async (mo: Mo) => {
     if (!mo.id) throw new Rezult(ErrorName.missing_id)
-    delete this.records[mo.moMeta.dbName][mo.id]
+    let childStopsDelete = false
+    // const moFieldDefs = Array.from(moMeta.moDef.fieldDefs.values()).filter(fd => fd.type === 'mo')
+    // const moArrayFieldDefs = Array.from(moMeta.moDef.fieldDefs.values()).filter(fd => fd.type === 'moArray')
+    // const moFieldDefs = moDef.getFieldDefs({type:'mo'})
+    // const moArrayFieldDefs = moMeta.moDef.getFieldDefs({type:'mo'})
+    // for (const fieldDef of moFieldDefs) {
+    //   const moFieldDef = fieldDef as MoFieldDefinition
+    //   if (moFieldDef.deleteCascade === DeleteCascade.noDelete) {
+    //     throw new Rezult(ErrorName.parent_instance_delete_not_allowed, {moname: moMeta.name, id})
+    //   }
+    //   if (moFieldDef.deleteCascade === DeleteCascade.cascade) {
+    //
+    //   }
+    // }
+    //
+    // delete this.records[mo.moMeta.dbName][mo.id]
   }
 }
 

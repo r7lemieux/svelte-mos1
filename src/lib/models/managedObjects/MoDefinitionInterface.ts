@@ -32,6 +32,8 @@ export interface MoDefinitionInterface {
 	getDbName: () => string
 	getFieldNames: () => string[]
 	getMoClass: () => any
+	getFieldDefs: (params?: any) => FieldDefinitionInterface<any>[]
+
 	/* -----------------
 	 * Field Definitions
 	 * -----------------

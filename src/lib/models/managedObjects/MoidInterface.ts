@@ -10,6 +10,10 @@ export interface MoidInterface {
   getDisplayName: () => string
   _isLoaded: boolean
   init: () => MoidInterface
+  toMoid: () => MoidInterface
+  toObj: () => any
+  isSameAs: (mo: MoidInterface ) => boolean
+
   // setDisplayName: (displayName: string) => MoidInterface
   // setProps: (props: any) => MoInterface
   //

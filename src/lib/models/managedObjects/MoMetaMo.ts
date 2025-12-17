@@ -12,6 +12,7 @@ import type {MoInterface} from './MoInterface.js'
 import type {MoidInterface} from './MoidInterface.js'
 import {toDisplayString} from '../../services/common/util/string.utils.js'
 import {getDefaultMoMeta} from './moMetaInstances.js'
+import {Moid} from './Moid.js'
 
 export class MoMetaMo implements MoidInterface, MoMetaInterface {
   moMeta: MoMeta
@@ -33,6 +34,7 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
   }
   init = () => this
   setName = (name?: string): MoMetaInterface => {return this}
+  isSameAs = (mo: MoidInterface ) => this.moMeta.name === mo.moMeta.name && this.id === mo.id
 
   newMo = (): MoInterface => {
     const moClass: MoInterface = this.moDef.moClass || Mo
@@ -55,8 +57,9 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
   // moToMoid = (mo: MoInterface): MoidInterface => mo
   moidToMo = (moid: MoidInterface): Promise<MoInterface> => this.dataSource.getMo(moid.id)
   moToMoid = (mo: MoInterface): MoidInterface => mo
+  toMoid = () => new Moid(this as MoMeta,0)
   toDocument =  () => ''
-
+  toObj = () => {}
   static fromMoDef = (moDef: MoDefinitionInterface) => new MoMeta(moDef)
   static moMeta = {} as MoMeta // taking a wild chance expecting MoMetaMoDef to fill it before anyone uses it.
 

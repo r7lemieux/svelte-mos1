@@ -17,6 +17,7 @@ import { objectToMo, objectToMoid } from '../../services/mo/moTransport.implemen
 import type { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
 import {type objectToMoParameters} from '../../services/mo/moTransport.js'
 import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
+import type {FieldDefinitionInterface} from '../fields/FieldDefinition.interface.js'
 // import { defaultMoMeta } from './moMetaInstances.js'
 // import type { MoMetaInterface } from './MoMetaInterface.js'
 // import { defaultMoMeta } from './MoMeta.js'
@@ -155,6 +156,22 @@ export class MoDefinition implements MoDefinitionInterface {
     return fieldnames
   }
 
+  getFieldDefs = (params?: any): FieldDefinitionInterface<any>[] =>  {
+    if (!params) return Array.from(this.fieldDefs.values())
+    const fieldDefs: FieldDefinitionInterface<any>[] = []
+    for (const fd of Array.from(this.fieldDefs.values())) {
+      let include = true
+      for (const [k, v] of Object.entries(params)) {
+        if (fd[k] !== v) {
+          include = false
+        }
+      }
+      if (include) {
+        fieldDefs.push(fd)
+      }
+    }
+    return fieldDefs
+}
   /*  -------------
    *  Mo Management
    *  -------------

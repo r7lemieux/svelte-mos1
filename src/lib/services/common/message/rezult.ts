@@ -39,39 +39,24 @@ export class Rezult extends Error {
   }
 
   static fromObj = (obj:any): Rezult => {
+    if (obj instanceof Rezult) return obj
     const errorName = obj.name || ErrorName.not_rezult
     const rezult:Rezult = new Rezult(errorName, obj.data, obj.context)
     if (Object.keys(RezultStatus).includes(obj.status)) {
       rezult.status = obj.status
     }
+    console.log(`==>rezult.ts:47 typeof rezult.message`, typeof rezult.message)
+    console.log(`==>rezult.ts:47 obj.message`, obj.message)
     if (obj.message && rezult.name === ErrorName.not_rezult) rezult.message = obj.message
     return rezult
   }
   serialize = () => JSON.stringify(this.toObj())
   toString = () => this.toDisplayString()
 
-  static toMessage = (name, data) => {
-    let dataStr: string = this.dataToString(data)
-    if (data == undefined) {
-      dataStr = ''
-    } else {
-    try {
-      dataStr = JSON.stringify(data)}
-    catch (err) {
-      try {
-        dataStr = Rezult.stringifyOneLevel(data)
-      }
-      catch(err) {
-        try {
-          dataStr = data.toString()
-        } catch (err) {
-          dataStr = ' not printable data '
-        }
-      }
-    }
-    }
+  static ok = (): Rezult => new Rezult(ErrorName.ok)
 
-    return `${this.name} ${dataStr}`
+  static toMessage = (name, data) => {
+    return this.dataToString(data)
   }
 
   static dataToString = (data:any): string => {
@@ -96,8 +81,6 @@ export class Rezult extends Error {
     }
   }
 
-
-
   toDisplayString = () => {
     // let str = Rezult.dataToString(this.data)
     // const dataStr = (str !== undefined)? ': '+str : ''
@@ -113,6 +96,7 @@ export class Rezult extends Error {
     return jsonToDisplayString(fields)
   }
 
+  ok = () => this.status === RezultStatus.ok
   static stringifyOneLevel = obj => JSON.stringify(obj, function (k, v) { return k && v && typeof v !== "number" ? (Array.isArray(v) ? "[object Array]" : "" + v) : v; });
 
   print = (str: string) => {

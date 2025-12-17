@@ -8,12 +8,9 @@ import { ErrorName } from '../common/message/errorName.js'
 export const moMetas: { [name: string]: MoMetaInterface } = {}
 export const moDefs: { [name: string]: MoDefinitionInterface } = {}
 
-let nextId = 0
 export const registerMoMeta = (moMeta: MoMetaInterface): void => {
   const name = moMeta.name
-  // console.log(`==> moManagement.ts:21 register moMeta name `, name);
   if (!name) throw new Rezult(ErrorName.missing_param)
-
   moMetas[name] = moMeta
 }
 

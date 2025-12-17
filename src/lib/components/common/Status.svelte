@@ -6,7 +6,6 @@
     import {Icon} from 'svelte-icons-pack'
 
     let {error}: { error?: any } = $props()
-    console.log(`==>Status.svelte:14`)
     let status: string = $state((error instanceof Rezult) ? error.status : RezultStatus.error)
     let serr = $state(error)
     let derr = $derived(serr)
@@ -36,7 +35,6 @@
         statusLine = error.toString()
         // statusText = httpCodeToStatusText(page.status)
         status = error.status
-        console.log(`==>Status.svelte:$effect `, statusLine)
     })
 </script>
 
@@ -66,7 +64,7 @@
         @media (max-width: 800px) {
             margin: 0 0.4rem;
         }
-
+       
         &.ok {
             visibility: hidden;
             background-color: var(--ok-background-color);
@@ -93,7 +91,9 @@
             /*color: var(--error-color);*/
             /*}*/
         }
-
+        .status {
+          align-content: center;
+        }
         .close {
             position: relative;
             right: 0;

@@ -2,6 +2,7 @@ import type {MoMetaInterface} from './MoMetaInterface.js'
 import {getDefaultMoMeta} from './moMetaInstances.js'
 import {toDisplayString} from '../../services/common/util/string.utils.js'
 import {type MoidInterface} from './MoidInterface.js'
+import {moidToObj} from '../../services/mo/moTransport.implementation.js'
 
 export class Moid implements MoidInterface {
 
@@ -23,4 +24,9 @@ export class Moid implements MoidInterface {
   }
 
   getDisplayName = () => this.displayName
+
+  toMoid=  () => this
+  toObj = () => moidToObj(this)
+
+  isSameAs = (mo: MoidInterface ) => this.moMeta.name === mo.moMeta.name && this.id === mo.id
 }

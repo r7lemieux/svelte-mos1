@@ -36,6 +36,7 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   deletePermission: DeletePermissionEnum = DeletePermission.ask
   init = () => this
   addFieldDef = (fd: FieldDefinitionInterface<any>) => {}
+  getFieldDefs = (params?: any) => []
   getDisplayName: () => string = () => ''
   getDbName: () => string = () => ''
   getFieldNames: () => string[] = ()=> []

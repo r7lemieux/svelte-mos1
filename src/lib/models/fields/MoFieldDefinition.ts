@@ -2,14 +2,15 @@ import { FieldDefinition } from './FieldDefinition.js'
 import type { MoMetaInterface } from '../managedObjects/MoMetaInterface.js'
 import { getDefaultMoMeta } from '../managedObjects/moMetaInstances.js'
 import {CommonFieldDefs} from '$lib/models/fields/CommonFieldDefinition.js'
-import type {DeletePermissionEnum} from '$lib/models/managedObjects/MoDefinitionInterface.js'
+import {DeletePermission, type DeletePermissionEnum} from '$lib/models/managedObjects/MoDefinitionInterface.js'
 
 export class MoFieldDefinition extends FieldDefinition<any> {
   moName: string
   type = 'mo'
   deleteCascade?: DeleteCascadeEnum
   deleteLastPermission?: DeletePermissionEnum
-  twoWays?: boolean
+  compositePart: boolean = false
+  twoWays: boolean = false
 
   gridColDef = {
     type: 'object'
@@ -32,10 +33,10 @@ export class MoFieldDefinition extends FieldDefinition<any> {
   }
 }
 export const DeleteCascade = {
-  no: 'no',
-  go: 'go',
+  noDelete: 'noDelete',
+  keep: 'keep',
+  cascade: 'cascade',
   reparent: 'reparent',
-  default: 'default'
 } as const
 export type DeleteCascadeEnum = (typeof DeleteCascade)[keyof typeof DeleteCascade]
 

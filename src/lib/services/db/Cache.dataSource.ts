@@ -1,13 +1,8 @@
-import {DbService} from  './db.service.js'
-import type {Mo} from '../../models/managedObjects/Mo.js'
-import type {MoDefinition} from '../../models/managedObjects/MoDefinition.js'
-import {Rezult} from  '../common/message/rezult.js'
-import {ErrorName} from  '../common/message/errorName.js'
-import type {DataSourceInterface} from './DataSource.interface.js'
+import {Rezult} from '../common/message/rezult.js'
+import {ErrorName} from '../common/message/errorName.js'
+import type {DataSourceInterface, DeleteResult} from './DataSource.interface.js'
 import type {MoDefinitionInterface} from '../../models/managedObjects/MoDefinitionInterface.js'
 import type {MoInterface} from '../../models/managedObjects/MoInterface.js'
-
-
 
 export class CacheDataSource<M extends MoInterface> implements DataSourceInterface<M> {
   moDef: MoDefinitionInterface
@@ -32,7 +27,7 @@ export class CacheDataSource<M extends MoInterface> implements DataSourceInterfa
       return mo
     }
   }
-  saveMo = async (mo) => {
+  saveMo = async (mo: M) => {
     if (!mo) throw new Rezult(ErrorName.missing_param)
     return this.ds.saveMo(mo)
       .then(mo => {
@@ -43,7 +38,7 @@ export class CacheDataSource<M extends MoInterface> implements DataSourceInterfa
       })
   }
 
-  updateMo = async (mo) => {
+  updateMo = async (mo: M) => {
     if (!mo) throw new Rezult(ErrorName.missing_param)
     return this.ds.updateMo(mo)
       .then(mo => {
@@ -54,7 +49,7 @@ export class CacheDataSource<M extends MoInterface> implements DataSourceInterfa
       })
   }
 
-  addMo = async (mo) => {
+  addMo = async (mo: M) => {
     if (!mo) throw new Rezult(ErrorName.missing_param)
     return this.ds.addMo(mo)
       .then(mo => {
@@ -83,9 +78,17 @@ export class CacheDataSource<M extends MoInterface> implements DataSourceInterfa
     return savedMos
   }
 
-  deleteMo = async (id) => {
-    await this.ds.deleteMo(id)
-    this.records.delete(id)
+  deleteMo = async (id: string | number): Promise<DeleteResult> => {
+    try {
+      const mo: M = await this.ds.getMo(id)
+      if (!mo) return { errors: [new Rezult(ErrorName.db_notFound)] }
+      await this.ds.deleteMo(id)
+      this.records.delete(id)
+      return {deleted: [mo]}
+    } catch (error) {
+      const rezult = Rezult.fromObj(error)
+      return {errors: [rezult]}
+    }
   }
 }
 
