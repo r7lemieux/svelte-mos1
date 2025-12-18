@@ -31,7 +31,8 @@
 
   // console.log(`==> MoArrayField.svelte:23 value `, value);
   // console.log(`==> MoArrayField.svelte:24 typeof value `, typeof value);
-  let values = value as Array<MoidInterface>
+  let values = $state(value as MoidInterface[])
+  let mos = $derived(values)
   const fd: MoFieldDefinition = fieldDef as MoFieldDefinition
   const fname = fieldDef.name
   const inArray = true
@@ -55,7 +56,10 @@
   let showDetails = $state(false)
   const toogle = () => showDetails = !showDetails
  
-  const onRemove = onMoRemove || ((fieldMo: FieldMo) => { })
+  const onRemove = (fieldMo: FieldMo) => {
+    values = values.filter(val => val.moMeta.name !== fieldname || !val.isSameAs(fieldMo.mo ))
+    if (onMoRemove) onMoRemove(fieldMo)
+  }
   
 </script>
 <div class="field ArrayField MoArrayField" data-fieldtype={fd.type} style="margin-left:{level*12}px;">

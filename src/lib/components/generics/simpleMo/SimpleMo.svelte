@@ -54,7 +54,7 @@
     for (const moToRemove of mosToRemove) {
       const fieldname = moToRemove.fieldname
       const moRem = moToRemove.mo
-      mo[fieldname] = mo[fieldname].filter((fmo: MoidInterface) => fmo.isSameAs(moRem))
+      mo[fieldname] = mo[fieldname].filter((fmo: MoidInterface) => !fmo.isSameAs(moRem))
     }
   }
   $effect(() => {

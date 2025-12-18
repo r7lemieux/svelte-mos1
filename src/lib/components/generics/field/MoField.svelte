@@ -118,7 +118,7 @@
       <button type="button" {onclick} class='name linkButton' aria-label={displayName}
               disabled={!moid?.id}> {displayName}</button>
     {#if inArray}
-      <button class="delete" onclick="{onRemoveClick}"><Icon src={AiOutlineCloseCircle}></Icon></button>
+      <button type="button" class="delete" onclick="{onRemoveClick}"><Icon src={AiOutlineCloseCircle}></Icon></button>
     {/if}
   </span>
 </div>
