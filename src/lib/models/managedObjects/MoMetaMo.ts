@@ -34,7 +34,11 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
   }
   init = () => this
   setName = (name?: string): MoMetaInterface => {return this}
-  isSameAs = (mo: MoidInterface ) => this.moMeta.name === mo.moMeta.name && this.id === mo.id
+  isSameAs = (mo: any) => {
+    if (!mo) return false
+    if (!mo.moMeta) return false
+    return this.moMeta.name === mo.moMeta.name && this.id === mo.id
+  }
 
   newMo = (): MoInterface => {
     const moClass: MoInterface = this.moDef.moClass || Mo

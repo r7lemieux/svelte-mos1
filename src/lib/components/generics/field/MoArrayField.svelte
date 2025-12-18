@@ -31,8 +31,9 @@
 
   // console.log(`==> MoArrayField.svelte:23 value `, value);
   // console.log(`==> MoArrayField.svelte:24 typeof value `, typeof value);
-  let values = $state(value as MoidInterface[])
-  let mos = $derived(values)
+  let values = $state(value as Array<MoidInterface>)
+  let fieldMoToRemove: FieldMo | null = $state(null)
+  const mos = $derived(values.filter(v => !v.isSameAs(fieldMoToRemove?.mo)))
   const fd: MoFieldDefinition = fieldDef as MoFieldDefinition
   const fname = fieldDef.name
   const inArray = true
@@ -57,10 +58,13 @@
   const toogle = () => showDetails = !showDetails
  
   const onRemove = (fieldMo: FieldMo) => {
-    values = values.filter(val => val.moMeta.name !== fieldname || !val.isSameAs(fieldMo.mo ))
-    if (onMoRemove) onMoRemove(fieldMo)
+    if (!onMoRemove) return {}
+    values = values.filter(mo => !mo.isSameAs(fieldMo.mo) )
+    fieldMoToRemove = fieldMo
+    //return onMoRemove(fieldMo)
   }
-  
+
+
 </script>
 <div class="field ArrayField MoArrayField" data-fieldtype={fd.type} style="margin-left:{level*12}px;">
   <label for={fname}>{fd.getDisplayName()}</label>
@@ -75,7 +79,7 @@
   </span>
 </div>
 {#if showDetails}
-  {#each (values || []) as item}
+  {#each (mos || []) as item}
     <MoField {fieldname} fieldDef={moItemFieldDef} value={item} {viewMode} level={level + 1} onChange={changed} {inArray} {onRemove} />
   {/each}
 <!--  <ObjectField fieldDef={moFieldDef} value={newItem} {viewMode} level={level + 1} onChange={changed} />-->

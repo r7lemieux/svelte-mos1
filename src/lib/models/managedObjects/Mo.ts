@@ -70,7 +70,11 @@ export class Mo implements MoInterface {
     return this
   }
 
-  isSameAs = (mo: MoidInterface ) => this.moMeta.name === mo.moMeta.name && this.id === mo.id
+  isSameAs = (mo: any) => {
+    if (!mo) return false
+    if (!mo.moMeta) return false
+    return this.moMeta.name === mo.moMeta.name && this.id === mo.id
+  }
 
 }
 

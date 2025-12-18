@@ -49,14 +49,12 @@
       save()
     }
   }
-  const onMoRemove = (fieldMo: FieldMo) => mosToRemove.push(fieldMo)
-  const removeMos = () => {
-    for (const moToRemove of mosToRemove) {
-      const fieldname = moToRemove.fieldname
-      const moRem = moToRemove.mo
-      mo[fieldname] = mo[fieldname].filter((fmo: MoidInterface) => !fmo.isSameAs(moRem))
-    }
+  const onMoRemove = (fieldMo: FieldMo) => {
+    const fieldname = fieldMo.fieldname
+    const moRem = fieldMo.mo
+    mo[fieldname] = mo[fieldname].filter((fmo: MoidInterface) => !fmo.isSameAs(moRem))
   }
+
   $effect(() => {
       // console.log(`==> SimpleMo.svelte:57 title `, title)
     }
@@ -77,13 +75,16 @@
   }
   const save = () => {
     // const form = document.getElementById('myForm');
-    if (mosToRemove) removeMos()
     const formData = new FormData(formElm)
     // const payload = Object.fromEntries(formData.entries())
     // const uri = formElm.baseURI.split('/').slice(0, -1).join('/') + '/save'
+    const partialMo = {}
+    formData.forEach((v, k) => partialMo[k] = v)
+    mo.hydrate(partialMo)
+    const body = mo.toObj()
     fetch(formElm.action, {
       method: 'PATCH',
-      body: formData
+      body
     })
       .then(response => response.json())
       .then(responseData => {

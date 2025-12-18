@@ -12,7 +12,7 @@ export interface MoidInterface {
   init: () => MoidInterface
   toMoid: () => MoidInterface
   toObj: () => any
-  isSameAs: (mo: MoidInterface ) => boolean
+  isSameAs: (any) => boolean
 
   // setDisplayName: (displayName: string) => MoidInterface
   // setProps: (props: any) => MoInterface
