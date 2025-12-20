@@ -14,7 +14,8 @@
   import type {FieldDefinitionInterface} from '../../../models/fields/FieldDefinition.interface.js'
   import type {FieldMo} from '../../../models/fields/FieldMo.js'
   import type {MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
-  
+  import { setContext } from 'svelte';
+
   let {mo, autoSave = false}:
     { mo: Mo, autoSave?: boolean } = $props()
   let viewMode: MoViewModeEnum = $state(extractViewMode())
@@ -27,6 +28,7 @@
   let formElm: HTMLFormElement
   let sfetchError = $state(OK)
   let fetchError = $derived(() => sfetchError)
+  setContext('openPaths', [])
   const mosToRemove: FieldMo[] = []
   const showDelete = () => moMeta.moDef.deletePermission !== DeletePermission.no
   

@@ -2,7 +2,9 @@
   <dictionary name="project">
     <words>
       <w>fieldnames</w>
+      <w>fname</w>
       <w>gdrive</w>
+      <w>moname</w>
     </words>
   </dictionary>
 </component>
