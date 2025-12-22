@@ -24,8 +24,8 @@
         viewMode = 'view',
         onChange,
         inArray = false,
-        onRemove = (fieldMo: FieldMo) => {
-        },
+        parentUiPath = [],
+        onRemove,
     }: {
         fieldDef: FieldDefinitionInterface<any>,
         fieldname: string,
@@ -34,6 +34,7 @@
         viewMode: MoViewModeEnum,
         onChange: any,
         inArray?: boolean,
+        parentUiPath: string[],
         onRemove?: (fieldMo: FieldMo) => void
     } = $props()
     // export let name
@@ -46,6 +47,7 @@
     const moMeta = $derived(getMoMeta(moName))
     // let fieldDefs: FieldDefinitionInterface<any>[] = $derived(Array.from(moMeta.moDef.fieldDefs.values()))
     let moid = $state(value as MoidInterface)
+    const uiPath = [...parentUiPath]
     const label = inArray ? '' : fieldDef?.getDisplayName()
     const displayName = (() => {
         return moid?.getDisplayName()
@@ -90,6 +92,7 @@
             console.log(`==>MoField.svelte:onDelete fails onDelete: ${!!onRemove}, !!moid: ${!!moid}, !!moid?.id: ${!!moid?.id}`)
             throw new Rezult(ErrorName.missing_id, {onDelete: !!onRemove, moid: !!moid, id: !!moid?.id}, 'onDelete')
         } else {
+            console.log(`==>MoField.svelte:95 moid`, moid.displayName)
             onRemove({fieldname, mo: moid})
         }
     }
@@ -133,7 +136,7 @@
         <!--    <p>showFieldDefs {showFieldDefs}</p>-->
         <!--    <p>{moMeta.moDef.fieldDefs.keys()}</p>-->
         {#each showFieldDefs as fd}
-            <Field fieldDef={fd} value={mo[fd.name]} {viewMode} {onChange} level={level + 1 }/>
+            <Field fieldDef={fd} value={mo[fd.name]} {viewMode} {onChange} parentUiPath={uiPath} level={level + 1 }/>
         {/each}
     {/if}
 {/if}

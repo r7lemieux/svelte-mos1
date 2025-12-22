@@ -10,7 +10,6 @@
   import MoArrayField from './MoArrayField.svelte'
   import MoField from './MoField.svelte'
   import Init from '../../common/Init.svelte'
-  import type {MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
   import type {FieldDefinitionInterface} from '../../../models/fields/FieldDefinition.interface.js'
   import type {FieldMo} from '../../../models/fields/FieldMo.js'
   
@@ -20,13 +19,15 @@
     viewMode = extractViewMode(),
     level,
     onChange,
-    onMoRemove = (fieldMo: FieldMo) => {},
+    parentUiPath = [],
+    onMoRemove,
   }: {
     fieldDef: FieldDefinitionInterface<any>,
     value: any,
     viewMode: MoViewModeEnum,
     level: number,
     onChange: (fieldId: string, val: any) => void,
+    parentUiPath?: string[],
     onMoRemove?: (fieldMo: FieldMo) => void,
   } = $props()
   
@@ -37,7 +38,7 @@
   // export let onChange: (fieldId: string, value: any) => void
   viewMode = extractViewMode() // = view
   const fd = fieldDef
-  
+  const uiPath = [...parentUiPath, fieldDef.name]
   function extractViewMode(): MoViewModeEnum {
     const pathParts = page.url.pathname.split('/')
     const pathTail = pathParts[pathParts.length - 1]
@@ -45,19 +46,22 @@
     if (pathTail === 'create') return MoViewMode.create
     return MoViewMode.view
   }
-  
-  $effect(sizeLabels)
+  console.log(`==>Field.svelte:52 field ${fieldDef.name} =`, value?.toString().slice(0,80))
+  $effect(() => {
+    sizeLabels
+    console.log(`==>Field.svelte:52 field ${fieldDef.name} =`, value?.toString().slice(0,80))
+  })
 </script>
 <Init/>
 <!--{fd.type}-->
 {#if fd.type === 'array'}
   <ArrayField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else if fd.type === 'moArray'}
-  <MoArrayField fieldname={fieldDef.name} {fieldDef} {value} {viewMode} {level} {onChange} {onMoRemove} />
+  <MoArrayField fieldname={fieldDef.name} {fieldDef} {value} {viewMode} {level} {onChange} parentUiPath={uiPath} {onMoRemove} />
 {:else if fd.type === 'map'}
   <MapField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else if fd.type === 'mo'}
-  <MoField fieldname={fieldDef.name} {fieldDef} {value} {viewMode} {level} {onChange} />
+  <MoField fieldname={fieldDef.name} {fieldDef} {value} {viewMode} {level} parentUiPath={uiPath} {onChange} />
 {:else if fd.type === 'object' }
   <ObjectField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else}

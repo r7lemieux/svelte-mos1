@@ -1,5 +1,5 @@
 import {Moid} from '../../models/managedObjects/Moid.js'
-import {getMoMeta} from '../mo/moManagement.js'
+import {getMoMeta} from './moManagement.js'
 import type {MoidInterface} from '../../models/managedObjects/MoidInterface.js'
 import type {MoInterface} from '../../models/managedObjects/MoInterface.js'
 import {ErrorName} from '../common/message/errorName.js'
@@ -230,10 +230,11 @@ export const valueToField = (fDef: FieldDefinitionInterface<any>, v: any): any |
                 if (typeof v === 'object') {
                     if (fDef.itemValueFieldDef) {
                         const newMap = new Map()
-                        for (const [k, itemVal] of Object.entries(v)) {
+                        for (let [k, itemVal] of Object.entries(v)) {
                             const fieldValue = valueToField(fDef.itemValueFieldDef, itemVal)
-                            return newMap.set(k, fieldValue)
+                            newMap.set(k, fieldValue)
                         }
+                        return newMap
                     } else {
                         return new Map(Object.entries(v))
                     }

@@ -14,22 +14,32 @@
   import type {FieldDefinitionInterface} from '../../../models/fields/FieldDefinition.interface.js'
   import type {FieldMo} from '../../../models/fields/FieldMo.js'
   import type {MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
-  import { setContext } from 'svelte';
-
-  let {mo, autoSave = false}:
-    { mo: Mo, autoSave?: boolean } = $props()
+  import {setContext} from 'svelte'
+  import {page} from '$app/state'
+  
+  let {
+    mo,
+    autoSave = false,
+    parentUiPath = [],
+  }: {
+    mo: Mo,
+    autoSave?: boolean,
+    parentUiPath?: string[]
+  } = $props()
+  console.log(`==>SimpleMo.svelte:29 mo.displayName`, mo.displayName)
+  const openPathList = page.url.searchParams.getAll('openPath')
+  const openPaths = {}
+  openPathList.forEach((openPath) => openPaths[openPath] = true)
+  setContext('openPaths', openPaths)
   let viewMode: MoViewModeEnum = $state(extractViewMode())
-  // let disabled = $derived(viewMode === 'view')
   let moMeta = $derived(mo.moMeta)
   let title = $derived(toDisplayString(moMeta.moDef.name))
   let fieldDefs: FieldDefinitionInterface<any>[] = $derived(Array.from(moMeta.moDef.fieldDefs.values()) as FieldDefinition<any>[])
-  // let showFieldnames = $derived(moMeta.moDef.showFieldnames)
   let showFieldDefs = $derived(moMeta.moDef.showFieldnames.map(fn => fieldDefs.find(fd => fd.name === fn))) as FieldDefinition<any>[]
   let formElm: HTMLFormElement
   let sfetchError = $state(OK)
   let fetchError = $derived(() => sfetchError)
-  setContext('openPaths', [])
-  const mosToRemove: FieldMo[] = []
+  const uiPath = [...parentUiPath, mo.moMeta.name + '-' + mo.id]
   const showDelete = () => moMeta.moDef.deletePermission !== DeletePermission.no
   
   const onChange = (fieldId: string, val: any): void => {
@@ -56,23 +66,24 @@
     const moRem = fieldMo.mo
     mo[fieldname] = mo[fieldname].filter((fmo: MoidInterface) => !fmo.isSameAs(moRem))
   }
-
-  $effect(() => {
-      // console.log(`==> SimpleMo.svelte:57 title `, title)
+  
+  const buildQueryParams = ():string => {
+    if (openPaths) {
+      return '?' + Object.keys(openPaths).filter(k => !!openPaths[k]).map(k => `openPath=${k}`).join('&')
     }
-  )
+    return ''
+  }
   const cancel = () => {
     if (viewMode === 'edit') {
       viewMode = 'view'
-      goto(`/mo/${moMeta.name}/${mo.id}`)
+      goto(`/mo/${moMeta.name}/${mo.id}${buildQueryParams()}`)
     } else if (viewMode === 'create') {
       goto(`/mo/${moMeta.name}`)
     }
-    // history.replaceState(history.state, '', `/mo/${moMeta.name}/${mo.id}/edit`);
   }
   const edit = () => {
     viewMode = 'edit'
-    goto(`/mo/${moMeta.name}/${mo.id}/edit`)
+    goto (`/mo/${moMeta.name}/${mo.id}/edit${buildQueryParams()}`)
     // history.replaceState(history.state, '', `/mo/${moMeta.name}/${mo.id}/edit`);
   }
   const save = () => {
@@ -117,7 +128,8 @@
         // formData.forEach((v, k) => fields[k] = v)
         // newMo.hydrate(fields)
         // mo = newMo
-        goto(`/mo/${moMeta.name}/${id}`)
+        let url = `/mo/${moMeta.name}/${id}`
+        goto(url)
       })
       .catch(err => {
         console.error('Error:', err)
@@ -143,7 +155,19 @@
   //     mo[fname] = mo[fname].filter((item, index) => index != i)
   //     goto(`/mo/${moMeta.name}`)
   // }
-
+  const printlogs = (ln: string) => {
+    console.log(`==> SimpleMo.svelte:${ln} moMeta `, moMeta.name)
+    console.log(`==> SimpleMo.svelte:${ln} title `, title)
+    console.log(`==> SimpleMo.svelte:${ln} fieldDefs `, fieldDefs.length)
+    console.log(`==> SimpleMo.svelte:${ln} showFieldDefs `, showFieldDefs.length)
+    console.log(`==> SimpleMo.svelte:${ln} fetchError `, fetchError)
+    console.log(`==> SimpleMo.svelte:${ln} mo displayName`, mo.displayName)
+  }
+  printlogs('1')
+  $effect(() => {
+    printlogs('2')
+    }
+  )
 </script>
 <svelte:head>
   <title>{title}</title>
@@ -174,7 +198,7 @@
     {#each showFieldDefs as fieldDef}
       {@const value = mo[fieldDef?.name]}
       {#key value}
-        <Field {fieldDef} {value} {viewMode} {onChange} {onMoRemove} level={0}/>
+        <Field {fieldDef} {value} {viewMode} {onChange} {onMoRemove} parentUiPath={uiPath} level={0}/>
       {/key}
     {/each}
   </div>

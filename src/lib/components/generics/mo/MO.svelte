@@ -12,6 +12,7 @@
   import Init from '../../common/Init.svelte'
   
   let {mo}: {mo:MoInterface} = $props()
+  console.log(`==>MO.svelte:15 mo.displayName`, mo.displayName)
 	let viewMode: MoViewModeEnum = extractViewMode()
 	let moDef = mo.moMeta.moDef;
 	const title = toDisplayString(moDef.name);
