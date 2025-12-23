@@ -18,7 +18,7 @@ export interface FieldDefinitionInterface<T> {
   parse: (string) => T | null
   stringToValue: (string) => T | null
   valueToString: (any) => string
-  valueToField: (any) => any
+  valueToField?: (any) => any
   documentToValue: (any) => any
   valueToDocument: (any) => any
   validateValue: (T) => Rezult

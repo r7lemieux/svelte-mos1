@@ -1,19 +1,15 @@
 <script lang="ts">
-  import type { Mo as MoClass } from '../../../models/managedObjects/Mo.js'
-  import { toDisplayString } from '../../../services/common/util/string.utils.js'
-  import type { MoViewMode, MoViewModeEnum } from '../../../constants/ui.js'
-  import { page } from '$app/state';
-  import { extractViewMode } from '../../../services/common/util/dom.utils.js'
-  import SimpleMo from '../simpleMo/SimpleMo.svelte'
-  import MoDefMo from '../../app/mo/moDefMo/MoDefMo.svelte'
-  import MoMetaMo from '../../app/mo/moMetaMo/MoMetaMo.svelte'
-  import type {MoInterface} from '../../../models/managedObjects/MoInterface.js'
-  import {MoDefinitionMo} from '../../../models/managedObjects/MoDefinitionMo.js'
-  import Init from '../../common/Init.svelte'
-  
+	import {toDisplayString} from '$lib/services/common/util/string.utils.js'
+	import SimpleMo from '../simpleMo/SimpleMo.svelte'
+	import MoDefMo from '../../app/mo/moDefMo/MoDefMo.svelte'
+	import MoMetaMo from '../../app/mo/moMetaMo/MoMetaMo.svelte'
+	import type {MoInterface} from '$lib/models/managedObjects/MoInterface.js'
+	import {MoDefinitionMo} from '$lib/models/managedObjects/MoDefinitionMo.js'
+	import Init from '../../common/Init.svelte'
+	import {initMoTransport} from "$lib/services/mo/moTransport.implementation.js";
+
+	initMoTransport()
   let {mo}: {mo:MoInterface} = $props()
-  console.log(`==>MO.svelte:15 mo.displayName`, mo.displayName)
-	let viewMode: MoViewModeEnum = extractViewMode()
 	let moDef = mo.moMeta.moDef;
 	const title = toDisplayString(moDef.name);
   const moDefMo = new MoDefinitionMo(moDef)

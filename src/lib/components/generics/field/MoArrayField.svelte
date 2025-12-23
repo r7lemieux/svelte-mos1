@@ -1,20 +1,17 @@
 <script lang="ts">
-  import {MoViewMode, type MoViewModeEnum} from '../../../constants/ui.js'
-  import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
+  import {MoViewMode, type MoViewModeEnum} from '$lib/constants/ui.js'
+  import type {FieldDefinition} from '$lib/models/fields/FieldDefinition.js'
   // import { AiOutlineCaretDown } from 'svelte-icons-pack/ai'
   // import { AiOutlineCaretRight } from 'svelte-icons-pack/ai'
   // import AiOutlineCaretDown from 'svelte-icons-pack/ai/AiOutlineCaretDown'
   // import AiOutlineCaretRight from 'svelte-icons-pack/ai/AiOutlineCaretRight'
   import './field.css'
-  import {type MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
-  import type {MoFieldDefinition} from '../../../models/fields/MoFieldDefinition.js'
+  import {type MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
+  import type {MoFieldDefinition} from '$lib/models/fields/MoFieldDefinition.js'
   import MoField from './MoField.svelte'
-  import type {FieldMo} from '../../../models/fields/FieldMo.js'
+  import type {FieldMo} from '$lib/models/fields/FieldMo.js'
   import {getContext} from 'svelte'
-  import type {OpenPathsContext} from '../../../services/common/util/pathContext.js'
-  import {areArraysEqual} from '../../../services/common/util/array.utils.js'
-  import {get} from 'svelte/store'
-  
+
   let {
     fieldDef,
     fieldname,
@@ -46,9 +43,6 @@
   const moItemFieldDef = fieldDef.clone()
   moItemFieldDef.type = 'mo'
   const uiPath = parentUiPath
-  const removeMos = (vs, fields) => {
-    return vs.filter(v => !fields.find(fm => fm.mo.isSameAs(v)))
-  }
   let mos = $derived(values) //removeMos(values, fieldsMoToRemove))
   const changed = (fieldId: string, item: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -66,7 +60,6 @@
 
   let openPaths = getContext('openPaths') as string[]
   let showDetails = $derived(!!openPaths[uiPath.join('_')])
-  const getMos = () => mos
   const toggle = () => {
     showDetails = !showDetails
     openPaths[uiPath.join('_')] = showDetails
@@ -76,14 +69,9 @@
     if (!onMoRemove) return {}
     values = values.filter(mo => !mo.isSameAs(fieldMo.mo) )
     fieldsMoToRemove = [...fieldsMoToRemove, fieldMo]
-    console.log(`==>MoArrayField.svelte:74 fieldsMoToRemove`, fieldsMoToRemove.map(fm => `${fm.fieldname}.${fm.mo.displayName}`))
+    // console.log(`==>MoArrayField.svelte:74 fieldsMoToRemove`, fieldsMoToRemove.map(fm => `${fm.fieldname}.${fm.mo.displayName}`))
     //return onMoRemove(fieldMo)
   }
-  $effect(() => {
-    // console.log(`==>MoArrayField.svelte:79 fieldsMoToRemove`, fieldsMoToRemove.map(fm => `${fm.fieldname}.${fm.mo.displayName}`))
-    //mos = values.filter(v => !fieldsMoToRemove.find(fm => fm.mo.isSameAs(v)))
-    console.log(`==>MoArrayField.svelte:80 mos`, mos.map(m => m.displayName))
-  })
 
 </script>
 <div class="field ArrayField MoArrayField" data-fieldtype={fd.type} style="margin-left:{level*12}px;">
@@ -98,10 +86,9 @@
   </span>
 </div>
 {#if showDetails}
-  {#each (mos || []) as item}
+  {#each (mos) as item (item.id)}
     <MoField {fieldname} fieldDef={moItemFieldDef} value={item} {viewMode} level={level + 1} onChange={changed} parentUiPath={uiPath} {inArray} {onRemove} />
   {/each}
 {/if}
-${mos.map(m=>m.displayName)}
 <style>
 </style>

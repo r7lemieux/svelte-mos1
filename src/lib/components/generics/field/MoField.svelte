@@ -1,20 +1,21 @@
 <script lang="ts">
-    import {sizeLabels} from '../../../services/common/util/dom.utils.js'
+    import {sizeLabels} from '$lib/services/common/util/dom.utils.js'
     // import Field from './Field.svelte'
     import './field.css'
-    import type {MoViewModeEnum} from '../../../constants/ui.js'
-    import type {MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
-    import type {FieldDefinitionInterface} from '../../../models/fields/FieldDefinition.interface.js'
-    import type {MoFieldDefinition} from '../../../models/fields/MoFieldDefinition.js'
-    import {getMoMeta} from '../../../services/mo/moManagement.js'
-    import type {MoInterface} from '../../../models/managedObjects/MoInterface.js'
+    import type {MoViewModeEnum} from '$lib/constants/ui.js'
+    import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
+    import type {FieldDefinitionInterface} from '$lib/models/fields/FieldDefinition.interface.js'
+    import type {MoFieldDefinition} from '$lib/models/fields/MoFieldDefinition.js'
+    import {getMoMeta} from '$lib/services/mo/moManagement.js'
+    import type {MoInterface} from '$lib/models/managedObjects/MoInterface.js'
     import Field from './Field.svelte'
     import {goto} from '$app/navigation'
     import {AiOutlineCloseCircle} from 'svelte-icons-pack/ai'
     import {Icon} from 'svelte-icons-pack'
-    import {Rezult} from '../../../services/common/message/rezult.js'
-    import {ErrorName} from '../../../services/common/message/errorName.js'
-    import type {FieldMo} from '../../../models/fields/FieldMo.js'
+    import {Rezult} from '$lib/services/common/message/rezult.js'
+    import {ErrorName} from '$lib/services/common/message/errorName.js'
+    import type {FieldMo} from '$lib/models/fields/FieldMo.js'
+    import {Moid} from "$lib/models/managedObjects/Moid.js";
 
     let {
         fieldDef,
@@ -42,16 +43,14 @@
     // export let value: any
     // export let level: number = 1
     // export let viewMode: MoViewModeEnum
-    const mofieldDef = $state((fieldDef || value.moMeta.fieldDef) as MoFieldDefinition)
-    const moName = $derived(mofieldDef.moName)
+    const moFieldDef = $state((fieldDef || value.moMeta.fieldDef) as MoFieldDefinition)
+    const moName = $derived(moFieldDef.moName)
     const moMeta = $derived(getMoMeta(moName))
     // let fieldDefs: FieldDefinitionInterface<any>[] = $derived(Array.from(moMeta.moDef.fieldDefs.values()))
-    let moid = $state(value as MoidInterface)
+    let smoid = $state(value as MoidInterface)
+    let moid = $derived(smoid as MoidInterface)
     const uiPath = [...parentUiPath]
     const label = inArray ? '' : fieldDef?.getDisplayName()
-    const displayName = (() => {
-        return moid?.getDisplayName()
-    })()
 
     let showDetails = $state(false)
     let loading = $state(false)
@@ -69,7 +68,6 @@
         const res = await fetch(`/mo/${moName}/${moid?.id}`)
         const obj = await res.json()
         mo = moMeta.objToMo(obj)
-        // fieldDefs = moMeta.moDef.fieldDefs.values()
         loading = false
     }
 
@@ -84,7 +82,7 @@
     }
 
     const onclick = () => {
-        console.log(`==>MoField.svelte:80 /mo/${moName}/${moid.id}`)
+        // console.log(`==>MoField.svelte:80 /mo/${moName}/${moid.id}`)
         goto(`/mo/${moName}/${moid.id}`, {replaceState: true})
     }
     const onRemoveClick = () => {
@@ -92,25 +90,15 @@
             console.log(`==>MoField.svelte:onDelete fails onDelete: ${!!onRemove}, !!moid: ${!!moid}, !!moid?.id: ${!!moid?.id}`)
             throw new Rezult(ErrorName.missing_id, {onDelete: !!onRemove, moid: !!moid, id: !!moid?.id}, 'onDelete')
         } else {
-            console.log(`==>MoField.svelte:95 moid`, moid.displayName)
             onRemove({fieldname, mo: moid})
         }
     }
-    // const removeMos = () => {
-    //     if (mofieldDef.compositePart) {
-    //       const deleteResult = await mo.moMeta.dataSource.deleteMo(mo.id)
-    //       if (deleteResult.errors) {
-    //       }
-    //
-    //     onDelete(mo.id)
-    //   }
-    // }
     $effect(() => {
         sizeLabels()
     })
 </script>
 
-<div class="field moField" data-fdtype={mofieldDef.type} style="margin-left:{level*12}px;">
+<div class="field moField" data-fdtype={moFieldDef.type} style="margin-left:{level*12}px;">
     <label for="name">{label}</label>
     <span class="tree-line {showDetails?'open':'closed'}" onclick={toggle} onkeydown={toggle} role="button"
           tabindex="-2">
@@ -120,8 +108,8 @@
 <!--        <span>{size}</span>-->
           <span class="detail-icon detail-arrow {showDetails?'open':'closed'}"></span>
       </span>
-      <button type="button" {onclick} class='name linkButton' aria-label={displayName}
-              disabled={!moid?.id}> {displayName}</button>
+      <button type="button" {onclick} class='name linkButton' aria-label={moid?.displayName}
+              disabled={!moid?.id}> {moid?.id} {moid?.displayName}</button>
         {#if inArray && viewMode === 'edit'}
       <button type="button" class="delete" onclick="{onRemoveClick}"><Icon src={AiOutlineCloseCircle}></Icon></button>
     {/if}

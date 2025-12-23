@@ -160,7 +160,7 @@ export const objectToMoid = (obj: any, params?: objectToMoParameters): MoidInter
         for (let fDef of fieldDefs) {
             const fname = fDef.name
             const value = obj[fname]
-            mo[fname] = fDef.valueToField(value)
+            mo[fname] = fDef.valueToField ? fDef.valueToField(value) : valueToField(fDef, value)
         }
         return mo
     }
@@ -218,7 +218,13 @@ export const valueToField = (fDef: FieldDefinitionInterface<any>, v: any): any |
             case 'array':
                 if (!Array.isArray(v)) return handleError('not array')
                 if (fDef.itemValueFieldDef) {
-                    return v.map(item => fDef.itemValueFieldDef?.valueToField(item))
+                    return v.map(item => {
+                        if (fDef.itemValueFieldDef?.valueToField) {
+                            return fDef.itemValueFieldDef.valueToField(item)
+                        } else {
+                            return valueToField(fDef, item)
+                        }
+                    })
                 } else {
                     return v
                 }

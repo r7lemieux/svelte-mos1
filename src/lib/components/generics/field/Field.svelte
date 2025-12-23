@@ -46,10 +46,8 @@
     if (pathTail === 'create') return MoViewMode.create
     return MoViewMode.view
   }
-  console.log(`==>Field.svelte:52 field ${fieldDef.name} =`, value?.toString().slice(0,80))
   $effect(() => {
     sizeLabels
-    console.log(`==>Field.svelte:52 field ${fieldDef.name} =`, value?.toString().slice(0,80))
   })
 </script>
 <Init/>

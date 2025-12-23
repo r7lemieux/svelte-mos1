@@ -104,9 +104,7 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
     }
   }
 
-  valueToField(v: any): any | null {
-    return transp.valueToField(this, v)
-  }
+  valueToField?(v: any): any | null
 
   // valueToField(v: any): any | null {
   //   const handleError = (message: string) => {

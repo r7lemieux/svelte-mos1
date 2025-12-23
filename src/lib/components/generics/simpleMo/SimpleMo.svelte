@@ -26,7 +26,6 @@
     autoSave?: boolean,
     parentUiPath?: string[]
   } = $props()
-  console.log(`==>SimpleMo.svelte:29 mo.displayName`, mo.displayName)
   const openPathList = page.url.searchParams.getAll('openPath')
   const openPaths = {}
   openPathList.forEach((openPath) => openPaths[openPath] = true)
@@ -94,7 +93,7 @@
     const partialMo = {}
     formData.forEach((v, k) => partialMo[k] = v)
     mo.hydrate(partialMo)
-    const body = mo.toObj()
+    const body = JSON.stringify(mo.toObj())
     fetch(formElm.action, {
       method: 'PATCH',
       body
@@ -155,19 +154,15 @@
   //     mo[fname] = mo[fname].filter((item, index) => index != i)
   //     goto(`/mo/${moMeta.name}`)
   // }
-  const printlogs = (ln: string) => {
-    console.log(`==> SimpleMo.svelte:${ln} moMeta `, moMeta.name)
-    console.log(`==> SimpleMo.svelte:${ln} title `, title)
-    console.log(`==> SimpleMo.svelte:${ln} fieldDefs `, fieldDefs.length)
-    console.log(`==> SimpleMo.svelte:${ln} showFieldDefs `, showFieldDefs.length)
-    console.log(`==> SimpleMo.svelte:${ln} fetchError `, fetchError)
-    console.log(`==> SimpleMo.svelte:${ln} mo displayName`, mo.displayName)
-  }
-  printlogs('1')
-  $effect(() => {
-    printlogs('2')
-    }
-  )
+  // const printlogs = (ln: string) => {
+  //   console.log(`==> SimpleMo.svelte:${ln} moMeta `, moMeta.name)
+  //   console.log(`==> SimpleMo.svelte:${ln} title `, title)
+  //   console.log(`==> SimpleMo.svelte:${ln} fieldDefs `, fieldDefs.length)
+  //   console.log(`==> SimpleMo.svelte:${ln} showFieldDefs `, showFieldDefs.length)
+  //   console.log(`==> SimpleMo.svelte:${ln} fetchError `, fetchError)
+  //   console.log(`==> SimpleMo.svelte:${ln} mo displayName`, mo.displayName)
+  // }
+
 </script>
 <svelte:head>
   <title>{title}</title>
