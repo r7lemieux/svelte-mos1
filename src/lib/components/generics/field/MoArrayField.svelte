@@ -49,7 +49,7 @@
   const removeMos = (vs, fields) => {
     return vs.filter(v => !fields.find(fm => fm.mo.isSameAs(v)))
   }
-  let mos = $derived(removeMos(values, fieldsMoToRemove))
+  let mos = $derived(values) //removeMos(values, fieldsMoToRemove))
   const changed = (fieldId: string, item: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const index = Number.parseInt(fieldId)
@@ -66,7 +66,7 @@
 
   let openPaths = getContext('openPaths') as string[]
   let showDetails = $derived(!!openPaths[uiPath.join('_')])
-  
+  const getMos = () => mos
   const toggle = () => {
     showDetails = !showDetails
     openPaths[uiPath.join('_')] = showDetails
@@ -74,7 +74,7 @@
  
   const onRemove = (fieldMo: FieldMo) => {
     if (!onMoRemove) return {}
-    // values = values.filter(mo => !mo.isSameAs(fieldMo.mo) )
+    values = values.filter(mo => !mo.isSameAs(fieldMo.mo) )
     fieldsMoToRemove = [...fieldsMoToRemove, fieldMo]
     console.log(`==>MoArrayField.svelte:74 fieldsMoToRemove`, fieldsMoToRemove.map(fm => `${fm.fieldname}.${fm.mo.displayName}`))
     //return onMoRemove(fieldMo)
