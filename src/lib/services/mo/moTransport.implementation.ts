@@ -156,11 +156,12 @@ export const objectToMoid = (obj: any, params?: objectToMoParameters): MoidInter
         mo.id = id
         mo.displayName = obj.displayName
         const fieldDefs = Array.from(moDef.fieldDefs.values()).filter(fd => fd.name !== 'id')
-
         for (let fDef of fieldDefs) {
             const fname = fDef.name
-            const value = obj[fname]
-            mo[fname] = fDef.valueToField ? fDef.valueToField(value) : valueToField(fDef, value)
+            if (!params?.mo || Object.hasOwn(obj, fname)) {
+                const value = obj[fname]
+                mo[fname] = fDef.valueToField ? fDef.valueToField(value) : valueToField(fDef, value)
+            }
         }
         return mo
     }
