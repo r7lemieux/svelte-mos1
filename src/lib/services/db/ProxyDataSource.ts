@@ -2,6 +2,7 @@ import {DbService} from  './db.service.js'
 import type {Mo} from '../../models/managedObjects/Mo.js'
 import type {DataSourceInterface} from './DataSource.interface.js'
 import type {MoInterface} from '../../models/managedObjects/MoInterface.js'
+import type {MoidInterface} from '../../models/managedObjects/MoidInterface.js'
 
 export class ProxyDataSource<M extends MoInterface> implements DataSourceInterface<M> {
   next: DataSourceInterface<M>
@@ -14,6 +15,9 @@ export class ProxyDataSource<M extends MoInterface> implements DataSourceInterfa
 
   getMo = async (id: any): Promise<M> => {
     return this.next.getMo(id)
+  }
+  getMoid = async (id: any): Promise<MoidInterface> => {
+    return this.next.getMoid(id)
   }
   saveMo = async (mo) => {
     return this.next.saveMo(mo)
@@ -29,6 +33,10 @@ export class ProxyDataSource<M extends MoInterface> implements DataSourceInterfa
 
   getMos = async (): Promise<M[]> => {
     return this.next.getMos()
+  }
+
+  getMoids = async (): Promise<MoidInterface[]> => {
+    return this.next.getMoids()
   }
 
   saveMos = async (givenMos: M[]): Promise<M[]> => {

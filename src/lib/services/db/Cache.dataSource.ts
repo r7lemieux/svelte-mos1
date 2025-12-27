@@ -3,6 +3,7 @@ import {ErrorName} from '../common/message/errorName.js'
 import type {DataSourceInterface, DeleteResult} from './DataSource.interface.js'
 import type {MoDefinitionInterface} from '../../models/managedObjects/MoDefinitionInterface.js'
 import type {MoInterface} from '../../models/managedObjects/MoInterface.js'
+import type {MoidInterface} from '../../models/managedObjects/MoidInterface.js'
 
 export class CacheDataSource<M extends MoInterface> implements DataSourceInterface<M> {
   moDef: MoDefinitionInterface
@@ -27,6 +28,17 @@ export class CacheDataSource<M extends MoInterface> implements DataSourceInterfa
       return mo
     }
   }
+
+  getMoid = async (id: any): Promise<MoidInterface> => {
+    if (this.records.has(id)) {
+      const record = this.records.get(id)
+      if (!record) throw new Rezult(ErrorName.db_notFound)
+      return record.toMoid()
+    } else {
+      return await this.ds.getMoid(id)
+    }
+  }
+
   saveMo = async (mo: M) => {
     if (!mo) throw new Rezult(ErrorName.missing_param)
     return this.ds.saveMo(mo)
@@ -68,6 +80,10 @@ export class CacheDataSource<M extends MoInterface> implements DataSourceInterfa
       }
     }
     return mos
+  }
+
+  getMoids = async (): Promise<MoidInterface[]> => {
+    return await this.ds.getMoids()
   }
 
   saveMos = async (givenMos: M[]): Promise<M[]> => {

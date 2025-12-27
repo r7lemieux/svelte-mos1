@@ -24,6 +24,11 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
   getMo = async (key: any): Promise<M> => {
     return this.records[key]
   }
+
+  getMoid = async (key: any): Promise<MoidInterface> => {
+    return this.records[key]?.toMoid()
+  }
+
   saveMo = async (mo: M) => {
     // console.log(`==>Heap.dataSource.ts:saveMo mo.id`, mo.id, this.nextId)
     if (!mo) throw new Rezult(ErrorName.missing_param)
@@ -47,6 +52,10 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
 
   getMos = async (): Promise<M[]> => {
     return Object.values(this.records)
+  }
+
+  getMoids = async (): Promise<MoidInterface[]> => {
+    return Object.values(this.records).map(mo => mo.toMoid())
   }
 
   saveMos = async (givenMos: M[]): Promise<M[]> => {

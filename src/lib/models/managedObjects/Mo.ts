@@ -61,7 +61,7 @@ export class Mo implements MoInterface {
     }
     return data
   }
-  toMoid = (): MoidInterface => this as MoidInterface
+  toMoid = (): MoidInterface => new Moid(this.moMeta, this.id, this.getDisplayName()) // this as MoidInterface
   toMo = () => new Promise<MoInterface>((r) => r(this))
 
   hydrate = (partial: Partial<Mo>)=> {
