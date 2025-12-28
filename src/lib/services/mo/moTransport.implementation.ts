@@ -516,7 +516,7 @@ export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, pa
       case 'moArray': {
         if (!Array.isArray(v)) return handleError('not array')
         const mofDef = fDef // as MoFieldDefinition
-        return v.map(async(item) => objectToMoidSync(item, {_moname: mofDef['moName']}))
+        return v.map((item) => objectToMoidSync(item, {_moname: mofDef['moName']}))
       }
       case 'map': {
         if (typeof v === 'object') {
