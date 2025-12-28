@@ -16,7 +16,7 @@
   import Init from '../../common/Init.svelte'
   
   let {mos, moMeta, title = null, topButtons = false, height = '100px'}: {
-    mos: Mo[],
+    mos: Promise<Mo>[]
     moMeta: MoMetaInterface,
     title?: string | null,
     topButtons?: boolean,
@@ -33,10 +33,11 @@
   let dtitle = $derived(stitle || sname)
   const gridId = 'grid'
   let gridApi: GridApi
-  let listModel = $derived(new MoListModel(dmoMeta, mos))
+  let smos= $state([] as Mo[])
   let displayName = $derived(smoMeta?.moDef.getDisplayName())
   const createMo = () => goto(`/mo/${smoMeta.name}/create`)
 
+  let listModel = $derived(new MoListModel(dmoMeta, smos))
   // let names: string[] = $state([])
   let eGridDiv
   onMount(() => {
@@ -119,14 +120,20 @@
   let gridOptions: GridOptions = $derived(buildGridOptions(listModel))
 
   let etitle = title
+  let emos: Mo[] = []
  $effect(() => {
-    if (gridApi && mos) {
+   Promise.all(mos)
+     .then(resolvedMos => {
+       smos= resolvedMos
+       emos = resolvedMos
+    if (gridApi && emos) {
       // createGrid(eGridDiv, gridOptions)
-      const elistModel = $derived(new MoListModel(moMeta, mos))
+      const elistModel = $derived(new MoListModel(moMeta, emos))
       const gridOptions = buildGridOptions((() => elistModel)())
       gridApi.setGridOption('columnDefs', gridOptions.columnDefs)
       gridApi.setGridOption('rowData', gridOptions.rowData);
-    }
+    }})
+   
     etitle = title
     stitle = title || sname
     displayName = moMeta?.moDef.getDisplayName()

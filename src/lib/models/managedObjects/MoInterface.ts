@@ -13,7 +13,8 @@ export interface MoInterface extends MoidInterface {
   toObj: () => any
   toMo: () => Promise<MoInterface>
 
-  hydrate(partial: Partial<MoInterface>): MoInterface
+  hydrate(partial: Partial<MoInterface>): Promise<MoInterface>
+  hydrateUntrusted(partial: Partial<MoInterface>): Promise<MoInterface>
 
   toDocument: () => {}
 }

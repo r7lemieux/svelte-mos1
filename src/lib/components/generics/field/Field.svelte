@@ -51,7 +51,6 @@
   })
 </script>
 <Init/>
-<!--{fd.type}-->
 {#if fd.type === 'array'}
   <ArrayField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else if fd.type === 'moArray'}

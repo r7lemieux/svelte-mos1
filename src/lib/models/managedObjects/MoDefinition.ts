@@ -197,8 +197,8 @@ export class MoDefinition implements MoDefinitionInterface {
     return new moClass() as MoInterface
   }
 
-  objToMoid = (obj: any, params?: objectToMoParameters): MoidInterface => objectToMoid(obj, params)
-  objToMo = (obj: any, params?: objectToMoParameters): MoInterface => objectToMo(obj, params)
+  objToMoid = async (obj: any, params?: objectToMoParameters): Promise<MoidInterface> => await objectToMoid(obj, params)
+  objToMo = async (obj: any, params?: objectToMoParameters): Promise<MoInterface> => await objectToMo(obj, params)
 
   documentToMo = (doc: any): MoInterface => {
     const mo = this.newMo()

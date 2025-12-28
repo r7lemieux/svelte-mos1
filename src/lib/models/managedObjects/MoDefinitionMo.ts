@@ -51,8 +51,8 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   deriveMoItemDefFromMoArrayDef: (moArryDef: MoFieldDefinition) => MoFieldDefinition = (moArrayDef) => new MoFieldDefinition('')
   extractFieldnamesFromMo: () => string[] = () => []
   newMo: (moMeta?: MoMetaInterface) => MoInterface = () => new Mo()
-  objToMoid: (obj: object, params?: objectToMoParameters) => MoidInterface = (o: object)=> new Mo()
-  objToMo: (obj: object, params?: objectToMoParameters) => MoInterface = (o: object)=> new Mo()
+  objToMoid: (obj: object, params?: objectToMoParameters) => Promise<MoidInterface> = (o: object)=> Promise.resolve(new Mo())
+  objToMo: (obj: object, params?: objectToMoParameters) => Promise<MoInterface> = (o: object)=> Promise.resolve(new Mo())
   moToObj: (mo: MoidInterface) => object = (mo: MoidInterface) => { return {}}
   moToDocument: (mo: MoInterface) => any = (mo: MoInterface) => {}
   documentToMo: (doc: any) => MoInterface = () => new Mo()

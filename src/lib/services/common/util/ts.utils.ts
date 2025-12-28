@@ -24,3 +24,11 @@ export const copyOwnProperties = (source, target, topTarget=target) => {
   bindFunctions(topTarget, target)
 }
 
+export const isSubclass = (subClass: any, superClass: any): boolean => {
+  // Check if SuperClass.prototype is present in the prototype chain of SubClass.prototype
+  if (superClass == subClass) return true
+  return superClass.prototype.isPrototypeOf(subClass.prototype);
+}
+
+
+

@@ -1,14 +1,12 @@
-import { FieldDefinition } from './FieldDefinition.js'
-import type { MoMetaInterface } from '../managedObjects/MoMetaInterface.js'
-import { getDefaultMoMeta } from '../managedObjects/moMetaInstances.js'
-import {CommonFieldDefs} from '$lib/models/fields/CommonFieldDefinition.js'
-import {DeletePermission, type DeletePermissionEnum} from '$lib/models/managedObjects/MoDefinitionInterface.js'
+import {FieldDefinition} from './FieldDefinition.js'
+import {type DeletePermissionEnum} from '$lib/models/managedObjects/MoDefinitionInterface.js'
 
 export class MoFieldDefinition extends FieldDefinition<any> {
   moName: string
   type = 'mo'
   deleteCascade?: DeleteCascadeEnum
-  deleteLastPermission?: DeletePermissionEnum
+  min: number = 1
+  max: number = 1
   compositePart: boolean = false
   twoWays: boolean = false
 
@@ -45,8 +43,11 @@ export interface moFieldParameters {
   deleteCascade?: DeleteCascadeEnum
   twoWays?: boolean
 }
+
 export interface moArrayFieldParameters {
   moname?: string
-  deleteLastPermission?: DeletePermissionEnum
+  min?: number
+  max?: number
+  deletePermission: DeletePermissionEnum
   twoWays?: boolean
 }

@@ -6,50 +6,52 @@ import {ErrorName} from '../common/message/errorName.js'
 import {Rezult} from '../common/message/rezult.js'
 import type {FieldDefinitionInterface} from '../../models/fields/FieldDefinition.interface.js'
 import {type objectToMoParameters, transp} from './moTransport.js'
+import type {MoFieldDefinition} from '../../models/fields/MoFieldDefinition.js'
+import {isSubclass} from '../common/util/ts.utils.js'
 
 export const moidToObj = (mo: MoidInterface) => {
-    const obj: any = {}
-    obj._moname = mo.moMeta.name
-    obj.id = mo.id
-    obj.displayName = mo.displayName
-    obj._moid = true
-    return obj
+  const obj: any = {}
+  obj._moname = mo.moMeta.name
+  obj.id = mo.id
+  obj.displayName = mo.displayName
+  obj._moid = true
+  return obj
 }
 
 export const moToObject = (mo: MoInterface) => {
-    const obj: any = {}
-    obj._moname = mo.moMeta.name
-    obj.id = mo.id
-    obj.displayName = mo.displayName
-    for (const fname of Array.from(mo.moMeta.moDef.fieldDefs.keys())) {
-        //const fieldDef = this.moMeta.moDef.fieldDefs.get(fname)
-        const value = mo[fname]
-        obj[fname] = valueToObject(value)
-    }
-    return obj
+  const obj: any = {}
+  obj._moname = mo.moMeta.name
+  obj.id = mo.id
+  obj.displayName = mo.displayName
+  for (const fname of Array.from(mo.moMeta.moDef.fieldDefs.keys())) {
+    //const fieldDef = this.moMeta.moDef.fieldDefs.get(fname)
+    const value = mo[fname]
+    obj[fname] = valueToObject(value)
+  }
+  return obj
 }
 
 export const valueToObject = (value: any): any => {
-    if (value !== undefined && value !== null) {
-        if (value.moMeta && value.id) {
-            return moidToObj(value)
-        } else if (value instanceof Array) {
-            return value.map(v => valueToObject(v))
-        } else if (value instanceof Object) {
-            const obj = {}
-            for (let [k, v] of Object.entries(value)) {
-                obj[k] = valueToObject(v)
-            }
-            return obj
-        } else {
-            return value
-        }
+  if (value !== undefined && value !== null) {
+    if (value.moMeta && value.id) {
+      return moidToObj(value)
+    } else if (value instanceof Array) {
+      return value.map(v => valueToObject(v))
+    } else if (value instanceof Object) {
+      const obj = {}
+      for (let [k, v] of Object.entries(value)) {
+        obj[k] = valueToObject(v)
+      }
+      return obj
+    } else {
+      return value
     }
+  }
 }
 
-export const objectToMo = (obj: any, params?: objectToMoParameters): MoInterface => {
-    if (obj._moid) throw new Rezult(ErrorName.field_unsupported)
-    return objectToMoid(obj, params) as MoInterface
+export const objectToMo = async (obj: any, params?: objectToMoParameters): Promise<MoInterface> => {
+  if (obj._moid) throw new Rezult(ErrorName.field_unsupported)
+  return await objectToMoid(obj, params) as MoInterface
 }
 
 // delete
@@ -134,128 +136,164 @@ export const objectToMo = (obj: any, params?: objectToMoParameters): MoInterface
 //     }
 // }
 
-export const objectToMoid = (obj: any, params?: objectToMoParameters): MoidInterface => {
-    const moname = params?._moname || params?.mo?.moMeta.name || obj._moname
-    if (params?._moname && params?.mo && params?._moname !== params.mo.moMeta.name) throw new Rezult(ErrorName.mo_mismatch)
-    if (!moname) {
-        throw new Rezult(ErrorName.missing_field, {fieldname: '_moname', method: 'objectToMoid'})
-    }
-    const moMeta = params?.mo?.moMeta || getMoMeta(moname)
-    if (!moMeta) {
-        throw new Rezult(ErrorName.moMeta_notFound, {moname: obj._moname, method: 'objectToMoid'})
-    }
+export const idToMoid = async (id: string, moname: string): Promise<MoidInterface> => {
+  if (!moname) {
+    throw new Rezult(ErrorName.missing_field, {fieldname: '_moname', method: 'idToMoid'})
+  }
+  if (!id) {
+    throw new Rezult(ErrorName.missing_id, {fieldname: '_moname', method: 'idToMoid'})
+  }
+  const moMeta = getMoMeta(moname)
+  if (!moMeta) {
+    throw new Rezult(ErrorName.moMeta_notFound, {moname, method: 'idToMoid'})
+  }
+  const moid = await moMeta.dataSource.getMoid(id)
+  console.log(`==>moTransport.implementation.ts:151 moid`, moid)
+  return moid
+}
 
-    if (obj._moname) delete obj._moname
-    const id = params?.mo?.id || obj.id
-    if (obj.id && params?.mo?.id && obj.id !== params?.mo?.id) throw new Rezult(ErrorName.id_mismatch)
-    if (obj._moid) {
-        return new Moid(moMeta, id, obj.displayName)
+export const objectToMoid = async (obj: any, params?: objectToMoParameters): Promise<MoidInterface> => {
+  const moname = params?._moname || params?.mo?.moMeta.name || obj._moname
+  if (params?._moname && params?.mo && params?._moname !== params.mo.moMeta.name) throw new Rezult(ErrorName.mo_mismatch)
+  if (!moname) {
+    throw new Rezult(ErrorName.missing_field, {fieldname: '_moname', method: 'objectToMoid'})
+  }
+  const moMeta = params?.mo?.moMeta || getMoMeta(moname)
+  if (!moMeta) {
+    throw new Rezult(ErrorName.moMeta_notFound, {moname: obj._moname, method: 'objectToMoid'})
+  }
+
+  if (obj._moname) delete obj._moname
+  const id = params?.mo?.id || obj.id
+  if (obj.id && params?.mo?.id && obj.id !== params?.mo?.id) throw new Rezult(ErrorName.id_mismatch)
+  if (obj._moid) {
+     return new Moid(moMeta, id, obj.displayName)
+  } else {
+    const moDef = moMeta.moDef
+    const mo = params?.mo || moDef.newMo()
+    mo.id = id
+    mo.displayName = obj.displayName
+    const fieldDefs = Array.from(moDef.fieldDefs.values()).filter(fd => fd.name !== 'id')
+    for (let fDef of fieldDefs) {
+      const fname = fDef.name
+      if (!params?.mo || Object.hasOwn(obj, fname)) {
+        const value = obj[fname]
+        mo[fname] = fDef.valueToField ? fDef.valueToField(value, {trusted: params?.trusted}) : await valueToField(fDef, value, params)
+      }
+    }
+    return mo
+  }
+}
+
+export const valueToField = async (fDef: FieldDefinitionInterface<any>, v: any, params?: objectToMoParameters): Promise<any> => {
+  const handleError = (message: string) => {
+    throw new Rezult(ErrorName.field_invalid, {
+      fieldName: fDef.name,
+      fieldDefType: fDef.type,
+      valueType: typeof v,
+      value: v?.toString(),
+      message
+    }, 'FieldDefinition.valueToField')
+  }
+
+  if (v === undefined) {
+    if (fDef.canBeUndefined) {
+      return undefined
     } else {
-        const moDef = moMeta.moDef
-        const mo = params?.mo || moDef.newMo()
-        mo.id = id
-        mo.displayName = obj.displayName
-        const fieldDefs = Array.from(moDef.fieldDefs.values()).filter(fd => fd.name !== 'id')
-        for (let fDef of fieldDefs) {
-            const fname = fDef.name
-            if (!params?.mo || Object.hasOwn(obj, fname)) {
-                const value = obj[fname]
-                mo[fname] = fDef.valueToField ? fDef.valueToField(value) : valueToField(fDef, value)
-            }
-        }
-        return mo
+      handleError('undefined')
     }
+  } else if (v === null) {
+    if (fDef.canBeNull) {
+      return null
+    } else {
+      handleError('null')
+    }
+  }
+  try {
+    switch (fDef.type) {
+      case 'string':
+        return v.toString()
+      case 'boolean':
+        if (typeof v !== 'boolean') return handleError('not boolean')
+        return v
+      case 'int':
+        if (typeof v !== 'number') return handleError('not number')
+        if (!Number.isInteger(v)) return handleError('not integer')
+        return v
+      case 'float':
+        if (typeof v !== 'number') return handleError('not number')
+        return v
+      case 'date':
+        if (v ! instanceof Date) return handleError('not date')
+        return v
+      case 'mo':
+        const mofDef= fDef as MoFieldDefinition
+        let moFieldMoname: string = mofDef['moName']
+        if (typeof v !== 'object') {
+          if (typeof v === 'string') {  // for edit or creation
+            return await idToMoid(v, mofDef.moName)
+          } else {
+            return handleError('not object, not string');
+          }
+        }
+        if (v._moname) {
+          if (!isMoSubclass(v._moname, mofDef.moName))
+          return handleError('not subclass');
+        }
+        moFieldMoname = v._moname || moFieldMoname
+        if (!moFieldMoname) return handleError('mo without moname')
+        return await objectToMoid(v, {_moname: mofDef['moName']})
+      case 'object':
+        if (typeof v !== 'object') return handleError('not object')
+        return v
+      case 'array':
+        if (!Array.isArray(v)) return handleError('not array')
+        if (fDef.itemValueFieldDef) {
+          return v.map(async(item) => {
+            if (fDef.itemValueFieldDef?.valueToField) {
+              return fDef.itemValueFieldDef.valueToField(item, {trusted: params?.trusted})
+            } else {
+              return await valueToField(fDef, item, params)
+            }
+          })
+        } else {
+          return v
+        }
+      case 'moArray': {
+        if (!Array.isArray(v)) return handleError('not array')
+        const mofDef = fDef // as MoFieldDefinition
+        return Promise.all(v.map(async(item) => await objectToMoid(item, {_moname: mofDef['moName']})))
+      }
+      case 'map': {
+        if (typeof v === 'object') {
+          if (fDef.itemValueFieldDef) {
+            const newMap = new Map()
+            for (let [k, itemVal] of Object.entries(v)) {
+              const fieldValue = await valueToField(fDef.itemValueFieldDef, itemVal, params)
+              newMap.set(k, fieldValue)
+            }
+            return newMap
+          } else {
+            return new Map(Object.entries(v))
+          }
+        }
+      }
+        break
+      default:
+        return v
+    }
+  } catch (ex: any) {
+    console.trace(ex.message)
+    handleError(ex.message)
+  }
 }
 
-export const valueToField = (fDef: FieldDefinitionInterface<any>, v: any): any | null => {
-    const handleError = (message: string) => {
-        throw new Rezult(ErrorName.field_invalid, {
-            fieldName: fDef.name,
-            fieldDefType: fDef.type,
-            valueType: typeof v,
-            value: v?.toString(),
-            message
-        }, 'FieldDefinition.valueToField')
-    }
-
-    if (v === undefined) {
-        if (fDef.canBeUndefined) {
-            return undefined
-        } else {
-            handleError('undefined')
-        }
-    } else if (v === null) {
-        if (fDef.canBeNull) {
-            return null
-        } else {
-            handleError('null')
-        }
-    }
-    try {
-        switch (fDef.type) {
-            case 'string':
-                return v.toString()
-            case 'boolean':
-                if (typeof v !== 'boolean') return handleError('not boolean')
-                return v
-            case 'int':
-                if (typeof v !== 'number') return handleError('not number')
-                if (!Number.isInteger(v)) return handleError('not integer')
-                return v
-            case 'float':
-                if (typeof v !== 'number') return handleError('not number')
-                return v
-            case 'date':
-                if (v ! instanceof Date) return handleError('not date')
-                return v
-            case 'mo':
-                if (typeof v !== 'object') return handleError('not object')
-                const moFieldMoname: string = fDef.moname || v._moname
-                if (!moFieldMoname) return handleError('mo without moname')
-                return objectToMoid(v, {_moname: fDef.moname})
-            case 'object':
-                if (typeof v !== 'object') return handleError('not object')
-                return v
-            case 'array':
-                if (!Array.isArray(v)) return handleError('not array')
-                if (fDef.itemValueFieldDef) {
-                    return v.map(item => {
-                        if (fDef.itemValueFieldDef?.valueToField) {
-                            return fDef.itemValueFieldDef.valueToField(item)
-                        } else {
-                            return valueToField(fDef, item)
-                        }
-                    })
-                } else {
-                    return v
-                }
-            case 'moArray': {
-                if (!Array.isArray(v)) return handleError('not array')
-                return v.map(item => objectToMoid(item, {_moname: fDef.moname}))
-            }
-            case 'map': {
-                if (typeof v === 'object') {
-                    if (fDef.itemValueFieldDef) {
-                        const newMap = new Map()
-                        for (let [k, itemVal] of Object.entries(v)) {
-                            const fieldValue = valueToField(fDef.itemValueFieldDef, itemVal)
-                            newMap.set(k, fieldValue)
-                        }
-                        return newMap
-                    } else {
-                        return new Map(Object.entries(v))
-                    }
-                }
-            }
-            break
-            default:
-                return v
-        }
-    } catch (ex: any) {
-        handleError(ex.message)
-    }
+export const isMoSubclass = (childMoname: string, parentMoname: string): boolean => {
+  if (childMoname === parentMoname) return true
+  const parentClass = getMoMeta(parentMoname).moDef.moClass
+  const childClass = getMoMeta(childMoname).moDef.moClass
+  return isSubclass(parentClass, childClass)
 }
-
 // export const valueOrStringToField = (fDef: FieldDefinitionInterface<any>, v: any): any | null => {
 //     const handleError = (message: string) => {
 //         throw new Rezult(ErrorName.field_invalid, {
@@ -372,12 +410,145 @@ export const valueToField = (fDef: FieldDefinitionInterface<any>, v: any): any |
 //         handleError(ex.message)
 //     }
 // }
+export const objectToMoidSync = (obj: any, params?: objectToMoParameters): MoidInterface => {
+  const moname = params?._moname || params?.mo?.moMeta.name || obj._moname
+  if (params?._moname && params?.mo && params?._moname !== params.mo.moMeta.name) throw new Rezult(ErrorName.mo_mismatch)
+  if (!moname) {
+    throw new Rezult(ErrorName.missing_field, {fieldname: '_moname', method: 'objectToMoid'})
+  }
+  const moMeta = params?.mo?.moMeta || getMoMeta(moname)
+  if (!moMeta) {
+    throw new Rezult(ErrorName.moMeta_notFound, {moname: obj._moname, method: 'objectToMoid'})
+  }
+
+  if (obj._moname) delete obj._moname
+  const id = params?.mo?.id || obj.id
+  if (obj.id && params?.mo?.id && obj.id !== params?.mo?.id) throw new Rezult(ErrorName.id_mismatch)
+  if (obj._moid) {
+    return new Moid(moMeta, id, obj.displayName)
+  } else {
+    const moDef = moMeta.moDef
+    const mo = params?.mo || moDef.newMo()
+    mo.id = id
+    mo.displayName = obj.displayName
+    const fieldDefs = Array.from(moDef.fieldDefs.values()).filter(fd => fd.name !== 'id')
+    for (let fDef of fieldDefs) {
+      const fname = fDef.name
+      if (!params?.mo || Object.hasOwn(obj, fname)) {
+        const value = obj[fname]
+        mo[fname] = fDef.valueToField ? fDef.valueToField(value, {trusted: params?.trusted}) : valueToFieldSync(fDef, value, params)
+      }
+    }
+    return mo
+  }
+}
+
+export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, params?: objectToMoParameters): any => {
+  const handleError = (message: string) => {
+    throw new Rezult(ErrorName.field_invalid, {
+      fieldName: fDef.name,
+      fieldDefType: fDef.type,
+      valueType: typeof v,
+      value: v?.toString(),
+      message
+    }, 'FieldDefinition.valueToFieldSync')
+  }
+
+  if (v === undefined) {
+    if (fDef.canBeUndefined) {
+      return undefined
+    } else {
+      handleError('undefined')
+    }
+  } else if (v === null) {
+    if (fDef.canBeNull) {
+      return null
+    } else {
+      handleError('null')
+    }
+  }
+  try {
+    switch (fDef.type) {
+      case 'string':
+        return v.toString()
+      case 'boolean':
+        if (typeof v !== 'boolean') return handleError('not boolean')
+        return v
+      case 'int':
+        if (typeof v !== 'number') return handleError('not number')
+        if (!Number.isInteger(v)) return handleError('not integer')
+        return v
+      case 'float':
+        if (typeof v !== 'number') return handleError('not number')
+        return v
+      case 'date':
+        if (v ! instanceof Date) return handleError('not date')
+        return v
+      case 'mo':
+        const mofDef= fDef as MoFieldDefinition
+        let moFieldMoname: string = mofDef['moName']
+        if (typeof v !== 'object') {
+            return handleError('not object, not string');
+          }
+        if (v._moname) {
+          if (!isMoSubclass(v._moname, mofDef.moName))
+            return handleError('not subclass');
+        }
+        moFieldMoname = v._moname || moFieldMoname
+        if (!moFieldMoname) return handleError('mo without moname')
+        return objectToMoid(v, {_moname: mofDef['moName']})
+      case 'object':
+        if (typeof v !== 'object') return handleError('not object')
+        return v
+      case 'array':
+        if (!Array.isArray(v)) return handleError('not array')
+        if (fDef.itemValueFieldDef) {
+          return v.map(item=> {
+            if (fDef.itemValueFieldDef?.valueToField) {
+              return fDef.itemValueFieldDef.valueToField(item, {trusted: params?.trusted})
+            } else {
+              return valueToFieldSync(fDef, item, params)
+            }
+          })
+        } else {
+          return v
+        }
+      case 'moArray': {
+        if (!Array.isArray(v)) return handleError('not array')
+        const mofDef = fDef // as MoFieldDefinition
+        return v.map(async(item) => objectToMoidSync(item, {_moname: mofDef['moName']}))
+      }
+      case 'map': {
+        if (typeof v === 'object') {
+          if (fDef.itemValueFieldDef) {
+            const newMap = new Map()
+            for (let [k, itemVal] of Object.entries(v)) {
+              const fieldValue = valueToFieldSync(fDef.itemValueFieldDef, itemVal, params)
+              newMap.set(k, fieldValue)
+            }
+            return newMap
+          } else {
+            return new Map(Object.entries(v))
+          }
+        }
+      }
+        break
+      default:
+        return v
+    }
+  } catch (ex: any) {
+    console.trace(ex.message)
+    handleError(ex.message)
+  }
+}
 
 export const initMoTransport = () => {
-    transp.moidToObj = moidToObj
-    transp.moToObject = moToObject
-    transp.valueToObject = valueToObject
-    transp.objectToMo = objectToMo
-    transp.objectToMoid = objectToMoid
-    transp.valueToField = valueToField
+  transp.moidToObj = moidToObj
+  transp.moToObject = moToObject
+  transp.valueToObject = valueToObject
+  transp.objectToMo = objectToMo
+  transp.objectToMoid = objectToMoid
+  transp.valueToField = valueToField
+  transp.objectToMoidSync = objectToMoidSync
+  transp.valueToFieldSync = valueToFieldSync
 }

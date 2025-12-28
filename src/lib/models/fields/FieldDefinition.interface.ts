@@ -1,6 +1,7 @@
 import type {Rezult} from '../../services/common/message/rezult.js'
 import type {ColDef} from 'ag-grid-community'
-import type {InputTypes} from  '../../services/common/util/dom.utils.js'
+import type {InputTypes} from '../../services/common/util/dom.utils.js'
+import type {hydrateFieldParameters} from './FieldDefinition.js'
 
 
 // Singleton
@@ -15,14 +16,14 @@ export interface FieldDefinitionInterface<T> {
   regexFlag?: string
   minLen: number
   maxLen: number
-  parse: (string) => T | null
-  stringToValue: (string) => T | null
-  valueToString: (any) => string
-  valueToField?: (any) => any
-  documentToValue: (any) => any
-  valueToDocument: (any) => any
-  validateValue: (T) => Rezult
-  validateString: (string) => Rezult
+  parse: (v:string) => T | null
+  stringToValue: (s:string) => T | null
+  valueToString: (v:any) => string
+  valueToField?: (v:any, params?:hydrateFieldParameters) => any
+  documentToValue: (d:any) => any
+  valueToDocument: (v:any) => any
+  validateValue: (v:T) => Rezult
+  validateString: (s:string) => Rezult
   canBeNull: boolean
   canBeUndefined: boolean
   // cellStyle?: CellStyle | CellStyleFunc

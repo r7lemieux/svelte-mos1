@@ -27,7 +27,6 @@ export class FieldDefinitionMo<Type> extends Mo {
     super({} as MoMetaInterface)
     // super(fieldDefinitionMoMeta)
     this.fieldDef = fieldDefinition
-    this.hydrate({})
   }
 
   hydrate1() {

@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type {MoViewMode} from '../../../constants/ui.js'
+  import type {MoViewMode, MoViewModeEnum} from '../../../constants/ui.js'
   import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import {onMount} from 'svelte'
   import './field.css'
+  import type {FieldDefinitionInterface} from '../../../models/fields/FieldDefinition.interface.js'
   
   let {
     fieldDef,
@@ -10,6 +11,12 @@
     level = 1,
     viewMode = 'view',
     onChange
+  }: {
+    fieldDef: FieldDefinitionInterface<any>,
+    value: any,
+    level: number,
+    viewMode: MoViewModeEnum,
+    onChange: (fieldId: string, any) => void
   } = $props()
   
   // export let fieldDef: FieldDefinition<any>
@@ -18,10 +25,10 @@
   // export let viewMode: MoViewModeEnum
   
   let disabled = $derived(viewMode === 'view')
-  const fd = fieldDef
-  const fname = fieldDef.name
-  
-  let changed = event => {
+  const fd = $state(fieldDef)
+  const fname = $derived(fieldDef.name)
+  const labelText = $derived(fieldDef.getDisplayName())
+  let onchange = event => {
     const fieldId = event.srcElement.id
     const value = event.srcElement.value
     onChange(fieldId, value)
@@ -31,14 +38,15 @@
     const ele = document.querySelector('.field') as HTMLElement
     height = ele!.offsetHeight
   })
+ 
 </script>
 <div class="field SimpleField" data-fdtype={fieldDef.type} style="margin-left:{level*12}px;">
-  <label for={fname}>{fd.getDisplayName()} </label>
+  <label for={fname}>{labelText}</label>
+<!--  <label for={fname}>{fd.getDisplayName()}</label>-->
   <span class=" tree-line"></span>
   <span class="value simple-value">
-    <input type={fd.inputType} name={fd.name} id="{fd.name}" value={fd.valueToString(value) || ''} onchange={changed}
-           {disabled}/>
-    </span>
+      <input type={fd.inputType} name={fname} id={fname} value={fd.valueToString(value) || ''} {onchange} {disabled} />
+  </span>
 </div>
 {#if false}
   <div class="field tree-line open">

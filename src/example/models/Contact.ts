@@ -41,11 +41,14 @@ export class Contact extends Mo {
     super(Contact.moMeta)
   }
 
-  hydrate = (props: Partial<Contact>) => {
+  hydrate = async (props: Partial<Contact>) => {
     Object.assign(this, props)
-    return this
+    return Promise.resolve(this)
   }
-
+  hydrateUntrusted = async (props: Partial<Contact>) => {
+    Object.assign(this, props)
+    return Promise.resolve(this)
+  }
   getDisplayName = () => `${this.firstName} ${this.lastName}`
 
 }

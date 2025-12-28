@@ -93,7 +93,7 @@ export class MoListModel {
     return model
   }
 
-  buildFromCsv(sheetStr) {
+  async buildFromCsv(sheetStr) {
     const lines = sheetStr.split('\r\n')
     const titleStr = lines[0]
     this.buildFieldDefsFromTitleLine(titleStr)
@@ -121,7 +121,7 @@ export class MoListModel {
           }
         }
       }
-      this.mos.push(this.moMeta.objToMo(row))
+      this.mos.push(await this.moMeta.objToMo(row))
     }
   }
   buildFieldDefsFromTitleLine(titleStr) {
@@ -146,7 +146,7 @@ export class MoListModel {
     })
     return fieldDefs
   }
-  fillFromCsv(sheetStr, options?: FillFromCsvOptions) {
+  async fillFromCsv(sheetStr, options?: FillFromCsvOptions) {
     const lines = sheetStr.split('\r\n')
     const titleStr = lines[0]
     const fieldNames = titleStr.split(',')
@@ -175,7 +175,7 @@ export class MoListModel {
           }
         }
       }
-      this.mos.push(this.moMeta.objToMo(row))
+      this.mos.push(await this.moMeta.objToMo(row))
     }
   }
 }

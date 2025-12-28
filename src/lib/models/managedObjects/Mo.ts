@@ -64,12 +64,16 @@ export class Mo implements MoInterface {
   toMoid = (): MoidInterface => new Moid(this.moMeta, this.id, this.getDisplayName()) // this as MoidInterface
   toMo = () => new Promise<MoInterface>((r) => r(this))
 
-  hydrate = (partial: Partial<Mo>)=> {
-    this.moMeta.moDef.objToMo(partial, {mo:this})
+  hydrate = async (partial: Partial<Mo>)=> {
+    this.moMeta.moDef.objToMo(partial, {mo:this, trusted: true})
     this.init()
     return this
   }
-
+  hydrateUntrusted = async (partial: Partial<Mo>)=> {
+    this.moMeta.moDef.objToMo(partial, {mo:this, trusted: false})
+    this.init()
+    return this
+  }
   isSameAs = (mo: any) => {
     if (!mo) return false
     if (!mo.moMeta) return false

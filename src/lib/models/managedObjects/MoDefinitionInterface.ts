@@ -52,8 +52,8 @@ export interface MoDefinitionInterface {
 	 *  --
 	 */
 	newMo: (moMeta?: MoMetaInterface) => MoInterface
-	objToMoid: (obj: object, params?: objectToMoParameters) => MoidInterface
-	objToMo: (obj: object,  params?: objectToMoParameters) => MoInterface
+	objToMoid: (obj: object, params?: objectToMoParameters) => Promise<MoidInterface>
+	objToMo: (obj: object,  params?: objectToMoParameters) => Promise<MoInterface>
 	moToObj: (mo: MoidInterface) => object
 	moToDocument: (mo: MoInterface) => any
 	documentToMo: (doc: any) => MoInterface

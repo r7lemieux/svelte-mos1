@@ -57,12 +57,12 @@
   }
 
   const size = value?.length
-
+  let showDetailtoggle = false
   let openPaths = getContext('openPaths') as string[]
-  let showDetails = $derived(!!openPaths[uiPath.join('_')])
+  let showDetails = $derived(showDetailtoggle || !!openPaths[uiPath.join('_')])
   const toggle = () => {
-    showDetails = !showDetails
-    openPaths[uiPath.join('_')] = showDetails
+    showDetailtoggle = !showDetailtoggle
+    openPaths[uiPath.join('_')] = showDetailtoggle
   }
  
   const onRemove = (fieldMo: FieldMo) => {
@@ -70,7 +70,7 @@
     values = values.filter(mo => !mo.isSameAs(fieldMo.mo) )
     fieldsMoToRemove = [...fieldsMoToRemove, fieldMo]
     // console.log(`==>MoArrayField.svelte:74 fieldsMoToRemove`, fieldsMoToRemove.map(fm => `${fm.fieldname}.${fm.mo.displayName}`))
-    //return onMoRemove(fieldMo)
+    return onMoRemove(fieldMo)
   }
 
 </script>
@@ -85,10 +85,12 @@
       <span class="size">{size}</span>
   </span>
 </div>
+
 {#if showDetails}
   {#each (mos) as item (item.id)}
     <MoField {fieldname} fieldDef={moItemFieldDef} value={item} {viewMode} level={level + 1} onChange={changed} parentUiPath={uiPath} {inArray} {onRemove} />
   {/each}
 {/if}
+{mos.map(m=>m.displayName)}
 <style>
 </style>

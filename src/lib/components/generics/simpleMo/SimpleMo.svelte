@@ -85,14 +85,14 @@
     goto (`/mo/${moMeta.name}/${mo.id}/edit${buildQueryParams()}`)
     // history.replaceState(history.state, '', `/mo/${moMeta.name}/${mo.id}/edit`);
   }
-  const save = () => {
+  const save = async () => {
     // const form = document.getElementById('myForm');
     const formData = new FormData(formElm)
     // const payload = Object.fromEntries(formData.entries())
     // const uri = formElm.baseURI.split('/').slice(0, -1).join('/') + '/save'
     const partialMo = {}
     formData.forEach((v, k) => partialMo[k] = v)
-    mo.hydrate(partialMo)
+    await mo.hydrate(partialMo)
     const body = JSON.stringify(mo.toObj())
     fetch(formElm.action, {
       method: 'PATCH',
@@ -102,9 +102,11 @@
       .then(responseData => {
         const newMo = moMeta.moDef.newMo()
         newMo.hydrate(responseData)
+        return newMo
+      })
+      .then(newMo => {
         mo = newMo
         goto(`/mo/${moMeta.name}/${newMo.id}`)
-        
       })
       .catch(err => {
         console.error('Error:', err)

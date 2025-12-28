@@ -5,7 +5,7 @@ import {objectReplacer, objectToString, toDisplayString} from '../../services/co
 import type {ColDef} from 'ag-grid-community'
 import {copyOwnProperties} from '../../services/common/util/ts.utils.js'
 import type {InputTypes} from '../../services/common/util/dom.utils.js'
-import {transp} from '../../services/mo/moTransport.js'
+import {type objectToMoParameters, transp} from '../../services/mo/moTransport.js'
 // import {objectToMoid, valueToField} from '$lib/services/mo/moTransport.implementation.js'
 // import type { ValueFormatterFunc } from 'ag-grid-community/dist/lib/entities/colDef.js'
 // Singleton
@@ -15,7 +15,6 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
   type = 'string'
   description?: string
   displayName?: string
-  moname?: string
   example?: string
   regex?: RegExp
   regexFlag?: string
@@ -104,7 +103,7 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
     }
   }
 
-  valueToField?(v: any): any | null
+  valueToField?(v: any, params?:hydrateFieldParameters): any | null
 
   // valueToField(v: any): any | null {
   //   const handleError = (message: string) => {
@@ -357,3 +356,6 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
 // // export const fieldDefinitionMoField = new MoDefinition('FieldDefinition')
 export const from = FieldDefinition.from
 
+export interface hydrateFieldParameters {
+  trusted?: boolean
+}
