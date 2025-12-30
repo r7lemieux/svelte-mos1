@@ -10,7 +10,7 @@
   import {getContext, onMount} from 'svelte'
   import type {MoInterface} from '../../../models/managedObjects/MoInterface.js'
   import {page} from '$app/state'
-  import {objectToMoid} from '../../../services/mo/moTransport.implementation.js'
+  import { objectToMoid, objectToMoidSync } from '../../../services/mo/moTransport.implementation.js'
   
   let {
     moFieldDef,
@@ -56,7 +56,7 @@
     const url = `${page.url.origin}/api/mo/${moFieldDef.moName}`
     fetch(url)
       .then(response => response.json())
-      .then((responseData) => Promise.all(responseData.map(async(obj) => await objectToMoid(obj))))
+      .then((responseData) => Promise.all(responseData.map((obj) => objectToMoidSync(obj))))
       .then(mos => {
         s_options = mos
         loaded = true

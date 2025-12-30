@@ -496,7 +496,7 @@ export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, pa
         }
         moFieldMoname = v._moname || moFieldMoname
         if (!moFieldMoname) return handleError('mo without moname')
-        return objectToMoid(v, {_moname: mofDef['moName']})
+        return objectToMoidSync(v, {_moname: mofDef['moName']})
       case 'object':
         if (typeof v !== 'object') return handleError('not object')
         return v

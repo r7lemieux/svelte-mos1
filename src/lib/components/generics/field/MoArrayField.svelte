@@ -42,7 +42,7 @@
   const inArray = true
   const moItemFieldDef = fieldDef.clone()
   moItemFieldDef.type = 'mo'
-  const uiPath = parentUiPath
+  const uiPath = $state(parentUiPath)
   let mos = $derived(values) //removeMos(values, fieldsMoToRemove))
   const changed = (fieldId: string, item: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -57,12 +57,12 @@
   }
 
   const size = value?.length
-  let showDetailtoggle = false
+  let showDetailToggle = $state(false)
   let openPaths = getContext('openPaths') as string[]
-  let showDetails = $derived(showDetailtoggle || !!openPaths[uiPath.join('_')])
+  let showDetails = $derived(showDetailToggle || !!openPaths[uiPath.join('_')])
   const toggle = () => {
-    showDetailtoggle = !showDetailtoggle
-    openPaths[uiPath.join('_')] = showDetailtoggle
+    showDetailToggle = !showDetailToggle
+    openPaths[uiPath.join('_')] = showDetailToggle
   }
  
   const onRemove = (fieldMo: FieldMo) => {
@@ -87,10 +87,10 @@
 </div>
 
 {#if showDetails}
-  {#each (mos) as item (item.id)}
+  {#each mos as item (item.id)}
     <MoField {fieldname} fieldDef={moItemFieldDef} value={item} {viewMode} level={level + 1} onChange={changed} parentUiPath={uiPath} {inArray} {onRemove} />
   {/each}
 {/if}
-{mos.map(m=>m.displayName)}
+
 <style>
 </style>
