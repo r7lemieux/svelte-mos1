@@ -10,7 +10,7 @@
   import {getContext, onMount} from 'svelte'
   import type {MoInterface} from '../../../models/managedObjects/MoInterface.js'
   import {page} from '$app/state'
-  import { objectToMoid, objectToMoidSync } from '../../../services/mo/moTransport.implementation.js'
+  import {objectToMoidSync} from '../../../services/mo/moTransport.implementation.js'
   
   let {
     moFieldDef,
@@ -35,7 +35,6 @@
   let s_options = $state(mosOptions)
   moItemFieldDef.type = 'mo'
   const uiPath = parentUiPath
-  const listName = fieldname + 'List'
   let sSelected: MoidInterface[] | undefined = $state(mosSelected)
   const size = $derived(sSelected.length)
   
@@ -48,6 +47,8 @@
   }
   let loading = false
   let loaded = false
+  
+  const isSelected = (moid: MoidInterface) => !!mosSelected.find(smo => smo.isSameAs(moid))
   // let inputFormEl: HTMLInputElement
   // let inputUiEl: HTMLInputElement
   const loadOptions = () => {
@@ -98,11 +99,10 @@
      <span class="size">{size}</span>
   {/if}
   
-  
   <!--  <input name={fname} id={fname} bind:this={inputFormEl} />-->
   <select class="value" name={fname} onclick={loadOptions} onmouseover={loadOptions} onfocus={loadOptions}>
     {#each s_options as optionMo (optionMo.id)}
-      <option label={optionMo.displayName} value={optionMo.id} selected="{mosSelected.includes(optionMo)}"></option>
+      <option label={optionMo.displayName} value={optionMo.id} selected="{isSelected(optionMo)}"></option>
     {/each}
   </select>
   

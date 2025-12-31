@@ -56,7 +56,7 @@
   let loading = $state(false)
   let mo: MoInterface | null = $state(null)
   let showFieldDefs = $derived(moMeta.moDef.showFieldnames.map(fn => moMeta.moDef.fieldDefs.get(fn)).filter(fd => !!fd))
-  let mosSelected: MoInterface[] = $state([])
+  let mosSelected: MoInterface[] = $state([value as MoInterface])
   let mosOptions: MoInterface[] = []
   
   // if (viewMode === 'create' || viewMode === 'edit') loadOptions()
@@ -65,8 +65,6 @@
   //   const value = event.srcElement.value
   //   onChange(fieldId, value)
   // }
-  const sMosSelected = $state(mosSelected)
-  const dmosSelected = $derived(sMosSelected)
   async function fetchDetails() {
     loading = true
     const res = await fetch(`/mo/${moName}/${moid?.id}`)
@@ -113,11 +111,11 @@
 <!--        <span>{size}</span>-->
           <span class="detail-icon detail-arrow {showDetails?'open':'closed'}"></span>
       </span>
-    {#if viewMode === 'view'}
+    {#if viewMode === 'view' || viewMode === 'edit'}
       <button type="button" onclick={onLinkClick} class='name linkButton' aria-label={moid?.displayName}
-              disabled={!moid?.id}> {moid?.id} {moid?.displayName}</button>
+              disabled={!moid?.id || viewMode === 'edit'}> {moid?.id} {moid?.displayName}</button>
     {/if}
-    {#if viewMode === 'create'}
+    {#if viewMode === 'create' || viewMode === 'edit'}
       <MoSelect {moFieldDef} {fieldname} {mosSelected} {mosOptions} {level} {viewMode} {parentUiPath}/>
     {/if}
     {#if inArray && viewMode === 'edit'}
@@ -148,4 +146,5 @@
     border: none;
     padding-inline-start: 3px;
   }
+
 </style>

@@ -150,6 +150,9 @@
         background: var(--link-button-color);
         border-radius: var(--link-button-radius);
         border: var(--link-button-border-color) solid 1px;
+      &:disabled {
+        color: var(--field-value-color);
+      }
     }
 }
 
