@@ -2,7 +2,7 @@
   import {sizeLabels} from '$lib/services/common/util/dom.utils.js'
   // import Field from './Field.svelte'
   import './field.css'
-  import type {MoViewModeEnum} from '$lib/constants/ui.js'
+  import {MoViewMode, type MoViewModeEnum} from '$lib/constants/ui.js'
   import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
   import type {FieldDefinitionInterface} from '$lib/models/fields/FieldDefinition.interface.js'
   import type {MoFieldDefinition} from '$lib/models/fields/MoFieldDefinition.js'
@@ -15,14 +15,14 @@
   import {Rezult} from '$lib/services/common/message/rezult.js'
   import {ErrorName} from '$lib/services/common/message/errorName.js'
   import type {FieldMo} from '$lib/models/fields/FieldMo.js'
-  import MoSelect from '$lib/components/generics/field/MoSelect.svelte'
+  import MoSelect from './MoSelectField.svelte'
   
   let {
     fieldDef,
     fieldname,
     value,
     level = 1,
-    viewMode = 'view',
+    viewMode = MoViewMode.view,
     onChange,
     inArray = false,
     parentUiPath = [],
@@ -55,8 +55,9 @@
   let showDetails = $state(false)
   let loading = $state(false)
   let mo: MoInterface | null = $state(null)
+  let d_mo: MoInterface | null = $derived(mo)
   let showFieldDefs = $derived(moMeta.moDef.showFieldnames.map(fn => moMeta.moDef.fieldDefs.get(fn)).filter(fd => !!fd))
-  let mosSelected: MoInterface[] = $state([value as MoInterface])
+  let moSelected: MoInterface = $state(value as MoInterface)
   let mosOptions: MoInterface[] = []
   
   // if (viewMode === 'create' || viewMode === 'edit') loadOptions()
@@ -67,25 +68,33 @@
   // }
   async function fetchDetails() {
     loading = true
-    const res = await fetch(`/mo/${moName}/${moid?.id}`)
+    const url = `/api/mo/${moName}/${moid?.id}`
+    const res = await fetch(url)
     const obj = await res.json()
     mo = await moMeta.objToMo(obj)
     loading = false
   }
   
   async function toggle() {
-    if (viewMode === 'edit') return
     showDetails = !showDetails
-    
     if (showDetails && !mo) {
       await fetchDetails()
     }
     //sizeLabels()
   }
   
+  const onMoChange = async (selectedMo?: MoidInterface) => {
+    if (selectedMo) {
+      console.log(`==>MoField.svelte:86 selectedMos`, selectedMo.id)
+      mo = await selectedMo?.toMo({trusted:false})
+      onChange(fieldname, mo)
+    }
+  }
   const onLinkClick = () => {
     // console.log(`==>MoField.svelte:80 /mo/${moName}/${moid.id}`)
-    goto(`/mo/${moName}/${moid.id}`, {replaceState: true})
+    if (viewMode === MoViewMode.view) {
+      goto(`/mo/${moName}/${moid.id}`, {replaceState: true})
+    }
   }
   
   const onRemoveClick = () => {
@@ -98,9 +107,9 @@
   }
   $effect(() => {
     sizeLabels()
+    console.log(`==>MoField.svelte.:110 moid`, moid)
   })
 </script>
-
 <div class="field moField" data-fdtype={moFieldDef.type} style="margin-left:{level*12}px;">
   <label for={fieldname}>{label}</label>
   <span class="tree-line {showDetails?'open':'closed'}" onclick={toggle} onkeydown={toggle} role="button"
@@ -111,33 +120,31 @@
 <!--        <span>{size}</span>-->
           <span class="detail-icon detail-arrow {showDetails?'open':'closed'}"></span>
       </span>
-    {#if viewMode === 'view' || viewMode === 'edit'}
+    {#if viewMode === MoViewMode.view}
       <button type="button" onclick={onLinkClick} class='name linkButton' aria-label={moid?.displayName}
-              disabled={!moid?.id || viewMode === 'edit'}> {moid?.id} {moid?.displayName}</button>
+              disabled={!moid?.id}> {moid?.id} {moid?.displayName}</button>
     {/if}
-    {#if viewMode === 'create' || viewMode === 'edit'}
-      <MoSelect {moFieldDef} {fieldname} {mosSelected} {mosOptions} {level} {viewMode} {parentUiPath}/>
+    {#if viewMode === MoViewMode.create || viewMode === MoViewMode.edit}
+      <MoSelect {moFieldDef} {fieldname} {moSelected} {mosOptions} {level} {viewMode} {parentUiPath} {onMoChange} />
     {/if}
-    {#if inArray && viewMode === 'edit'}
+    {#if inArray && viewMode === MoViewMode.edit}
       <button type="button" class="delete" onclick="{onRemoveClick}"><Icon src={AiOutlineCloseCircle}></Icon></button>
     {/if}
   </span>
 </div>
 
-{#if viewMode === 'view'}
   {#if showDetails}
     {#if loading}
       <span class="loading" style="margin-left:{level*12}px;">Loading…</span>
-    {:else if mo}
+    {:else if d_mo}
       <!--    <p>moMeta.moDef.showFieldNames {moMeta.moDef.showFieldnames}</p>-->
       <!--    <p>showFieldDefs {showFieldDefs}</p>-->
       <!--    <p>{moMeta.moDef.fieldDefs.keys()}</p>-->
       {#each showFieldDefs as fd}
-        <Field fieldDef={fd} value={mo[fd.name]} {viewMode} {onChange} parentUiPath={uiPath} level={level + 1 }/>
+        <Field fieldDef={fd} value={d_mo[fd.name]} viewMode={MoViewMode.view} {onChange} parentUiPath={uiPath} level={level + 1 }/>
       {/each}
     {/if}
   {/if}
-{/if}
 <style>
   
   .delete {

@@ -15,7 +15,7 @@
   let {
     fieldDef,
     fieldname,
-    value = [],
+    value,
     level = 1,
     viewMode = MoViewMode.view,
     onChange,
@@ -34,29 +34,28 @@
 
   // console.log(`==> MoArrayField.svelte:23 value `, value);
   // console.log(`==> MoArrayField.svelte:24 typeof value `, typeof value);
-  let values = $state(value as Array<MoidInterface>)
+  // let values = $state(value as Array<MoidInterface> | [] as Array<MoidInterface>)
+  let mos = $derived(value.filter(v => !fieldsMoToRemove.find(m => m.mo.id === v.id)))
   let fieldsMoToRemove: FieldMo[] = $state([])
-  
   const fd: MoFieldDefinition = fieldDef as MoFieldDefinition
   const fname = fieldDef.name
   const inArray = true
   const moItemFieldDef = fieldDef.clone()
   moItemFieldDef.type = 'mo'
   const uiPath = $state(parentUiPath)
-  let mos = $derived(values) //removeMos(values, fieldsMoToRemove))
   const changed = (fieldId: string, item: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const index = Number.parseInt(fieldId)
-    if (index === -2) {
-      value.push(item)
-    } else {
-      value[index] = item
-    }
-    value = [...value]
-    onChange(fieldDef.name, value)
+    // const index = Number.parseInt(fieldId)
+    // if (index === -2) {
+    //   values.push(item)
+    // } else {
+    //   values[index] = item
+    // }
+    // values = [...values]
+    // onChange(fieldDef.name, values)
   }
 
-  const size = value?.length
+  const size = $derived(value?.length)
   let showDetailToggle = $state(false)
   let openPaths = getContext('openPaths') as string[]
   let showDetails = $derived(showDetailToggle || !!openPaths[uiPath.join('_')])
@@ -67,15 +66,21 @@
  
   const onRemove = (fieldMo: FieldMo) => {
     if (!onMoRemove) return {}
-    values = values.filter(mo => !mo.isSameAs(fieldMo.mo) )
+    const index = value.indexOf(mo => !mo.isSameAs(fieldMo.mo) )
+    value.splice(index, 1)
     fieldsMoToRemove = [...fieldsMoToRemove, fieldMo]
     // console.log(`==>MoArrayField.svelte:74 fieldsMoToRemove`, fieldsMoToRemove.map(fm => `${fm.fieldname}.${fm.mo.displayName}`))
     return onMoRemove(fieldMo)
   }
+  $effect(() => {
+    // console.log(`==>MoArrayField.svelte.effect:74 `)
+    // console.log(`==>MoArrayField.svelte.effect:75 mos`, $inspect(mos))
+    // console.log(`==>MoArrayField.svelte.effect:76 mos`, $state.snapshot(mos))
+  })
 
 </script>
 <div class="field ArrayField MoArrayField" data-fieldtype={fd.type} style="margin-left:{level*12}px;">
-  <label for={fname}>{fd.getDisplayName()}</label>
+  <span class="label">{fd.getDisplayName()}</span>
   <span class=" tree-line {showDetails?'open':'closed'}"></span>
   <span class="value">
     <span class="count" onclick={toggle} onkeydown={toggle} role="button" tabindex="0">

@@ -1,5 +1,6 @@
 import type {MoMetaInterface} from './MoMetaInterface.js'
 import type {MoInterface} from '$lib/models/managedObjects/MoInterface.js'
+import type {objectToMoParameters} from '../../services/mo/moTransport.js'
 
 export interface MoidInterface {
 
@@ -11,6 +12,7 @@ export interface MoidInterface {
   _isLoaded: boolean
   init: () => MoidInterface
   toMoid: () => MoidInterface
+  toMo: (params?: ToMoParams) => Promise<MoInterface>
   toObj: () => any
   isSameAs: (any) => boolean
 
@@ -24,4 +26,8 @@ export interface MoidInterface {
   // hydrate(partial: Partial<MoInterface>): MoInterface
   //
   // toDocument: () => {}
+}
+
+export interface ToMoParams {
+  trusted?: boolean
 }

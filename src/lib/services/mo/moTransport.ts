@@ -1,9 +1,10 @@
-import type {MoidInterface} from '../../models/managedObjects/MoidInterface.js'
+import type {MoidInterface, ToMoParams} from '../../models/managedObjects/MoidInterface.js'
 import type {MoInterface} from '../../models/managedObjects/MoInterface.js'
 import type {FieldDefinitionInterface} from '../../models/fields/FieldDefinition.interface.js'
 
-export interface objectToMoParameters {
+export interface objectToMoParameters extends ToMoParams {
   _moname?: string
+  _moid?: boolean
   mo? : MoInterface
   trusted?: boolean
 }

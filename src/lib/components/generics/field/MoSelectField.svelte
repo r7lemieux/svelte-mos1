@@ -15,28 +15,28 @@
   let {
     moFieldDef,
     fieldname,
-    mosSelected = $bindable<MoidInterface[]>(),
+    moSelected, // $bindable<MoidInterface[]>(),
     mosOptions = [],
     viewMode = MoViewMode.view,
     parentUiPath = [],
+    onMoChange = () => {}
   }: {
     moFieldDef: MoFieldDefinition,
     fieldname: string,
-    mosSelected: MoidInterface[],
+    moSelected: MoidInterface | undefined,
     mosOptions: MoInterface[],
     level: number,
     viewMode: MoViewModeEnum,
     parentUiPath: string[],
+    onMoChange?: (smo: MoidInterface | undefined) => void,
   } = $props()
   
   const fd = moFieldDef
   const fname = moFieldDef.name
-  const moItemFieldDef = moFieldDef.clone()
-  let s_options = $state(mosOptions)
-  moItemFieldDef.type = 'mo'
+  let s_options = $state(!!mosOptions.length? mosOptions: moSelected? [moSelected] : [] )
+  // moItemFieldDef.type = 'mo' // delete
   const uiPath = parentUiPath
-  let sSelected: MoidInterface[] | undefined = $state(mosSelected)
-  const size = $derived(sSelected.length)
+  let sSelected: MoidInterface | undefined = $state(moSelected)
   
   let openPaths = getContext('openPaths') as string[]
   let showDetails = $derived(!!openPaths[uiPath.join('_')])
@@ -48,7 +48,7 @@
   let loading = false
   let loaded = false
   
-  const isSelected = (moid: MoidInterface) => !!mosSelected.find(smo => smo.isSameAs(moid))
+  const isSelected = (moid: MoidInterface) => !!moSelected?.isSameAs(moid)
   // let inputFormEl: HTMLInputElement
   // let inputUiEl: HTMLInputElement
   const loadOptions = () => {
@@ -57,27 +57,23 @@
     const url = `${page.url.origin}/api/mo/${moFieldDef.moName}`
     fetch(url)
       .then(response => response.json())
-      .then((responseData) => Promise.all(responseData.map((obj) => objectToMoidSync(obj))))
+      .then((responseData) => Promise.all(responseData.map((obj:any) => objectToMoidSync(obj))))
       .then(mos => {
         s_options = mos
         loaded = true
       })
   }
-  
-  // const onchange = () => {
-  //   // const optionEls = inputEl.querySelector('option')
-  //   const datalistEl = inputUiEl.nextElementSibling
-  //   const options = datalistEl?.querySelectorAll('option')
-  //   if (!options) {
-  //     mosSelected = []
-  //     sSelected = mosSelected
-  //   } else {
-  //     mosSelected = mosOptions.filter(mo => mo.displayName === inputUiEl.value)
-  //   }
-  //   sSelected = mosSelected
-  //   inputUiEl.value = mosSelected.join(',')
-  //   console.log(`==>MoSelect.svelte:74 mosSelected`, mosSelected)
-  // }
+  let selectElm: HTMLSelectElement
+  const onchange = () => {
+    // const optionEls = inputEl.querySelector('option')
+    const optionElms = selectElm?.querySelectorAll('option')
+    const selectedOptionElm = Array.from(optionElms).find(elm => elm.selected)
+    const selectedId = selectedOptionElm?.value
+    sSelected = s_options?.find(o => o?.id?.toString() === selectedId)
+    //sSelected = mosOptions.filter(mo => mo.displayName === selectElm.value)
+    console.log(`==>MoSelect.svelte:74 sSelected`, sSelected)
+    onMoChange(sSelected)
+  }
   
   onMount(() => {
     const script = document.createElement('script')
@@ -96,11 +92,11 @@
       <span class="detail-icon detail-arrow {showDetails?'open':'closed'}">
       </span>
      </span>
-     <span class="size">{size}</span>
   {/if}
   
   <!--  <input name={fname} id={fname} bind:this={inputFormEl} />-->
-  <select class="value" name={fname} onclick={loadOptions} onmouseover={loadOptions} onfocus={loadOptions}>
+  <select class="value" name={fname} onclick={loadOptions} onmouseover={loadOptions} onfocus={loadOptions} {onchange}
+   disabled={fd.type === 'moArray'} bind:this={selectElm} >
     {#each s_options as optionMo (optionMo.id)}
       <option label={optionMo.displayName} value={optionMo.id} selected="{isSelected(optionMo)}"></option>
     {/each}

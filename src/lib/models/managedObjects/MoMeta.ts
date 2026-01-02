@@ -8,6 +8,7 @@ import {MoDefinition} from './MoDefinition.js'
 import {HeapDataSource} from '../../services/db/Heap.dataSource.js'
 import type {MoidInterface} from './MoidInterface.js'
 import {objectToMo, objectToMoid} from '../../services/mo/moTransport.implementation.js'
+import type {objectToMoParameters} from '../../services/mo/moTransport.js'
 
 export class MoMeta implements MoMetaInterface {
   name: string = ''
@@ -77,8 +78,8 @@ export class MoMeta implements MoMetaInterface {
   }
   moToObj = (mo: MoInterface): any => this.moDef.moToObj(mo)
   moToDocument = (mo: MoInterface): any => this.moDef.moToDocument(mo)
-  objToMoid = (obj: any, mo?:MoInterface): Promise<MoidInterface> => objectToMoid(obj, {_moname: this.name, mo})
-  objToMo = (obj: any, mo?: MoInterface): Promise<MoInterface> => objectToMo(obj, {_moname: this.name, mo})
+  objToMoid = (obj: any, params?:objectToMoParameters): Promise<MoidInterface> => objectToMoid(obj, {_moname: this.name, mo: params?.mo})
+  objToMo = (obj: any, params?:objectToMoParameters): Promise<MoInterface> => objectToMo(obj, {_moname: this.name, mo: params?.mo})
   toDocument = (): string => {
     return '' //todo
   }

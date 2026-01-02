@@ -7,7 +7,7 @@
   import {ErrorName} from '../../../services/common/message/errorName.js'
   import {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import Field from '../field/Field.svelte'
-  import {extractViewMode} from '../../../services/common/util/dom.utils.js'
+  import {extractViewMode, formDataToObj} from '../../../services/common/util/dom.utils.js'
   import Init from '../../common/Init.svelte'
   import Status from '../../common/Status.svelte'
   import {DeletePermission} from '../../../models/managedObjects/MoDefinitionInterface.js'
@@ -90,8 +90,7 @@
     const formData = new FormData(formElm)
     // const payload = Object.fromEntries(formData.entries())
     // const uri = formElm.baseURI.split('/').slice(0, -1).join('/') + '/save'
-    const partialMo = {}
-    formData.forEach((v, k) => partialMo[k] = v)
+    const partialMo = formDataToObj(formData)
     await mo.hydrate(partialMo)
     const body = JSON.stringify(mo.toObj())
     fetch(formElm.action, {

@@ -26,7 +26,7 @@
         left: 2px;
     }
     
-    label {
+    label, .label {
         flex: 120px 1 0;
         margin: 0 8px 7px 0;
         justify-content: flex-end;
@@ -48,7 +48,7 @@
             color: var(--field-value-color);
         }
         
-        input {
+        input, select {
             height: var(--field-height);
             border: none;
             border-bottom: 1px solid var(--field-bottom-line-color);

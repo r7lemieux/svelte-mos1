@@ -65,7 +65,7 @@ export class Mo implements MoInterface {
   toMo = () => new Promise<MoInterface>((r) => r(this))
 
   hydrate = async (partial: Partial<Mo>)=> {
-    this.moMeta.moDef.objToMo(partial, {mo:this, trusted: true})
+    await this.moMeta.moDef.objToMo(partial, {mo:this, trusted: true})
     this.init()
     return this
   }

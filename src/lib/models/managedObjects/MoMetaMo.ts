@@ -9,7 +9,7 @@ import {from} from '../fields/FieldDefinition.js'
 import {HeapDataSource} from '../../services/db/Heap.dataSource.js'
 import {Mo} from './Mo.js'
 import type {MoInterface} from './MoInterface.js'
-import type {MoidInterface} from './MoidInterface.js'
+import type {MoidInterface, ToMoParams} from './MoidInterface.js'
 import {toDisplayString} from '../../services/common/util/string.utils.js'
 import {getDefaultMoMeta} from './moMetaInstances.js'
 import {Moid} from './Moid.js'
@@ -68,6 +68,7 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
   moidToMo = (moid: MoidInterface): Promise<MoInterface> => this.dataSource.getMo(moid.id)
   moToMoid = (mo: MoInterface): MoidInterface => mo
   toMoid = () => new Moid(this as MoMeta,0)
+  toMo = (params?: ToMoParams): Promise<MoInterface> => Promise.resolve(new Mo(this as MoMeta))
   toDocument =  () => ''
   toObj = () => {}
   static fromMoDef = (moDef: MoDefinitionInterface) => new MoMeta(moDef)

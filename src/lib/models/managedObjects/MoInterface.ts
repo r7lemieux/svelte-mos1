@@ -1,5 +1,6 @@
 import type {MoMetaInterface} from './MoMetaInterface.js'
-import type {MoidInterface} from './MoidInterface.js'
+import type {MoidInterface, ToMoParams} from './MoidInterface.js'
+import type {objectToMoParameters} from '../../services/mo/moTransport.js'
 
 export interface MoInterface extends MoidInterface {
 
@@ -11,7 +12,7 @@ export interface MoInterface extends MoidInterface {
   setProps: (props: any) => MoInterface
 
   toObj: () => any
-  toMo: () => Promise<MoInterface>
+  toMo: (params?: ToMoParams) => Promise<MoInterface>
 
   hydrate(partial: Partial<MoInterface>): Promise<MoInterface>
   hydrateUntrusted(partial: Partial<MoInterface>): Promise<MoInterface>

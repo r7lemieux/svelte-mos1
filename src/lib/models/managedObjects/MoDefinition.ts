@@ -108,9 +108,9 @@ export class MoDefinition implements MoDefinitionInterface {
     }
   }
 
-  addFieldDef = fieldDef => {
+  addFieldDef = (fieldDef: FieldDefinition<any>) => {
     this.fieldDefs.set(fieldDef.name, fieldDef)
-    return fieldDef
+    return this
   }
 
 
@@ -147,13 +147,13 @@ export class MoDefinition implements MoDefinitionInterface {
       .filter(fn => !fn.startsWith('_'))
       .map(getClosestFieldName)
       .map(buildFieldDef)
-      .map((fd, i) => from(fd, {name: fieldnames[i]}))
+      .map((fd, i) => fd.chainSetName(fieldnames[i]))
+      // .map((fd, i) => from(fd, {name: fieldnames[i]}))  // Why this. the fieldDef is already clones in buildFieldDef
   }
 
   extractFieldnamesFromMo() {
     const mo: MoInterface = this.newMo()
-    const fieldnames: string[] = Object.getOwnPropertyNames(mo).filter(n => typeof mo[n] !== 'function' && n !== 'moMeta' && !n.startsWith('_'))
-    return fieldnames
+    return Object.getOwnPropertyNames(mo).filter(n => typeof mo[n] !== 'function' && n !== 'moMeta' && !n.startsWith('_'))
   }
 
   getFieldDefs = (params?: any): FieldDefinitionInterface<any>[] =>  {
@@ -176,7 +176,7 @@ export class MoDefinition implements MoDefinitionInterface {
    *  Mo Management
    *  -------------
    */
-  // I would prefer Mo and typeof Mo to MoInterface i
+  // I would prefer Mo and typeof Mo to MoInterface i,
   // but it causes:  ReferenceError: Cannot access 'Mo' before initialization
   // newMo = (): Mo => {
   //   const moClass: typeof Mo = this.moClass || Mo
@@ -208,11 +208,11 @@ export class MoDefinition implements MoDefinitionInterface {
     return mo
   }
   moToObj = (mo: any): any => mo.toObj()
-  moToDocument = mo => mo.toDocument()
+  moToDocument = (mo: MoInterface) => mo.toDocument()
 
 }
 
-let moDefDef
+let moDefDef: MoDefinitionInterface
 export const initMoDefDef = () => {
 // const moDefDef = new MoDefinition('MoDefinition')
   const moDefDef = new MoDefinition('moDef')
@@ -238,7 +238,7 @@ export const initMoDefDef = () => {
     if (!v) {
       console.log(`==>MoDefinition.ts:172 v `, v)
     }
-    v => v.name
+    return v.getDisplayName()
   }
   moDefDef.addFieldDef(moClassFieldDef)
 // export const moDefMeta: MoMetaInterface = new MoMeta(moDefDef)

@@ -20,7 +20,7 @@ export const registerMoDef = (moDef: MoDefinitionInterface) : void => {
   moDefs[name] = moDef
 }
 
-export const getMoDef = (name: string): MoDefinition => {
+export const getMoDef = (name: string): MoDefinitionInterface => {
   const moDef = moDefs[name]
   if (!moDef) throw new Rezult(ErrorName.resource_not_found, {name})
   return moDef

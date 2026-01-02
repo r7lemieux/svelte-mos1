@@ -8,7 +8,7 @@ import { moDefMoMeta } from './MoDefinitionMo.js';
 //   moDefMo.name = moDef.id = moDef.name
 //   moDefMoMeta.dataSource?.saveMo(moDefMo)
 // }
-export const getMoDefMo = (moname:string): Promise<MoDefinition> => {
+export const getMoDefMo = async (moname:string): Promise<MoDefinition> => {
   return moDefMoMeta.dataSource?.getMo(moname)
     .then( mo => {
       return mo as MoDefinitionMo

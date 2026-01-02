@@ -1,5 +1,5 @@
-import { MoViewMode, type MoViewModeEnum } from '../../../constants/ui.js'
-import { page } from '$app/state'
+import {MoViewMode, type MoViewModeEnum} from '../../../constants/ui.js'
+import {page} from '$app/state'
 
 export const computeHeight = () => Math.max(
   document.body.scrollHeight, document.documentElement.scrollHeight,
@@ -10,7 +10,7 @@ export type InputTypes = 'button' | 'checkbox' | 'color' | 'date' | 'datetime-lo
   'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit' | 'tel' | 'text' |
   'time' | 'url' | 'week'
 
-  export const sizeLabels = () => {
+export const sizeLabels = () => {
   return
   const elems = Array.from(document.getElementsByTagName('label'))
   for (const elem of elems) {
@@ -22,7 +22,7 @@ export type InputTypes = 'button' | 'checkbox' | 'color' | 'date' | 'datetime-lo
     testElem.style.font = fontStyle
     const textWidth = testElem.offsetWidth
     const elemWidth = elem.offsetWidth
-    if (textWidth > elemWidth - 10 ) {
+    if (textWidth > elemWidth - 10) {
       const fontSizeStyle = window.getComputedStyle(elem, null).getPropertyValue('font-size')
       const fontSize = Number.parseInt(fontSizeStyle.match(/\d*/)![0])
       elem.style.fontSize = `${fontSize! - 2}px`
@@ -47,4 +47,18 @@ export function extractViewMode(): MoViewModeEnum {
   return MoViewMode.view
 }
 
-export const getDocumentHeight = () => Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, document.body.offsetHeight, document.documentElement.offsetHeight, document.body.clientHeight, document.documentElement.clientHeight);
+export const formDataToObj = (formData: FormData): any => {
+  const partialMo = {}
+  formData.forEach((v, k) => {
+    if (partialMo[k]) {
+      if (!(partialMo[k] instanceof Array)) {
+        partialMo[k] = [partialMo[k]]
+      }
+      partialMo[k].push(v)
+    }
+  })
+  return partialMo
+}
+
+
+export const getDocumentHeight = () => Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, document.body.offsetHeight, document.documentElement.offsetHeight, document.body.clientHeight, document.documentElement.clientHeight)

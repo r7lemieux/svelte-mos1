@@ -8,6 +8,7 @@ import type {FieldDefinitionInterface} from '../../models/fields/FieldDefinition
 import {type objectToMoParameters, transp} from './moTransport.js'
 import type {MoFieldDefinition} from '../../models/fields/MoFieldDefinition.js'
 import {isSubclass} from '../common/util/ts.utils.js'
+import {browser} from '$app/environment'
 
 export const moidToObj = (mo: MoidInterface) => {
   const obj: any = {}
@@ -166,7 +167,7 @@ export const objectToMoid = async (obj: any, params?: objectToMoParameters): Pro
   if (obj._moname) delete obj._moname
   const id = params?.mo?.id || obj.id
   if (obj.id && params?.mo?.id && obj.id !== params?.mo?.id) throw new Rezult(ErrorName.id_mismatch)
-  if (obj._moid) {
+  if (obj._moid || params?._moid) {
      return new Moid(moMeta, id, obj.displayName)
   } else {
     const moDef = moMeta.moDef
@@ -231,7 +232,11 @@ export const valueToField = async (fDef: FieldDefinitionInterface<any>, v: any, 
         let moFieldMoname: string = mofDef['moName']
         if (typeof v !== 'object') {
           if (typeof v === 'string') {  // for edit or creation
-            return await idToMoid(v, mofDef.moName)
+            if (browser) {
+              return v
+            } else {
+              return await idToMoid(v, mofDef.moName)
+            }
           } else {
             return handleError('not object, not string');
           }
@@ -242,7 +247,7 @@ export const valueToField = async (fDef: FieldDefinitionInterface<any>, v: any, 
         }
         moFieldMoname = v._moname || moFieldMoname
         if (!moFieldMoname) return handleError('mo without moname')
-        return await objectToMoid(v, {_moname: mofDef['moName']})
+        return await objectToMoid(v, {_moname: mofDef['moName'], _moid: true})
       case 'object':
         if (typeof v !== 'object') return handleError('not object')
         return v
@@ -283,7 +288,7 @@ export const valueToField = async (fDef: FieldDefinitionInterface<any>, v: any, 
         return v
     }
   } catch (ex: any) {
-    console.trace(ex.message)
+    console.error(ex)
     handleError(ex.message)
   }
 }
@@ -501,7 +506,7 @@ export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, pa
         if (typeof v !== 'object') return handleError('not object')
         return v
       case 'array':
-        if (!Array.isArray(v)) return handleError('not array')
+        if (!Array.isArray(v)) v = [v] //return handleError('not array')
         if (fDef.itemValueFieldDef) {
           return v.map(item=> {
             if (fDef.itemValueFieldDef?.valueToField) {
@@ -514,7 +519,7 @@ export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, pa
           return v
         }
       case 'moArray': {
-        if (!Array.isArray(v)) return handleError('not array')
+        if (!Array.isArray(v)) v = [v] // return handleError('not array')
         const mofDef = fDef // as MoFieldDefinition
         return v.map((item) => objectToMoidSync(item, {_moname: mofDef['moName']}))
       }
@@ -537,7 +542,7 @@ export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, pa
         return v
     }
   } catch (ex: any) {
-    console.trace(ex.message)
+    console.error(ex)
     handleError(ex.message)
   }
 }

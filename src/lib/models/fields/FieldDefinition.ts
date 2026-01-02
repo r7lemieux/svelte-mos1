@@ -27,7 +27,6 @@ export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
   canBeUndefined = true
   itemValueType?: string // for maps and arrays
   itemValueFieldDefinition?: FieldDefinitionInterface<any> // for maps and arrays
-
   constructor(props: Partial<FieldDefinition<any>> = {}) {
     this.init(props)
   }
