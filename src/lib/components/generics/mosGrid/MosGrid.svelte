@@ -37,7 +37,6 @@
   
   // model and svelte are ready
   $effect(() => {
-    console.log(`==>MosGrid.svelte:37 `, smos.length, listModel?.mos?.length, dmos?.length, moname)
     const gridOptions = createGridOptions()
     if (gridApi) gridApi.updateGridOptions(gridOptions)
   })

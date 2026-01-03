@@ -3,7 +3,7 @@
 import { FieldDefinition, from } from '../fields/FieldDefinition.js'
 import { BaseFieldDefs, buildFieldDef, CommonFieldDefs } from '../fields/CommonFieldDefinition.js'
 import { getClosestFieldName } from '../fields/FieldMatcher.js'
-import { plural, toDisplayString } from '../../services/common/util/string.utils.js'
+import { singular, plural, toDisplayString } from '../../services/common/util/string.utils.js'
 import { ErrorName } from '../../services/common/message/errorName.js'
 import { Rezult } from '../../services/common/message/rezult.js'
 import {
@@ -116,9 +116,15 @@ export class MoDefinition implements MoDefinitionInterface {
 
   addMoFieldDefFromName(name: string, params?: moFieldParameters): MoFieldDefinition {
     const moFieldDef = CommonFieldDefs.mo.clone() as MoFieldDefinition
-    // moFieldDef.type = 'mo'
-    moFieldDef.moName = params?.moname || plural(name)
+    moFieldDef.type = 'mo'
+    const proposedName = params?.moname || plural(name)
+    const pluralName = plural(name)
+    moFieldDef.singularName = (proposedName != pluralName) ? proposedName : singular(pluralName)
     moFieldDef.name = name
+    moFieldDef.moName = params?.moname || pluralName
+    moFieldDef.name = name
+    moFieldDef.reverseFieldName = params?.reverseFieldName || this.name
+    moFieldDef.twoWays = !!params?.twoWays
     this.fieldDefs.set(name, moFieldDef)
     return moFieldDef
   }
@@ -126,8 +132,13 @@ export class MoDefinition implements MoDefinitionInterface {
   addMoArrayFieldDefFromName(name: string, params?: moFieldParameters): MoFieldDefinition {
     const moFieldDef = CommonFieldDefs.moArray.clone() as MoFieldDefinition
     moFieldDef.type = 'moArray'
-    moFieldDef.moName = params?.moname || plural(name)
+    const proposedName = params?.moname || plural(name)
+    const pluralName = plural(name)
+    moFieldDef.singularName = (proposedName != pluralName) ? proposedName : singular(pluralName)
     moFieldDef.name = name
+    moFieldDef.moName = params?.moname || pluralName
+    moFieldDef.reverseFieldName = params?.reverseFieldName || this.name
+    moFieldDef.twoWays = !!params?.twoWays
     this.fieldDefs.set(name, moFieldDef)
     return moFieldDef
   }

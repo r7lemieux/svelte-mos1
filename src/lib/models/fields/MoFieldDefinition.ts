@@ -2,8 +2,10 @@ import {FieldDefinition} from './FieldDefinition.js'
 import {type DeletePermissionEnum} from '$lib/models/managedObjects/MoDefinitionInterface.js'
 
 export class MoFieldDefinition extends FieldDefinition<any> {
-  moName: string
   type = 'mo'
+  moName: string
+  reverseFieldName?: string
+  singularName?: string
   deleteCascade?: DeleteCascadeEnum
   min: number = 1
   max: number = 1
@@ -40,6 +42,7 @@ export type DeleteCascadeEnum = (typeof DeleteCascade)[keyof typeof DeleteCascad
 
 export interface moFieldParameters {
   moname?: string
+  reverseFieldName?: string
   deleteCascade?: DeleteCascadeEnum
   twoWays?: boolean
 }

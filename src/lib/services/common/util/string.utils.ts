@@ -1,4 +1,6 @@
-export const toCamelCase = (str0: string): string => {
+import pluralize from 'pluralize'
+
+const toCamelCase = (str0: string): string => {
   if (!str0) return ''
   let camel = str0[0].toLowerCase()
   for (let i = 1; i < str0.length; i++) {
@@ -104,8 +106,8 @@ export const objectToString = (o: any): any => {
     return o
   }
 }
-export const plural = (str: string) => {
-  if (str.endsWith('s')) return str
-  if (str.endsWith('y')) return str.slice(0,str.length -1 ) + 'ies'
-  return str + 's'
+export const singular = (str: string) => {
+  if (str.endsWith('s')) return str.slice(0,str.length -1 )
+  return str
 }
+export const plural = pluralize

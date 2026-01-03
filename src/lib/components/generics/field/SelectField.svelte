@@ -28,7 +28,7 @@
   } = $props()
   
   const labelText = $derived(fieldDef.getDisplayName())
-  const selected = $state([value])
+  const selected = $derived([value])
   const efd = fieldDef as EnumFieldDefinition
   const fname = fieldDef.name
   let s_options = options.length ? options : Object.keys(efd.validValues)

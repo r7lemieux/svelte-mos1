@@ -24,8 +24,8 @@
   // export let level: number = 1
   // export let viewMode: MoViewModeEnum
   
-  let disabled = $derived(viewMode === 'view')
-  const fd = $state(fieldDef)
+  let disabled = $derived(viewMode === 'view' || viewMode === 'subEdit')
+  const fd = $derived(fieldDef)
   const fname = $derived(fieldDef.name)
   const labelText = $derived(fieldDef.getDisplayName())
   let onchange = event => {

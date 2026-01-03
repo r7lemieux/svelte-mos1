@@ -2,6 +2,7 @@
 
 export const MoViewMode = {
   view: 'view',
+  subEdit: 'subEdit',
   edit: 'edit',
   create: 'create'
 } as const

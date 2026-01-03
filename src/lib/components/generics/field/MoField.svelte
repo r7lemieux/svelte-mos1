@@ -59,7 +59,7 @@
   let showFieldDefs = $derived(moMeta.moDef.showFieldnames.map(fn => moMeta.moDef.fieldDefs.get(fn)).filter(fd => !!fd))
   let moSelected: MoInterface = $state(value as MoInterface)
   let mosOptions: MoInterface[] = []
-  
+  const subViewMode = (viewMode === MoViewMode.view) ? MoViewMode.view : MoViewMode.subEdit
   // if (viewMode === 'create' || viewMode === 'edit') loadOptions()
   // let changed = event => {
   //   const fieldId = event.srcElement.id
@@ -85,13 +85,11 @@
   
   const onMoChange = async (selectedMo?: MoidInterface) => {
     if (selectedMo) {
-      console.log(`==>MoField.svelte:86 selectedMos`, selectedMo.id)
       mo = await selectedMo?.toMo({trusted:false})
       onChange(fieldname, mo)
     }
   }
   const onLinkClick = () => {
-    // console.log(`==>MoField.svelte:80 /mo/${moName}/${moid.id}`)
     if (viewMode === MoViewMode.view) {
       goto(`/mo/${moName}/${moid.id}`, {replaceState: true})
     }
@@ -99,7 +97,7 @@
   
   const onRemoveClick = () => {
     if (!onRemove || !moid?.id) {
-      console.log(`==>MoField.svelte:onDelete fails onDelete: ${!!onRemove}, !!moid: ${!!moid}, !!moid?.id: ${!!moid?.id}`)
+      // console.log(`==>MoField.svelte:onDelete fails onDelete: ${!!onRemove}, !!moid: ${!!moid}, !!moid?.id: ${!!moid?.id}`)
       throw new Rezult(ErrorName.missing_id, {onDelete: !!onRemove, moid: !!moid, id: !!moid?.id}, 'onDelete')
     } else {
       onRemove({fieldname, mo: moid})
@@ -107,7 +105,6 @@
   }
   $effect(() => {
     sizeLabels()
-    console.log(`==>MoField.svelte.:110 moid`, moid)
   })
 </script>
 <div class="field moField" data-fdtype={moFieldDef.type} style="margin-left:{level*12}px;">
@@ -120,7 +117,7 @@
 <!--        <span>{size}</span>-->
           <span class="detail-icon detail-arrow {showDetails?'open':'closed'}"></span>
       </span>
-    {#if viewMode === MoViewMode.view}
+    {#if viewMode === MoViewMode.view || viewMode === MoViewMode.subEdit}
       <button type="button" onclick={onLinkClick} class='name linkButton' aria-label={moid?.displayName}
               disabled={!moid?.id}> {moid?.id} {moid?.displayName}</button>
     {/if}
@@ -141,7 +138,7 @@
       <!--    <p>showFieldDefs {showFieldDefs}</p>-->
       <!--    <p>{moMeta.moDef.fieldDefs.keys()}</p>-->
       {#each showFieldDefs as fd}
-        <Field fieldDef={fd} value={d_mo[fd.name]} viewMode={MoViewMode.view} {onChange} parentUiPath={uiPath} level={level + 1 }/>
+        <Field fieldDef={fd} value={d_mo[fd.name]} viewMode={MoViewMode.subEdit} {onChange} parentUiPath={uiPath} level={level + 1 }/>
       {/each}
     {/if}
   {/if}

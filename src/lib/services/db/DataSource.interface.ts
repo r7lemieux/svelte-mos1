@@ -5,7 +5,7 @@ import {Rezult} from '../common/message/rezult.js'
 export interface DataSourceInterface<M extends MoInterface> {
   getMo: (id: any) => Promise<M>
   getMoid: (id: any) => Promise<MoidInterface>
-  saveMo: (mo: M) => Promise<M>
+  saveMo: (mo: M, params?:SaveMoParams) => Promise<M>
   updateMo: (mo: M) => Promise<M>
   addMo: (mo: M) => Promise<M>
   getMos: () => Promise<M[]>
@@ -16,4 +16,7 @@ export interface DataSourceInterface<M extends MoInterface> {
 export interface DeleteResult {
   deleted?: MoidInterface[]
   errors?: Rezult[]
+}
+export interface SaveMoParams {
+  datafill: boolean
 }

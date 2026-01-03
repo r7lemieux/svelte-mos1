@@ -47,15 +47,12 @@
     if (pathTail === 'create') return MoViewMode.create
     return MoViewMode.view
   }
-  $effect(() => {
-    sizeLabels
-    console.log(`==>Field.svelte.effect:52 d_value`, d_value)
-    console.log(`==>Field.svelte.effect:53 fd.type`, fd.type)
-  })
+  $effect(sizeLabels)
 </script>
 <Init/>
+
 {#if fd.type === 'array'}
-  <ArrayField {fieldDef} {value} {viewMode} {level} {onChange}/>
+  <ArrayField {fieldDef} {value} {viewMode} {level} {onChange} />
 {:else if fd.type === 'moArray'}
   <MoArrayField fieldname={fieldDef.name} {fieldDef} value={d_value} {viewMode} {level} {onChange} parentUiPath={uiPath} {onMoRemove} />
 {:else if fd.type === 'map'}
@@ -66,7 +63,8 @@
   <ObjectField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else if fd.type === 'enum' }
   <SelectField {fieldDef} {value} {viewMode} {level}  parentUiPath={uiPath} {onChange}/>
-{:else}  <SimpleField {fieldDef} {value} {viewMode} {level} {onChange}/>
+{:else}
+  <SimpleField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {/if}
 
 <style>

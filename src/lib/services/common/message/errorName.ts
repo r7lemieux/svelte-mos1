@@ -39,6 +39,7 @@ export const ErrorName = {
   'missing_implementation': 'missing_implementation',
   'missing_param': 'missing_param',
   'missing_value': 'missing_value',
+  'missing_reverse_mo': 'missing_reverse_mo',
   'moMeta_notFound': 'moMeta_notFound',
   'not_implemented_in_default': 'not_implemented_in_default',
   'not_implemented_in_subclass': 'not_implemented_in_subclass',
