@@ -1,12 +1,12 @@
-import {getMoMeta, moDefs, moMetas} from "$lib/services/mo/moManagement.js";
-import type {MoDefinitionInterface} from "$lib/models/managedObjects/MoDefinitionInterface.js";
-import type {MoFieldDefinition} from "$lib/models/fields/MoFieldDefinition.js";
-import {ErrorName} from "$lib/services/common/message/errorName.js";
-import {Rezult} from "$lib/services/common/message/rezult.js";
-import {pluralize} from "inflection";
-import {getClosestName, levenshteinRank} from "$lib/services/common/util/fieldMatcher.js";
+import {getMoMeta, moDefs, moMetas} from '$lib/services/mo/moManagement.js'
+import type {MoDefinitionInterface} from '$lib/models/managedObjects/MoDefinitionInterface.js'
+import type {MoFieldDefinition} from '$lib/models/fields/MoFieldDefinition.js'
+import {ErrorName} from '$lib/services/common/message/errorName.js'
+import {Rezult} from '$lib/services/common/message/rezult.js'
+import {pluralize} from 'inflection'
+import {getClosestName, levenshteinRank} from '$lib/services/common/util/fieldMatcher.js'
 
-export const validateAllReferences = () => {
+export const validateAllReferenceDefs = () => {
     for (const moDef of Object.values(moDefs)) {
         const moDefName = moDef.name
         for (const fieldDef of moDef.getFieldDefs()) {
@@ -35,7 +35,7 @@ export const validateAllReferences = () => {
     }
 }
 
-export const connectAllReferences = () => {
+export const connectAllReferenceDefs = () => {
     for (const moDef of Object.values(moDefs)) {
         const moDefName = moDef.name
         for (const fieldDef of moDef.getFieldDefs()) {
@@ -70,6 +70,40 @@ export const connectAllReferences = () => {
                             if (bestMatch.rank < 70) console.log(`==>moReferenceBuilder:67 connectAllReferences bestMatch for ${moFieldDef.name}`, {moDefName, moFieldDefName, moname, reverseMoDefName, reverseFieldName}, bestMatch)
                             moFieldDef.reverseFieldName = bestMatch.name
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+export const ReferenceAction = {
+    fill: 'fill',
+    deleteField: 'deleteField',
+    deleteObject: 'deleteObject',
+    nothing: 'nothing',
+} as const
+export type ReferenceActionEnum = (typeof ReferenceAction) [keyof typeof ReferenceAction]
+
+export interface cleanReferenceHandling {
+    missingReferencesField: ReferenceActionEnum
+    missingReferencesMo: ReferenceActionEnum
+}
+
+export const cleanReference = (params?:cleanReferenceHandling) => {
+    for (const moMeta of Object.values(moMetas)) {
+        const moDef = moMeta.moDef
+        const moDefName = moDef.name
+        for (const fieldDef of moDef.getFieldDefs()) {
+            if (fieldDef.type === 'mo' || fieldDef.type === 'moArray') {
+                const moFieldDef = fieldDef as MoFieldDefinition
+                if (moFieldDef.twoWays) {
+                    const moFieldDefName = moFieldDef.name
+                    const moname = moFieldDef.moName
+                    const reverseMoMeta = getMoMeta(moname)
+                    const reverseMoDef = reverseMoMeta.moDef
+                    const reverseMoDefName = reverseMoDef.name
+                    let reverseFieldName = moFieldDef.reverseFieldName
+                    for (let mo of moMeta.dataSource.)
                     }
                 }
             }

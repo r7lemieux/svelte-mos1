@@ -5,7 +5,7 @@
     import {Icon} from 'svelte-icons-pack'
 
     let {error}: { error?: any } = $props()
-    let status: string = $state((error instanceof Rezult) ? error.status : RezultStatus.error)
+    let status: string = $derived((error instanceof Rezult) ? error.status : RezultStatus.error)
     // let d_err = $derived(error)
     // let d_message = $derived(error?.message)
     // let code = $state(page.status)
@@ -20,7 +20,7 @@
     //     return ''
     // }
     const onClose = () => {
-        status = RezultStatus.ok
+        status = error.ok
     }
     // let statusText = $derived(httpCodeToStatusText(page.status))
     let statusLine = $state('')
