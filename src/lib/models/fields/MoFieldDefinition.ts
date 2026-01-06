@@ -5,7 +5,6 @@ export class MoFieldDefinition extends FieldDefinition<any> {
   type = 'mo'
   moName: string
   reverseFieldName?: string
-  singularName?: string
   deleteCascade?: DeleteCascadeEnum
   min: number = 1
   max: number = 1

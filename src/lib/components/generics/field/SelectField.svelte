@@ -29,9 +29,9 @@
   
   const labelText = $derived(fieldDef.getDisplayName())
   const selected = $derived([value])
-  const efd = fieldDef as EnumFieldDefinition
-  const fname = fieldDef.name
-  let s_options = options.length ? options : Object.keys(efd.validValues)
+  const efd = $derived(fieldDef) as EnumFieldDefinition
+  const fname = $derived(fieldDef.name)
+  let s_options = $derived(options.length ? options : Object.keys(efd.validValues))
   // let sSelected: any[] | undefined = $state(selected)
   
   const isSelected = (opt: any) => !!selected.find(sel => sel === opt)

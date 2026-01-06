@@ -17,6 +17,7 @@ import type {MoidInterface} from './MoidInterface.js'
 import {Moid} from './Moid.js'
 import { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
 import type {objectToMoParameters} from '$lib/services/mo/moTransport.js'
+import type {Difference} from "$lib/services/common/util/mo.utils.js";
 
 export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   id: string
@@ -57,7 +58,9 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
   moToDocument: (mo: MoInterface) => any = (mo: MoInterface) => {}
   documentToMo: (doc: any) => MoInterface = () => new Mo()
   moToMoid: (mo:MoInterface) => MoidInterface = (mo:MoInterface) => new Moid(mo.moMeta, mo.id!, mo.getDisplayName())
-  moDef: MoDefinitionInterface
+  assumeIsSameAs = (moDef: MoDefinitionInterface) => null
+
+    moDef: MoDefinitionInterface
   constructor(moDef: MoDefinitionInterface) {
     super(moDefMoMeta)
     this.moDef = moDef

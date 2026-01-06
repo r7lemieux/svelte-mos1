@@ -63,7 +63,7 @@
 		"ag-grid-community": "^34.2.0",
 		"esm-env": "^1.2.2",
 		"fastest-levenshtein": "^1.0.16",
-		"pluralize": "^8.0.0",
+		"inflection": "^3.0.2",
 		"string-similarity": "^4.0.4",
 		"svelte": "^5.0.0",
 		"svelte-icons-pack": "^3.1.3"

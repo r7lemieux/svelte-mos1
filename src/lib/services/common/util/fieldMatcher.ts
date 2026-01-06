@@ -1,7 +1,7 @@
 import * as stringSimilarity from 'string-similarity'
 import * as levenshtein from 'fastest-levenshtein'
-import {CommonFieldDefs} from './CommonFieldDefinition.js'
-import {toWords} from  '../../services/common/util/string.utils.js'
+import {CommonFieldDefs} from '../../../models/fields/CommonFieldDefinition.js'
+import {toWords} from './string.utils.js'
 export const diceRank = (word1, word2): number => {
   if (!word1 || !word2) return 0
   return stringSimilarity.compareTwoStrings(word1.toLowerCase(), word2.toLowerCase())

@@ -5,12 +5,15 @@ import type {MoidInterface} from './MoidInterface.js'
 import type { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
 import type {objectToMoParameters} from '../../services/mo/moTransport.js'
 import {  type moFieldParameters} from '../fields/MoFieldDefinition.js'
+import type {Difference} from "$lib/services/common/util/mo.utils.js";
 
 export interface MoDefinitionInterface {
 	id: string
 	name: string
 	dbName: string //todo remove
 	displayName?: string
+	singularName?: string
+	pluralName?: string
 	fieldDefs: Map<string, FieldDefinitionInterface<any>>
 	keyFieldnames: string[][]
 	gridFieldnames?: string[]
@@ -60,6 +63,8 @@ export interface MoDefinitionInterface {
 	// toDocument: () => any
 
 	deletePermission: DeletePermissionEnum
+	assumeIsSameAs: (moDef: MoDefinitionInterface) => Difference | null
+
 }
 
 export const DeletePermission = {

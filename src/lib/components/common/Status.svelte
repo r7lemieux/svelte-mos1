@@ -1,34 +1,29 @@
 <script lang="ts">
-    import {page} from '$app/state';
-    import {RezultStatus, type RezultStatusEnum} from '../../services/common/message/RezultStatus.js'
-    import {OK, Rezult} from '../../services/common/message/rezult.js'
+    import {RezultStatus} from '../../services/common/message/RezultStatus.js'
+    import {Rezult} from '../../services/common/message/rezult.js'
     import {AiOutlineCloseCircle} from 'svelte-icons-pack/ai'
     import {Icon} from 'svelte-icons-pack'
 
     let {error}: { error?: any } = $props()
     let status: string = $state((error instanceof Rezult) ? error.status : RezultStatus.error)
-    let serr = $state(error)
-    let derr = $derived(serr)
-    let smessage = $state(error?.message)
-    let message = $derived(smessage)
-    let code = $state(page.status)
-    // const err = $derived(serr)
-    const httpCodeToStatusText = (code: number) => {
-        if (status === RezultStatus.error) {
-            if (code >= 400 && code < 500) {
-                return 'client error'
-            } else if (code >= 500 && code < 600) {
-                return 'server error'
-            }
-        }
-        return ''
-    }
+    // let d_err = $derived(error)
+    // let d_message = $derived(error?.message)
+    // let code = $state(page.status)
+    // const httpCodeToStatusText = (code: number) => {
+    //     if (status === RezultStatus.error) {
+    //         if (code >= 400 && code < 500) {
+    //             return 'client error'
+    //         } else if (code >= 500 && code < 600) {
+    //             return 'server error'
+    //         }
+    //     }
+    //     return ''
+    // }
     const onClose = () => {
         status = RezultStatus.ok
     }
-    let statusText = $derived(httpCodeToStatusText(page.status))
+    // let statusText = $derived(httpCodeToStatusText(page.status))
     let statusLine = $state('')
-    let messageLine = $state('')
     $effect(() => {
         // statusLine = derr?.status + ' : ' + derr?.name + ' : ' + derr?.message
         // statusText = error?.status + ' : ' + error?.name + ' : ' + error?.message
@@ -87,9 +82,9 @@
             visibility: visible;
             background-color: var(--error-background-color);
             border: var(--error-color);
-            /*.status {*/
-            /*color: var(--error-color);*/
-            /*}*/
+            .status {
+            color: var(--error-color);
+            }
         }
         .status {
           align-content: center;
@@ -100,7 +95,6 @@
             background: transparent;
             border: none;
             top: 2px;
-            right: -5px;
         }
     }
 </style>

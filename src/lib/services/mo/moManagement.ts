@@ -12,6 +12,15 @@ export const registerMoMeta = (moMeta: MoMetaInterface): void => {
   const name = moMeta.name
   if (!name) throw new Rezult(ErrorName.missing_param)
   moMetas[name] = moMeta
+  const registeredMoDef = moDefs[moMeta.moDef.name]
+  if (registeredMoDef) {
+    const diff = moMeta.moDef.assumeIsSameAs(registeredMoDef)
+    if (diff) {
+      throw new Rezult(ErrorName.mo_mismatch, diff, `registerMoMeta ${name}`)
+    }
+  } else {
+    moDefs[moMeta.moDef.name] = moMeta.moDef
+  }
 }
 
 export const registerMoDef = (moDef: MoDefinitionInterface) : void => {
@@ -31,6 +40,7 @@ export const getMoMeta = (name: string): MoMeta => {
   if (!moMeta) throw new Rezult(ErrorName.resource_not_found, {name})
   return moMeta
 }
+
 
 // export const getMoDefMo = (name): MoDefinition => {
 // 	const moDef = moDefs[name]

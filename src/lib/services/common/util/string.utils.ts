@@ -1,4 +1,4 @@
-import pluralize from 'pluralize'
+
 
 const toCamelCase = (str0: string): string => {
   if (!str0) return ''
@@ -106,8 +106,3 @@ export const objectToString = (o: any): any => {
     return o
   }
 }
-export const singular = (str: string) => {
-  if (str.endsWith('s')) return str.slice(0,str.length -1 )
-  return str
-}
-export const plural = pluralize

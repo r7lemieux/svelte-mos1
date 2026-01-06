@@ -2,7 +2,7 @@
 import {CommonFieldDefs, buildFieldDef} from '../fields/CommonFieldDefinition.js'
 import {FieldDefinition} from '../fields/FieldDefinition.js'
 import {Rezult} from  '../../services/common/message/rezult.js'
-import {getClosestFieldName} from '../fields/FieldMatcher.js'
+import {getClosestFieldName} from '../../services/common/util/fieldMatcher.js'
 import type {Mo} from './Mo.js'
 import {MoDefinition} from './MoDefinition.js'
 import {ErrorName} from  '../../services/common/message/errorName.js'
