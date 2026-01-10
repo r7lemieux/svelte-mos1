@@ -1,5 +1,6 @@
 import {FieldDefinition} from './FieldDefinition.js'
 import {type DeletePermissionEnum} from '$lib/models/managedObjects/MoDefinitionInterface.js'
+import type {RelationDefinition} from "$lib/models/managedObjects/RelationDefinition.js";
 
 export class MoFieldDefinition extends FieldDefinition<any> {
   type = 'mo'
@@ -10,7 +11,6 @@ export class MoFieldDefinition extends FieldDefinition<any> {
   max: number = 1
   compositePart: boolean = false
   twoWays: boolean = false
-
   gridColDef = {
     type: 'object'
   }

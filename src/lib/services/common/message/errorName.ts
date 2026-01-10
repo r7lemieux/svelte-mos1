@@ -38,6 +38,7 @@ export const ErrorName = {
   'mismatch_fieldnames': 'mismatchFieldnames',
   'missing_id': 'missing_id',
   'missing_field': 'missing_field',
+  'missing_fieldDef': 'missing_fieldDef',
   'missing_implementation': 'missing_implementation',
   'missing_param': 'missing_param',
   'missing_value': 'missing_value',

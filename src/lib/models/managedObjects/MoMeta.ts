@@ -9,14 +9,17 @@ import {HeapDataSource} from '../../services/db/Heap.dataSource.js'
 import type {MoidInterface} from './MoidInterface.js'
 import {objectToMo, objectToMoid} from '../../services/mo/moTransport.implementation.js'
 import type {objectToMoParameters} from '../../services/mo/moTransport.js'
+import type {RelationDefinition} from "$lib/models/managedObjects/RelationDefinition.js";
 
 export class MoMeta implements MoMetaInterface {
   name: string = ''
   dbName: string = ''
   moDef: MoDefinitionInterface
   dataSource: DataSourceInterface<MoInterface>
+  relationDefs: RelationDefinition[] = []
+  relationDefsByFieldname: {[fieldName: string]: RelationDefinition} = {}
 
-  constructor(moDef: MoDefinitionInterface, dbName?: string) {
+  constructor(moDef: MoDefinitionInterface, params?: Partial<MoMeta>) {
     if (!moDef) {
       throw new Rezult(ErrorName.argument_null, {name})
     }
@@ -24,7 +27,9 @@ export class MoMeta implements MoMetaInterface {
 
     this.dataSource = new HeapDataSource(this.moDef)
     this.setName()
-    this.dbName = dbName || this.name
+    Object.assign(this, params)
+    this.dbName = this.dbName || this.name
+
     this.init()
   }
 
@@ -35,7 +40,9 @@ export class MoMeta implements MoMetaInterface {
    * ------------
    */
   init() {
+
   }
+
 
   setName = (given_name?: string): MoMeta => {
     let name = ''
@@ -92,5 +99,10 @@ export class MoMeta implements MoMetaInterface {
   }
   moidToMo = (moid: MoidInterface): Promise<MoInterface> => this.dataSource.getMo(moid.id)
   moToMoid = (mo: MoInterface): MoidInterface => mo
+}
+
+export interface referenceDef {
+  moMeta: MoMetaInterface
+  mo
 }
 
