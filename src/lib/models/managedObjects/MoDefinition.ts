@@ -20,6 +20,7 @@ import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
 import type {FieldDefinitionInterface} from '../fields/FieldDefinition.interface.js'
 import {pluralize, singularize} from "inflection";
 import type {Difference} from "$lib/services/common/util/mo.utils.js";
+import type {RelationDefinition} from './RelationDefinition.js'
 // import { defaultMoMeta } from './moMetaInstances.js'
 // import type { MoMetaInterface } from './MoMetaInterface.js'
 // import { defaultMoMeta } from './MoMeta.js'
@@ -42,6 +43,7 @@ export class MoDefinition implements MoDefinitionInterface {
     gdriveFileId?: string | null
     canCreate = true
     deletePermission: DeletePermissionEnum = DeletePermission.ask
+    relations: {[fieldname:string]: RelationDefinition} = {}
 
     constructor(name: string, moClass?: MoInterface) {
         if (name && !name.match(/[A-Za-z0-9]/)) throw new Rezult(ErrorName.field_invalid, {
@@ -124,9 +126,9 @@ export class MoDefinition implements MoDefinitionInterface {
         const moFieldDef = CommonFieldDefs.mo.clone() as MoFieldDefinition
         moFieldDef.type = 'mo'
         moFieldDef.name = name
-        moFieldDef.twoWays = !!params?.twoWays
-        moFieldDef.reverseFieldName = params?.reverseFieldName || this.name
-        moFieldDef.moName = params?.moname || name
+        // moFieldDef.twoWays = !!params?.twoWays
+        // moFieldDef.reverseFieldName = params?.reverseFieldName || this.name
+        // moFieldDef.moName = params?.moname || name
         this.fieldDefs.set(name, moFieldDef)
         return moFieldDef
     }

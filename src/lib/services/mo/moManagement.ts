@@ -4,9 +4,9 @@ import type { MoDefinitionInterface } from '../../models/managedObjects/MoDefini
 import { MoDefinition } from '../../models/managedObjects/MoDefinition.js'
 import { Rezult } from '../common/message/rezult.js'
 import { ErrorName } from '../common/message/errorName.js'
+import {moDefs} from './moDefManagement.js'
 
 export const moMetas: { [name: string]: MoMetaInterface } = {}
-export const moDefs: { [name: string]: MoDefinitionInterface } = {}
 
 export const registerMoMeta = (moMeta: MoMetaInterface): void => {
   const name = moMeta.name
@@ -21,18 +21,6 @@ export const registerMoMeta = (moMeta: MoMetaInterface): void => {
   } else {
     moDefs[moMeta.moDef.name] = moMeta.moDef
   }
-}
-
-export const registerMoDef = (moDef: MoDefinitionInterface) : void => {
-  const name = moDef.name
-  if (!name) throw new Rezult(ErrorName.missing_param, {param: 'moDef.name'}, 'moManagement.registerMoDef')
-  moDefs[name] = moDef
-}
-
-export const getMoDef = (name: string): MoDefinitionInterface => {
-  const moDef = moDefs[name]
-  if (!moDef) throw new Rezult(ErrorName.resource_not_found, {name})
-  return moDef
 }
 
 export const getMoMeta = (name: string): MoMeta => {

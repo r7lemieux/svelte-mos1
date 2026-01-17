@@ -9,6 +9,8 @@ import {type objectToMoParameters, transp} from './moTransport.js'
 import type {MoFieldDefinition} from '../../models/fields/MoFieldDefinition.js'
 import {isSubclass} from '../common/util/ts.utils.js'
 import {browser} from '$app/environment'
+import type {MoDefinitionInterface} from '../../models/managedObjects/MoDefinitionInterface.js'
+import type {MoMetaInterface} from '../../models/managedObjects/MoMetaInterface.js'
 
 export const moidToObj = (mo: MoidInterface) => {
   const obj: any = {}
@@ -179,14 +181,14 @@ export const objectToMoid = async (obj: any, params?: objectToMoParameters): Pro
       const fname = fDef.name
       if (!params?.mo || Object.hasOwn(obj, fname)) {
         const value = obj[fname]
-        mo[fname] = fDef.valueToField ? fDef.valueToField(value, {trusted: params?.trusted}) : await valueToField(fDef, value, params)
+        mo[fname] = fDef.valueToField ? fDef.valueToField(value, {trusted: params?.trusted}) : await valueToField(moMeta, fDef, value, params)
       }
     }
     return mo
   }
 }
 
-export const valueToField = async (fDef: FieldDefinitionInterface<any>, v: any, params?: objectToMoParameters): Promise<any> => {
+export const valueToField = async (moMeta: MoMetaInterface, fDef: FieldDefinitionInterface<any>, v: any, params?: objectToMoParameters): Promise<any> => {
   const handleError = (message: string) => {
     throw new Rezult(ErrorName.field_invalid, {
       fieldName: fDef.name,
@@ -229,6 +231,8 @@ export const valueToField = async (fDef: FieldDefinitionInterface<any>, v: any, 
         return v
       case 'mo':
         const mofDef= fDef as MoFieldDefinition
+        const relation = moMeta.moDef[fDef.name]
+        if (!relation) throw new Rezult(ErrorName.missing_relation, {mo: moMeta.name, fieldName: fDef.name})
         let moFieldMoname: string = mofDef['moName']
         if (typeof v !== 'object') {
           if (typeof v === 'string') {  // for edit or creation

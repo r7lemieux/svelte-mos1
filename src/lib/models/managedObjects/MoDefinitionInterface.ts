@@ -6,6 +6,7 @@ import type { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
 import type {objectToMoParameters} from '../../services/mo/moTransport.js'
 import {  type moFieldParameters} from '../fields/MoFieldDefinition.js'
 import type {Difference} from "$lib/services/common/util/mo.utils.js";
+import type {RelationDefinition} from './RelationDefinition.js'
 
 export interface MoDefinitionInterface {
 	id: string
@@ -24,6 +25,7 @@ export interface MoDefinitionInterface {
 	gdriveFilePath?: string
 	gdriveFileId?: string | null
 	canCreate: boolean
+    relations: {[fieldname: string]: RelationDefinition}
 
 	init: () => void
 	addFieldDef: (fieldDef: FieldDefinitionInterface<any>) => void
