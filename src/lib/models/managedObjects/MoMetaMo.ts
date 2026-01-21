@@ -13,6 +13,8 @@ import type {MoidInterface, ToMoParams} from './MoidInterface.js'
 import {toDisplayString} from '../../services/common/util/string.utils.js'
 import {getDefaultMoMeta} from './moMetaInstances.js'
 import {Moid} from './Moid.js'
+import type {RelationMeta} from './RelationMeta.js'
+import type {RelationDefinition} from './RelationDefinition.js'
 
 export class MoMetaMo implements MoidInterface, MoMetaInterface {
   moMeta: MoMeta
@@ -23,6 +25,8 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
   moDef: MoDefinitionInterface
   dataSource: DataSourceInterface<MoInterface>
   _isLoaded = true
+  relations: {[fieldname: string]: RelationMeta} = {}
+  relationDefsByFieldname: {[fieldName: string]: RelationDefinition} = {}
 
   constructor(moMeta: MoMetaInterface) {
     this.moMeta = MoMetaMo.moMeta

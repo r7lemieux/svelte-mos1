@@ -1,28 +1,15 @@
-import type {MoDefinitionInterface} from './MoDefinitionInterface.js'
 import type {FieldDefinitionInterface} from '../fields/FieldDefinition.interface.js'
+import type {MoMetaInterface} from './MoMetaInterface.js'
+import type {RelationDefinitionInterface} from './RelationDefinitionInterface.js'
 
-export interface RelationDefinitionInterface {
-    moDefinition1: MoDefinitionInterface
-    moDefinition2: MoDefinitionInterface
-    fieldDef1: FieldDefinitionInterface<any>
-    fieldDef2?: FieldDefinitionInterface<any>
-    min1: number
-    min2: number
-    max1: number
-    max2: number
-    deleteCascade1: DeleteCascadeEnum
-    deleteCascade2: DeleteCascadeEnum
-    reverse?: RelationDefinitionInterface
+export interface RelationMetaInterface {
+    moMeta1: MoMetaInterface
+    moMeta2: MoMetaInterface
+    relationDef: RelationDefinitionInterface
+    reverse?: RelationMetaInterface
 
-    createReverse: () => RelationDefinitionInterface
-    register: ()=> RelationDefinitionInterface
-    setup: () => RelationDefinitionInterface
+    createReverse: () => RelationMetaInterface
+    register: ()=> RelationMetaInterface
+    setup: () => RelationMetaInterface
 }
 
-export const DeleteCascade = {
-    noDelete: 'noDelete',
-    keep: 'keep',
-    cascade: 'cascade',
-    reparent: 'reparent',
-} as const
-export type DeleteCascadeEnum = (typeof DeleteCascade)[keyof typeof DeleteCascade]

@@ -38,7 +38,8 @@
   let formElm: HTMLFormElement
   let sfetchError = $state(OK)
   let fetchError = $derived(() => sfetchError)
-  const uiPath = [...parentUiPath, mo.moMeta.name + '-' + mo.id]
+  const uiPath = $derived([...parentUiPath, mo.moMeta.name + '-' + mo.id])
+  setContext('currentMo', mo)
   const showDelete = () => moMeta.moDef.deletePermission !== DeletePermission.no
   
   const onChange = (fieldId: string, val: any): void => {

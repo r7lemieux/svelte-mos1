@@ -18,15 +18,21 @@
     height = '100px',
     gridId = 'grid',
     listModel, ready
-  }: { height?: string, gridId?: string, listModel: MoListModel, ready: Promise<void> } = $props()
+  }:
+    {
+      height?: string,
+      gridId?: string,
+      listModel: MoListModel,
+      ready: Promise<void>
+    } = $props()
   const model = $derived(listModel)
   let displayName = $state()
   let gridOptions: GridOptions
   let emptyGrid = false
   ModuleRegistry.registerModules([AllCommunityModule])
   let gridApi: GridApi | null = null
-  let dmos = $derived(listModel.mos)
   let smos = $state(listModel.mos)
+  let dmos = $derived(smos)
   let moname = $derived(page.params.moname)
   // OnMount promise
   let resolveSvelte: Function

@@ -57,7 +57,7 @@
 
   const size = $derived(value?.length)
   let showDetailToggle = $state(false)
-  let openPaths = getContext('openPaths') as string[]
+  let openPaths = getContext('openPaths') as string[] // path of the open branches in the tree
   let showDetails = $derived(showDetailToggle || !!openPaths[uiPath.join('_')])
   const toggle = () => {
     showDetailToggle = !showDetailToggle

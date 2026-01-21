@@ -69,7 +69,7 @@ export class RelationDefinition implements RelationDefinitionInterface  {
 export const RelationDefs: {[moDefname:string]:{[fieldname:string] : RelationDefinition}} = {}
 export const getRelationDefs = () => Object.values(RelationDefs).map(o => Object.values(o)).flat()
 
-export const initRelations = () => {
+export const initRelationDefs = () => {
     initDefaultRelationDefs()
     createReverses()
     linkMoDefs()

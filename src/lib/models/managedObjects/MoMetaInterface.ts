@@ -5,13 +5,14 @@ import type {MoidInterface} from './MoidInterface.js'
 import {Rezult} from '../../services/common/message/rezult.js'
 import {ErrorName} from '../../services/common/message/errorName.js'
 import type {RelationDefinition} from "$lib/models/managedObjects/RelationDefinition.js";
+import type {RelationMeta} from './RelationMeta.js'
 
 export interface MoMetaInterface {
 	name: string
 	dbName: string
 	moDef: MoDefinitionInterface
 	dataSource: DataSourceInterface<MoInterface>
-	relationDefs: RelationDefinition[]
+    relations: {[fieldname: string]: RelationMeta}
 	relationDefsByFieldname: {[fieldName: string]: RelationDefinition}
 	newMo: () => MoInterface
 	objToMoid: (any, MoInterface?) => Promise<MoidInterface>

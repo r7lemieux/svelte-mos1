@@ -16,6 +16,7 @@
   import {ErrorName} from '$lib/services/common/message/errorName.js'
   import type {FieldMo} from '$lib/models/fields/FieldMo.js'
   import MoSelect from './MoSelectField.svelte'
+  import {getContext} from 'svelte'
   
   let {
     fieldDef,
@@ -44,8 +45,10 @@
   // export let level: number = 1
   // export let viewMode: MoViewModeEnum
   const moFieldDef = $state((fieldDef || value.moMeta.fieldDef) as MoFieldDefinition)
-  const moName = $derived(moFieldDef.moName)
-  const moMeta = $derived(getMoMeta(moName))
+  const currentMo = getContext('currentMo') as MoidInterface
+  const relation = currentMo.moMeta.relations[fieldDef.name]
+  const moName = $derived(relation.moMeta2.name)
+  const moMeta = $derived(relation.moMeta2)
   // let fieldDefs: FieldDefinitionInterface<any>[] = $derived(Array.from(moMeta.moDef.fieldDefs.values()))
   let smoid = $state(value as MoidInterface)
   let moid = $derived(smoid as MoidInterface)

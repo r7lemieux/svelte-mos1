@@ -10,13 +10,14 @@ import type {MoidInterface} from './MoidInterface.js'
 import {objectToMo, objectToMoid} from '../../services/mo/moTransport.implementation.js'
 import type {objectToMoParameters} from '../../services/mo/moTransport.js'
 import type {RelationDefinition} from "$lib/models/managedObjects/RelationDefinition.js";
+import type {RelationMeta} from './RelationMeta.js'
 
 export class MoMeta implements MoMetaInterface {
   name: string = ''
   dbName: string = ''
   moDef: MoDefinitionInterface
   dataSource: DataSourceInterface<MoInterface>
-  relationDefs: RelationDefinition[] = []
+  relations: {[fieldname: string]: RelationMeta} = {}
   relationDefsByFieldname: {[fieldName: string]: RelationDefinition} = {}
 
   constructor(moDef: MoDefinitionInterface, params?: Partial<MoMeta>) {

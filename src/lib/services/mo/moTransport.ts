@@ -1,6 +1,7 @@
 import type {MoidInterface, ToMoParams} from '../../models/managedObjects/MoidInterface.js'
 import type {MoInterface} from '../../models/managedObjects/MoInterface.js'
 import type {FieldDefinitionInterface} from '../../models/fields/FieldDefinition.interface.js'
+import type {MoMetaInterface} from '../../models/managedObjects/MoMetaInterface.js'
 
 export interface objectToMoParameters extends ToMoParams {
   _moname?: string
@@ -14,7 +15,7 @@ export const transp = {
   valueToObject: (value: any): any => {throw new Error('transp is not initialized')},
   objectToMo: (obj: any, params?: objectToMoParameters): Promise<MoInterface> => {return Promise.reject('transp is not initialized') },
   objectToMoid: (obj: any, params?: objectToMoParameters): Promise<MoidInterface> => {return Promise.reject('transp is not initialized') },
-  valueToField: (fDef: FieldDefinitionInterface<any>, v: any, params?:objectToMoParameters): Promise<any> => { return Promise.reject('transp is not initialized')},
+  valueToField: (moMeta: MoMetaInterface, fDef: FieldDefinitionInterface<any>, v: any, params?:objectToMoParameters): Promise<any> => { return Promise.reject('transp is not initialized')},
   objectToMoidSync: (obj: any, params?: objectToMoParameters): MoidInterface => { throw new Error('transp is not initialized') },
-  valueToFieldSync: (fDef: FieldDefinitionInterface<any>, v: any, params?:objectToMoParameters): any => { throw new Error('transp is not initialized') }
+  valueToFieldSync: (moMeta: MoMetaInterface, fDef: FieldDefinitionInterface<any>, v: any, params?:objectToMoParameters): any => { throw new Error('transp is not initialized') }
 }

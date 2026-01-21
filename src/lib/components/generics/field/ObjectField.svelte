@@ -21,10 +21,10 @@
   // export let value: any
   // export let level: number = 1
   // export let viewMode: MoViewModeEnum
-  const fd = fieldDef || value.moMeta.fieldDef
+  const fd = $derived(fieldDef || value.moMeta.fieldDef)
   
   let disabled = $derived(!!viewMode)
-  const size = value ? Object.keys(value).length : 0
+  const size = $derived(value ? Object.keys(value).length : 0)
   const ui = {}
   let changed = event => {
     const fieldId = event.srcElement.id
@@ -33,7 +33,7 @@
   }
   let showDetails = $state(false)
   
-  const displayName = (value.getDisplayName) ? (value.getDisplayName()) : (value.name || value.constructor.name)
+  const displayName = $derived((value.getDisplayName) ? (value.getDisplayName()) : (value.name || value.constructor.name))
   const toogle = () => {
     showDetails = !showDetails
     sizeLabels()

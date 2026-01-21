@@ -3,9 +3,11 @@ import type {MoDefinitionInterface} from '../../models/managedObjects/MoDefiniti
 import {Rezult} from '../common/message/rezult.js'
 import {ErrorName} from '../common/message/errorName.js'
 import type {DataSourceInterface, DeleteResult, SaveMoParams} from './DataSource.interface.js'
-import {DeleteCascade, type MoFieldDefinition} from '../../models/fields/MoFieldDefinition.js'
+import {type MoFieldDefinition} from '../../models/fields/MoFieldDefinition.js'
 import {getMoMeta} from '../mo/moManagement.js'
 import type {MoidInterface} from '../../models/managedObjects/MoidInterface.js'
+import {RelationMetas} from '../../models/managedObjects/RelationMeta.js'
+import {DeleteCascade} from '../../models/managedObjects/RelationDefinitionInterface.js'
 
 
 export class HeapDataSource<M extends MoInterface> implements DataSourceInterface<M> {
@@ -31,25 +33,28 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
   saveMo = async (mo: M, params?: SaveMoParams) => {
     // console.log(`==>Heap.dataSource.ts:saveMo mo.id`, mo.id, this.nextId)
     if (!mo) throw new Rezult(ErrorName.missing_param)
+      const moMeta = mo.moMeta
     this.records[mo[this.keyname!]] = mo
-    const twoWayFieldDefs = this.moDef.getFieldDefs({twoWays: true}) as MoFieldDefinition[]
-    for (const fd of twoWayFieldDefs) {
-      const reverseName = fd.reverseFieldName
-      if (!reverseName) {
-        console.log(`==>Heap.dataSource.ts.saveMo:40 No reverseName ${this.moDef?.name} ${fd?.name}`)
+      const twoWaysRelation = Object.values(RelationMetas[moMeta.name]).filter(rel => !!rel.reverse)
+    for (const relation of twoWaysRelation) {
+        const reverseMoMeta = relation.moMeta2
+        const relationDef = relation.relationDef
+        const fieldname = relationDef.fieldDef1.name
+        const reverseFieldname = relationDef.fieldDef2?.name
+      if (!reverseFieldname) {
+        console.log(`==>Heap.dataSource.ts.saveMo:40 No reverseName ${this.moDef?.name} ${fieldname}`)
         continue
       }
-      console.log(`==>Heap.dataSource.ts.saveMo:38 fd`, fd)
-      const reverseMoMeta = getMoMeta(fd.moName!)
-      const id = mo[fd.name].id
-      const reverseFieldDef = reverseMoMeta.moDef.fieldDefs.get(reverseName)
+      console.log(`==>Heap.dataSource.ts.saveMo:38 ${fieldname} reverseName`, reverseFieldname)
+      const id = mo[fieldname].id
+      const reverseFieldDef = relationDef.fieldDef2
       if (!reverseFieldDef) {
         throw new Rezult(ErrorName.missing_field, {
           missing: 'reverseFieldDef',
-          reverseField: reverseName,
+          reverseField: reverseFieldname,
           moDef: this.moDef?.name,
           id: mo.id,
-          field: fd?.name,
+          field: fieldname,
           reverseId: id
         })
       }
@@ -59,24 +64,24 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
           throw new Rezult(ErrorName.missing_reverse_mo, {
             moDef: this.moDef?.name,
             id: mo.id,
-            field: fd?.name,
+            field: fieldname,
             reverseId: id,
-            reverseField: reverseName
+            reverseField: reverseFieldname
           })
         }
       } else {
         if (reverseFieldDef.type === 'mo') {
-          reverseMo[reverseName] = mo.toMoid()
+          reverseMo[reverseFieldname] = mo.toMoid()
         } else if (reverseFieldDef.type === 'moArray') {
-          const reverseMoFields = reverseMo[reverseName] as MoidInterface[]
+          const reverseMoFields = reverseMo[reverseFieldname] as MoidInterface[]
           if (!reverseMoFields) {
-            reverseMo[reverseName] = [mo.toMoid()]
+            reverseMo[reverseFieldname] = [mo.toMoid()]
           } else {
             const index = reverseMoFields.findIndex(m => m.id === mo.id)
             if (index >= 0) {
-              reverseMo[reverseName][index] = mo.toMoid()
+              reverseMo[reverseFieldname][index] = mo.toMoid()
             } else {
-              reverseMo[reverseName].push(mo.toMoid())
+              reverseMo[reverseFieldname].push(mo.toMoid())
             }
           }
         }
@@ -127,8 +132,8 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
 
     // no Delete
     // const noDeleteMoFields = this.moDef.getFieldDefs({deleteCascade: DeleteCascade.noDelete}).filter(fd => !!mo[fd.name])
-    const noDeleteMoFields = moFieldDefs.filter(fd => fd.deleteCascade === DeleteCascade.noDelete && !!mo[fd.name])
-    const noDeleteMoArrayFields = moArrayFieldDefs.filter(fd => fd.deleteCascade === DeleteCascade.noDelete && !!mo[fd.name])
+    const noDeleteMoFields = moFieldDefs.filter(fd => fd.relation.deleteCascade1 === DeleteCascade.noDelete && !!mo[fd.name])
+    const noDeleteMoArrayFields = moArrayFieldDefs.filter(fd => fd.relation.deleteCascade1 === DeleteCascade.noDelete && !!mo[fd.name])
     const noDeleteMos = {}
     for (const fd of noDeleteMoFields) noDeleteMos[fd.name] = (mo[fd.name] as MoidInterface).toMoid()
     for (const fd of noDeleteMoArrayFields) noDeleteMos[fd.name] = (mo[fd.name].map((dmf: MoidInterface) => dmf.toMoid()))
@@ -137,8 +142,8 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
     }
 
     // Cascade
-    const cascadeMoFields = moFieldDefs.filter(fd => fd.deleteCascade === DeleteCascade.cascade && !!mo[fd.name])
-    const cascadeMoArrayFields = moArrayFieldDefs.filter(fd => fd.deleteCascade === DeleteCascade.cascade && !!mo[fd.name])
+    const cascadeMoFields = moFieldDefs.filter(fd => fd.relation.deleteCascade1 === DeleteCascade.cascade && !!mo[fd.name])
+    const cascadeMoArrayFields = moArrayFieldDefs.filter(fd => fd.relation.deleteCascade1 === DeleteCascade.cascade && !!mo[fd.name])
     const depMoToDelete: MoidInterface[] = []
     for (const fd of cascadeMoFields) depMoToDelete.push((mo[fd.name] as MoidInterface).toMoid())
     for (const fd of cascadeMoArrayFields) depMoToDelete.push(...(mo[fd.name].map((dmf: MoidInterface) => dmf.toMoid())))

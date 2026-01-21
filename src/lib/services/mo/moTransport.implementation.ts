@@ -9,7 +9,6 @@ import {type objectToMoParameters, transp} from './moTransport.js'
 import type {MoFieldDefinition} from '../../models/fields/MoFieldDefinition.js'
 import {isSubclass} from '../common/util/ts.utils.js'
 import {browser} from '$app/environment'
-import type {MoDefinitionInterface} from '../../models/managedObjects/MoDefinitionInterface.js'
 import type {MoMetaInterface} from '../../models/managedObjects/MoMetaInterface.js'
 
 export const moidToObj = (mo: MoidInterface) => {
@@ -231,22 +230,25 @@ export const valueToField = async (moMeta: MoMetaInterface, fDef: FieldDefinitio
         return v
       case 'mo':
         const mofDef= fDef as MoFieldDefinition
-        const relation = moMeta.moDef[fDef.name]
-        if (!relation) throw new Rezult(ErrorName.missing_relation, {mo: moMeta.name, fieldName: fDef.name})
+          const relationMeta = moMeta.relations[fDef.name]
+          const relationDef = relationMeta?.relationDef
+        if (!relationDef) return handleError('no relationDef')
         let moFieldMoname: string = mofDef['moName']
         if (typeof v !== 'object') {
           if (typeof v === 'string') {  // for edit or creation
             if (browser) {
               return v
             } else {
-              return await idToMoid(v, mofDef.moName)
+              return await idToMoid(v, relationMeta.moMeta2.name)
             }
           } else {
             return handleError('not object, not string');
           }
         }
         if (v._moname) {
-          if (!isMoSubclass(v._moname, mofDef.moName))
+            // const moFieldMoMeta = getMoMeta(v._moname)
+            // const moFieldMoDef = moMeta.moDef
+          if (!isMoSubclass(v._moname, relationMeta.moMeta2.name))
           return handleError('not subclass');
         }
         moFieldMoname = v._moname || moFieldMoname
@@ -262,7 +264,7 @@ export const valueToField = async (moMeta: MoMetaInterface, fDef: FieldDefinitio
             if (fDef.itemValueFieldDef?.valueToField) {
               return fDef.itemValueFieldDef.valueToField(item, {trusted: params?.trusted})
             } else {
-              return await valueToField(fDef, item, params)
+              return await valueToField(moMeta, fDef, item, params)
             }
           })
         } else {
@@ -270,15 +272,15 @@ export const valueToField = async (moMeta: MoMetaInterface, fDef: FieldDefinitio
         }
       case 'moArray': {
         if (!Array.isArray(v)) return handleError('not array')
-        const mofDef = fDef // as MoFieldDefinition
-        return Promise.all(v.map(async(item) => await objectToMoid(item, {_moname: mofDef['moName']})))
+        const relationMeta = moMeta.relations[fDef.name]
+        return Promise.all(v.map(async(item) => await objectToMoid(item, {_moname: relationMeta.moMeta2.name})))
       }
       case 'map': {
         if (typeof v === 'object') {
           if (fDef.itemValueFieldDef) {
             const newMap = new Map()
             for (let [k, itemVal] of Object.entries(v)) {
-              const fieldValue = await valueToField(fDef.itemValueFieldDef, itemVal, params)
+              const fieldValue = await valueToField(moMeta, fDef.itemValueFieldDef, itemVal, params)
               newMap.set(k, fieldValue)
             }
             return newMap
@@ -445,14 +447,14 @@ export const objectToMoidSync = (obj: any, params?: objectToMoParameters): MoidI
       const fname = fDef.name
       if (!params?.mo || Object.hasOwn(obj, fname)) {
         const value = obj[fname]
-        mo[fname] = fDef.valueToField ? fDef.valueToField(value, {trusted: params?.trusted}) : valueToFieldSync(fDef, value, params)
+        mo[fname] = fDef.valueToField ? fDef.valueToField(value, {trusted: params?.trusted}) : valueToFieldSync(moMeta, fDef, value, params)
       }
     }
     return mo
   }
 }
 
-export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, params?: objectToMoParameters): any => {
+export const valueToFieldSync = (moMeta: MoMetaInterface, fDef: FieldDefinitionInterface<any>, v: any, params?: objectToMoParameters): any => {
   const handleError = (message: string) => {
     throw new Rezult(ErrorName.field_invalid, {
       fieldName: fDef.name,
@@ -496,11 +498,12 @@ export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, pa
       case 'mo':
         const mofDef= fDef as MoFieldDefinition
         let moFieldMoname: string = mofDef['moName']
+          const relationMeta = moMeta.relations[fDef.name]
         if (typeof v !== 'object') {
             return handleError('not object, not string');
           }
         if (v._moname) {
-          if (!isMoSubclass(v._moname, mofDef.moName))
+          if (!isMoSubclass(v._moname, relationMeta.moMeta2.name))
             return handleError('not subclass');
         }
         moFieldMoname = v._moname || moFieldMoname
@@ -516,7 +519,7 @@ export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, pa
             if (fDef.itemValueFieldDef?.valueToField) {
               return fDef.itemValueFieldDef.valueToField(item, {trusted: params?.trusted})
             } else {
-              return valueToFieldSync(fDef, item, params)
+              return valueToFieldSync(moMeta, fDef, item, params)
             }
           })
         } else {
@@ -532,7 +535,7 @@ export const valueToFieldSync = (fDef: FieldDefinitionInterface<any>, v: any, pa
           if (fDef.itemValueFieldDef) {
             const newMap = new Map()
             for (let [k, itemVal] of Object.entries(v)) {
-              const fieldValue = valueToFieldSync(fDef.itemValueFieldDef, itemVal, params)
+              const fieldValue = valueToFieldSync(moMeta, fDef.itemValueFieldDef, itemVal, params)
               newMap.set(k, fieldValue)
             }
             return newMap

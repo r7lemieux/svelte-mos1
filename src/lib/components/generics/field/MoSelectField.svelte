@@ -11,6 +11,7 @@
   import type {MoInterface} from '../../../models/managedObjects/MoInterface.js'
   import {page} from '$app/state'
   import {objectToMoidSync} from '../../../services/mo/moTransport.implementation.js'
+  import {RelationMetas} from '../../../models/managedObjects/RelationMeta.js'
   
   let {
     moFieldDef,
@@ -33,6 +34,7 @@
   
   const fd = moFieldDef
   const fname = moFieldDef.name
+  // const relationMeta = RelationMetas[]
   let s_options = $state(!!mosOptions.length? mosOptions: moSelected? [moSelected] : [] )
   // moItemFieldDef.type = 'mo' // delete
   const uiPath = parentUiPath
@@ -47,14 +49,15 @@
   }
   let loading = false
   let loaded = false
-  
+  const currentMo = getContext('currentMo') as MoInterface
+  const relation = currentMo.moMeta.relations[moFieldDef.name]
   const isSelected = (moid: MoidInterface) => !!moSelected?.isSameAs(moid)
   // let inputFormEl: HTMLInputElement
   // let inputUiEl: HTMLInputElement
   const loadOptions = () => {
     if (loading || loaded) return
     loading = true
-    const url = `${page.url.origin}/api/mo/${moFieldDef.moName}`
+    const url = `${page.url.origin}/api/mo/${relation.moMeta2.name}`
     fetch(url)
       .then(response => response.json())
       .then((responseData) => Promise.all(responseData.map((obj:any) => objectToMoidSync(obj))))
@@ -87,7 +90,7 @@
 </svelte:head>
 
 <span class="value">
-  {#if fd.max > 1}
+  {#if relation.relationDef.max1 > 1}
     <span class="count" onclick={toggle} onkeydown={toggle} role="button" tabindex="0">
       <span class="detail-icon detail-arrow {showDetails?'open':'closed'}">
       </span>
