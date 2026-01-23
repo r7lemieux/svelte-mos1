@@ -16,8 +16,8 @@ import type {MoInterface} from './MoInterface.js'
 import type {MoidInterface} from './MoidInterface.js'
 import {Moid} from './Moid.js'
 import {MoFieldDefinition} from '../fields/MoFieldDefinition.js'
-import type {objectToMoParameters} from '$lib/services/mo/moTransport.js'
-import type {Difference} from '$lib/services/common/util/mo.utils.js'
+import type {objectToMoParameters} from '../../services/mo/moTransport.js'
+import type {Difference} from '../../services/common/util/mo.utils.js'
 import type {RelationDefinition} from './RelationDefinition.js'
 
 export class MoDefinitionMo extends Mo implements MoDefinitionInterface {

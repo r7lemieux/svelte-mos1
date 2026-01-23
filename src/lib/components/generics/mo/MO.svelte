@@ -1,12 +1,12 @@
 <script lang="ts">
-	import {toDisplayString} from '$lib/services/common/util/string.utils.js'
+	import {toDisplayString} from '../../../services/common/util/string.utils.js'
 	import SimpleMo from '../simpleMo/SimpleMo.svelte'
 	import MoDefMo from '../../app/mo/moDefMo/MoDefMo.svelte'
 	import MoMetaMo from '../../app/mo/moMetaMo/MoMetaMo.svelte'
-	import type {MoInterface} from '$lib/models/managedObjects/MoInterface.js'
-	import {MoDefinitionMo} from '$lib/models/managedObjects/MoDefinitionMo.js'
+	import type {MoInterface} from '../../../models/managedObjects/MoInterface.js'
+	import {MoDefinitionMo} from '../../../models/managedObjects/MoDefinitionMo.js'
 	import Init from '../../common/Init.svelte'
-	import {initMoTransport} from "$lib/services/mo/moTransport.implementation.js";
+	import {initMoTransport} from "../../../services/mo/moTransport.implementation.js";
 
 	initMoTransport()
   let {mo}: {mo:MoInterface} = $props()

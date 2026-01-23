@@ -6,7 +6,7 @@ import {registerMoDef} from '../../lib/services/mo/moDefManagement.js'
 
 // import { qqsp1 } from 'svelte-mos'
 // import
-// {getContactMoMeta} from '$lib/models/common/Contact.js'
+// {getContactMoMeta} from '../models/common/Contact.js'
 
 let mosRegistered = false
 export const registerMos = () => {

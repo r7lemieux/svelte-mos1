@@ -16,10 +16,10 @@ import type {MoInterface} from './MoInterface.js'
 import {objectToMo, objectToMoid} from '../../services/mo/moTransport.implementation.js'
 import type {MoFieldDefinition} from '../fields/MoFieldDefinition.js'
 import {type objectToMoParameters} from '../../services/mo/moTransport.js'
-import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
+import type {MoidInterface} from './MoidInterface.js'
 import type {FieldDefinitionInterface} from '../fields/FieldDefinition.interface.js'
 import {pluralize, singularize} from "inflection";
-import type {Difference} from "$lib/services/common/util/mo.utils.js";
+import type {Difference} from "../../services/common/util/mo.utils.js";
 import type {RelationDefinition} from './RelationDefinition.js'
 // import { defaultMoMeta } from './moMetaInstances.js'
 // import type { MoMetaInterface } from './MoMetaInterface.js'

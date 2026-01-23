@@ -4,7 +4,7 @@ import type { MoDefinitionInterface } from './MoDefinitionInterface.js'
 import type {MoidInterface} from './MoidInterface.js'
 import {Rezult} from '../../services/common/message/rezult.js'
 import {ErrorName} from '../../services/common/message/errorName.js'
-import type {RelationDefinition} from "$lib/models/managedObjects/RelationDefinition.js";
+import type {RelationDefinition} from "./RelationDefinition.js";
 import type {RelationMeta} from './RelationMeta.js'
 
 export interface MoMetaInterface {

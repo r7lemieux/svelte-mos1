@@ -9,7 +9,7 @@ import {HeapDataSource} from '../../services/db/Heap.dataSource.js'
 import type {MoidInterface} from './MoidInterface.js'
 import {objectToMo, objectToMoid} from '../../services/mo/moTransport.implementation.js'
 import type {objectToMoParameters} from '../../services/mo/moTransport.js'
-import type {RelationDefinition} from "$lib/models/managedObjects/RelationDefinition.js";
+import type {RelationDefinition} from "./RelationDefinition.js";
 import type {RelationMeta} from './RelationMeta.js'
 
 export class MoMeta implements MoMetaInterface {

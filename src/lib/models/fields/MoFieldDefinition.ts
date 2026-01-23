@@ -1,5 +1,5 @@
 import {FieldDefinition} from './FieldDefinition.js'
-import {type DeletePermissionEnum} from '$lib/models/managedObjects/MoDefinitionInterface.js'
+import {type DeletePermissionEnum} from '../managedObjects/MoDefinitionInterface.js'
 import type {DeleteCascadeEnum, RelationDefinitionInterface} from '../managedObjects/RelationDefinitionInterface.js'
 
 export class MoFieldDefinition extends FieldDefinition<any> {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {MoViewMode, type MoViewModeEnum} from '$lib/constants/ui.js'
+  import {MoViewMode, type MoViewModeEnum} from '../../../constants/ui.js'
   // import { AiOutlineCaretDown } from 'svelte-icons-pack/ai'
   // import { AiOutlineCaretRight } from 'svelte-icons-pack/ai'
   // import AiOutlineCaretDown from 'svelte-icons-pack/ai/AiOutlineCaretDown'

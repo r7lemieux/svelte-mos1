@@ -1,10 +1,10 @@
-// import {getMoMeta, moDefs, moMetas} from '$lib/services/mo/moManagement.js'
-// import type {MoDefinitionInterface} from '$lib/models/managedObjects/MoDefinitionInterface.js'
-// import type {MoFieldDefinition} from '$lib/models/fields/MoFieldDefinition.js'
-// import {ErrorName} from '$lib/services/common/message/errorName.js'
-// import {Rezult} from '$lib/services/common/message/rezult.js'
+// import {getMoMeta, moDefs, moMetas} from './moManagement.js'
+// import type {MoDefinitionInterface} from '../../models/managedObjects/MoDefinitionInterface.js'
+// import type {MoFieldDefinition} from '../../models/fields/MoFieldDefinition.js'
+// import {ErrorName} from '../../services/common/message/errorName.js'
+// import {Rezult} from '../../services/common/message/rezult.js'
 // import {pluralize} from 'inflection'
-// import {getClosestName, levenshteinRank} from '$lib/services/common/util/fieldMatcher.js'
+// import {getClosestName, levenshteinRank} from '../../services/common/util/fieldMatcher.js'
 //
 // export const validateAllReferenceDefs = () => {
 //     for (const moDef of Object.values(moDefs)) {

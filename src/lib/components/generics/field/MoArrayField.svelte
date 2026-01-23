@@ -1,15 +1,15 @@
 <script lang="ts">
-  import {MoViewMode, type MoViewModeEnum} from '$lib/constants/ui.js'
-  import type {FieldDefinition} from '$lib/models/fields/FieldDefinition.js'
+  import {MoViewMode, type MoViewModeEnum} from '../../../constants/ui.js'
+  import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   // import { AiOutlineCaretDown } from 'svelte-icons-pack/ai'
   // import { AiOutlineCaretRight } from 'svelte-icons-pack/ai'
   // import AiOutlineCaretDown from 'svelte-icons-pack/ai/AiOutlineCaretDown'
   // import AiOutlineCaretRight from 'svelte-icons-pack/ai/AiOutlineCaretRight'
   import './field.css'
-  import {type MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
-  import type {MoFieldDefinition} from '$lib/models/fields/MoFieldDefinition.js'
+  import {type MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
+  import type {MoFieldDefinition} from '../../../models/fields/MoFieldDefinition.js'
   import MoField from './MoField.svelte'
-  import type {FieldMo} from '$lib/models/fields/FieldMo.js'
+  import type {FieldMo} from '../../../models/fields/FieldMo.js'
   import {getContext} from 'svelte'
 
   let {

@@ -11,10 +11,10 @@ export class RelationDefinition implements RelationDefinitionInterface  {
     moDefinition2: MoDefinitionInterface
     fieldDef1: FieldDefinitionInterface<any>
     fieldDef2?: FieldDefinitionInterface<any>
-    min1: number = 1
-    min2: number = 1
-    max1: number = 1
-    max2: number = 1
+    min1: number = 0
+    min2: number = 0
+    max1: number = -1
+    max2: number = -1
     deleteCascade1: DeleteCascadeEnum = DeleteCascade.keep
     deleteCascade2: DeleteCascadeEnum = DeleteCascade.keep
     reverse?: RelationDefinitionInterface

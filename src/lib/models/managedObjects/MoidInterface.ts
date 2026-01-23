@@ -1,5 +1,5 @@
 import type {MoMetaInterface} from './MoMetaInterface.js'
-import type {MoInterface} from '$lib/models/managedObjects/MoInterface.js'
+import type {MoInterface} from './MoInterface.js'
 import type {objectToMoParameters} from '../../services/mo/moTransport.js'
 
 export interface MoidInterface {

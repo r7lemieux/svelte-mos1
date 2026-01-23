@@ -6,7 +6,7 @@ import type {ColDef} from 'ag-grid-community'
 import {copyOwnProperties} from '../../services/common/util/ts.utils.js'
 import type {InputTypes} from '../../services/common/util/dom.utils.js'
 import {type objectToMoParameters, transp} from '../../services/mo/moTransport.js'
-// import {objectToMoid, valueToField} from '$lib/services/mo/moTransport.implementation.js'
+// import {objectToMoid, valueToField} from '../../services/mo/moTransport.implementation.js'
 // import type { ValueFormatterFunc } from 'ag-grid-community/dist/lib/entities/colDef.js'
 // Singleton
 export class FieldDefinition<T> implements FieldDefinitionInterface<T> {
