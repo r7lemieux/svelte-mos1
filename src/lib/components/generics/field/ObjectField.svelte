@@ -21,7 +21,7 @@
   // export let value: any
   // export let level: number = 1
   // export let viewMode: MoViewModeEnum
-  const fd = $derived(fieldDef || value.moMeta.fieldDef)
+  const fd = $derived(fieldDef || value._moMeta.fieldDef)
   
   let disabled = $derived(!!viewMode)
   const size = $derived(value ? Object.keys(value).length : 0)
@@ -54,9 +54,7 @@
   }
   const seTreeLineHeight = (ele: Element) => ele?.parentElement?.offsetHeight
   
-  const keys = value ?
-               (Object.keys(value).filter(k => typeof value[k] !== 'function')) :
-    []
+  const keys = value ? (Object.keys(value).filter(k => typeof value[k] !== 'function')) : []
 </script>
 
 <div class="field ObjectField">

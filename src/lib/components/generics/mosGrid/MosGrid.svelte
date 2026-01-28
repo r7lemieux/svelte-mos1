@@ -31,6 +31,7 @@
   let emptyGrid = false
   ModuleRegistry.registerModules([AllCommunityModule])
   let gridApi: GridApi | null = null
+  // svelte-ignore state_referenced_locally
   let smos = $state(listModel.mos)
   let dmos = $derived(smos)
   let moname = $derived(page.params.moname)
@@ -46,7 +47,7 @@
     const gridOptions = createGridOptions()
     if (gridApi) gridApi.updateGridOptions(gridOptions)
   })
-  
+  // svelte-ignore state_referenced_locally
   Promise.all([ready, svelteReadyPromise])
     .then(() => {
       smos = model.mos
@@ -104,7 +105,7 @@
   }
   
   const goToView = (mo) => {
-    goto(`/mo/${mo.moMeta.name}/${mo.id}`)
+    goto(`/mo/${mo._moMeta.name}/${mo.id}`)
       .then(r => {
         console.log(`==>MosGrid.svelte:67 r`, r)
         return r

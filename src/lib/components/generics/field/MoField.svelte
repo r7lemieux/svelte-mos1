@@ -6,7 +6,6 @@
   import type {MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
   import type {FieldDefinitionInterface} from '../../../models/fields/FieldDefinition.interface.js'
   import type {MoFieldDefinition} from '../../../models/fields/MoFieldDefinition.js'
-  import {getMoMeta} from '../../../services/mo/moManagement.js'
   import type {MoInterface} from '../../../models/managedObjects/MoInterface.js'
   import Field from './Field.svelte'
   import {goto} from '$app/navigation'
@@ -22,6 +21,7 @@
     fieldDef,
     fieldname,
     value,
+    parentMo,
     level = 1,
     viewMode = MoViewMode.view,
     onChange,
@@ -32,6 +32,7 @@
     fieldDef: FieldDefinitionInterface<any>,
     fieldname: string,
     value: any,
+    parentMo: MoidInterface,
     level: number,
     viewMode: MoViewModeEnum,
     onChange: any,
@@ -44,43 +45,43 @@
   // export let value: any
   // export let level: number = 1
   // export let viewMode: MoViewModeEnum
-  const moFieldDef = $state((fieldDef || value.moMeta.fieldDef) as MoFieldDefinition)
+  const moFieldDef = $derived(fieldDef as MoFieldDefinition)
   const currentMo = getContext('currentMo') as MoidInterface
-  const relation = currentMo.moMeta.relations[fieldDef.name]
+  const relation = $derived(parentMo._moMeta.relations[moFieldDef.name])
   const moName = $derived(relation.moMeta2.name)
   const moMeta = $derived(relation.moMeta2)
   // let fieldDefs: FieldDefinitionInterface<any>[] = $derived(Array.from(moMeta.moDef.fieldDefs.values()))
-  let smoid = $state(value as MoidInterface)
-  let moid = $derived(smoid as MoidInterface)
-  const uiPath = [...parentUiPath]
-  const label = inArray ? '' : fieldDef?.getDisplayName()
+  // let moid = $derived(value as MoidInterface)
+  const uiPath = $derived([...parentUiPath])
+  const label = $derived(inArray ? '' : moFieldDef?.getDisplayName())
   
   let showDetails = $state(false)
   let loading = $state(false)
-  let mo: MoInterface | null = $state(null)
-  let d_mo: MoInterface | null = $derived(mo)
+  let moid: MoidInterface = $derived(value as MoidInterface)
+  let fullMo: MoInterface | null = $state(null)
+  let d_fullMo: MoInterface | null = $derived(fullMo)
   let showFieldDefs = $derived(moMeta.moDef.showFieldnames.map(fn => moMeta.moDef.fieldDefs.get(fn)).filter(fd => !!fd))
-  let moSelected: MoInterface = $state(value as MoInterface)
   let mosOptions: MoInterface[] = []
-  const subViewMode = (viewMode === MoViewMode.view) ? MoViewMode.view : MoViewMode.subEdit
+  // const subViewMode = $derived((viewMode === MoViewMode.view) ? MoViewMode.view : MoViewMode.subEdit)
   // if (viewMode === 'create' || viewMode === 'edit') loadOptions()
   // let changed = event => {
   //   const fieldId = event.srcElement.id
   //   const value = event.srcElement.value
   //   onChange(fieldId, value)
   // }
+
   async function fetchDetails() {
     loading = true
     const url = `/api/mo/${moName}/${moid?.id}`
     const res = await fetch(url)
     const obj = await res.json()
-    mo = await moMeta.objToMo(obj)
+    fullMo = await moMeta.objToMo(obj)
     loading = false
   }
   
   async function toggle() {
     showDetails = !showDetails
-    if (showDetails && !mo) {
+    if (showDetails && !fullMo) {
       await fetchDetails()
     }
     //sizeLabels()
@@ -88,8 +89,8 @@
   
   const onMoChange = async (selectedMo?: MoidInterface) => {
     if (selectedMo) {
-      mo = await selectedMo?.toMo({trusted:false})
-      onChange(fieldname, mo)
+      fullMo = await selectedMo?.toMo({trusted:false})
+      onChange(fieldname, fullMo)
     }
   }
   const onLinkClick = () => {
@@ -108,7 +109,13 @@
   }
   $effect(() => {
     sizeLabels()
+    const rel = currentMo._moMeta.relations[moFieldDef.name]
+    if (!rel) {
+      console.log(`==>MoField.svelte:111  currentMo`, currentMo)
+    }
+    
   })
+  const moSelected = $derived(moid as MoInterface)
 </script>
 <div class="field moField" data-fdtype={moFieldDef.type} style="margin-left:{level*12}px;">
   <label for={fieldname}>{label}</label>
@@ -136,12 +143,12 @@
   {#if showDetails}
     {#if loading}
       <span class="loading" style="margin-left:{level*12}px;">Loading…</span>
-    {:else if d_mo}
+    {:else if d_fullMo}
       <!--    <p>moMeta.moDef.showFieldNames {moMeta.moDef.showFieldnames}</p>-->
       <!--    <p>showFieldDefs {showFieldDefs}</p>-->
       <!--    <p>{moMeta.moDef.fieldDefs.keys()}</p>-->
       {#each showFieldDefs as fd}
-        <Field fieldDef={fd} value={d_mo[fd.name]} viewMode={MoViewMode.subEdit} {onChange} parentUiPath={uiPath} level={level + 1 }/>
+        <Field fieldDef={fd} value={d_fullMo[fd.name]} mo={d_fullMo} viewMode={MoViewMode.subEdit} {onChange} parentUiPath={uiPath} level={level + 1 } />
       {/each}
     {/if}
   {/if}

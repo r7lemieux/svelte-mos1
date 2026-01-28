@@ -16,6 +16,7 @@
     fieldDef,
     fieldname,
     value,
+    parentMo,
     level = 1,
     viewMode = MoViewMode.view,
     onChange,
@@ -25,6 +26,7 @@
     fieldDef: FieldDefinition<any>,
     fieldname: string,
     value: any,
+    parentMo: MoidInterface
     level: number,
     viewMode: MoViewModeEnum,
     onChange:any,
@@ -35,14 +37,13 @@
   // console.log(`==> MoArrayField.svelte:23 value `, value);
   // console.log(`==> MoArrayField.svelte:24 typeof value `, typeof value);
   // let values = $state(value as Array<MoidInterface> | [] as Array<MoidInterface>)
-  let mos = $derived(value.filter(v => !fieldsMoToRemove.find(m => m.mo.id === v.id)))
   let fieldsMoToRemove: FieldMo[] = $state([])
-  const fd: MoFieldDefinition = fieldDef as MoFieldDefinition
-  const fname = fieldDef.name
+  let mos = $derived(value.filter((v: MoidInterface) => !fieldsMoToRemove.find((m:FieldMo) => m.mo.id === v.id)))
+  const fd: MoFieldDefinition = $state(fieldDef as MoFieldDefinition)
   const inArray = true
-  const moItemFieldDef = fieldDef.clone()
-  moItemFieldDef.type = 'mo'
-  const uiPath = $state(parentUiPath)
+  const moItemFieldDef = $derived(fieldDef as MoFieldDefinition)
+  // moItemFieldDef.type = 'mo'
+  const uiPath = $derived(parentUiPath)
   const changed = (fieldId: string, item: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     // const index = Number.parseInt(fieldId)
@@ -93,7 +94,7 @@
 
 {#if showDetails}
   {#each mos as item (item.id)}
-    <MoField {fieldname} fieldDef={moItemFieldDef} value={item} {viewMode} level={level + 1} onChange={changed} parentUiPath={uiPath} {inArray} {onRemove} />
+    <MoField {fieldname} fieldDef={moItemFieldDef} value={item} {parentMo} {viewMode} level={level + 1} onChange={changed} parentUiPath={uiPath} {inArray} {onRemove} />
   {/each}
 {/if}
 

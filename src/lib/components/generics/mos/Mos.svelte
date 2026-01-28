@@ -41,7 +41,7 @@
   let eGridDiv
   onMount(() => {
     displayName = moMeta.moDef?.getDisplayName()
-    // names = mos.map(m => `moMeta: ${m.moMeta.name} moDef ${m.moMeta.moDef?.name} dataSource ${m.moMeta.dataSource?.constructor.name}`)
+    // names = mos.map(m => `moMeta: ${m._moMeta.name} moDef ${m._moMeta.moDef?.name} dataSource ${m._moMeta.dataSource?.constructor.name}`)
     eGridDiv = window.document.getElementById(gridId)
     if (!eGridDiv) throw new Rezult(ErrorName.missing_value)
     gridApi = createGrid(eGridDiv, gridOptions)
@@ -79,7 +79,7 @@
     gridApi?.sizeColumnsToFit()
   }
   
-  const goToView = (mo) => goto(`/mo/${mo.moMeta.name}/${mo.id}`)
+  const goToView = (mo) => goto(`/mo/${mo._moMeta.name}/${mo.id}`)
   
   const buildGridOptions = (model): GridOptions<any> => {
     let gridFieldDefs: FieldDefinition<any>[] = []

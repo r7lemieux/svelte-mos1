@@ -15,7 +15,7 @@
   let disabled = $derived(viewMode === 'view')
   let moDef = mo.moDef
   const title = toDisplayString(moDef.name)
-  const fieldDefs = Array.from(mo.moMeta.moDef.fieldDefs.values())
+  const fieldDefs = Array.from(mo._moMeta.moDef.fieldDefs.values())
   const ui = {}
 
   const onChange = (fieldId: string, val: any) => {
@@ -41,13 +41,13 @@
     // history.replaceState(history.state, '', `/mo/${moDef.name}/${mo.id}/edit`);
   }
   const save = () => {
-    mo.moMeta.dataSource?.saveMo(mo).then(mo => {
+    mo._moMeta.dataSource?.saveMo(mo).then(mo => {
       goto(`/mo/${moDef.name}/${mo.id}`)
       // viewMode = 'view'
     })
   }
   const create = event => {
-    mo.moMeta.dataSource?.addMo(mo).then(mo => {
+    mo._moMeta.dataSource?.addMo(mo).then(mo => {
       goto(`/mo/${moDef.name}/${mo.id}`)
       // viewMode = 'view'
     })

@@ -57,5 +57,5 @@ export class Contact extends Mo {
 contactData.forEach((data: any) => {
   const contact = new Contact()
   contact.hydrate(data)
-  contact.moMeta.dataSource.addMo(contact)
+  contact._moMeta.dataSource.addMo(contact)
 })

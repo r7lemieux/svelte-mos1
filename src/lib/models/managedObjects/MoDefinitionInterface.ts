@@ -4,7 +4,6 @@ import type { MoMetaInterface } from './MoMetaInterface.js';
 import type {MoidInterface} from './MoidInterface.js'
 import type { MoFieldDefinition } from '../fields/MoFieldDefinition.js'
 import type {objectToMoParameters} from '../../services/mo/moTransport.js'
-import {  type moFieldParameters} from '../fields/MoFieldDefinition.js'
 import type {Difference} from "../../services/common/util/mo.utils.js";
 import type {RelationDefinition} from './RelationDefinition.js'
 
@@ -46,8 +45,8 @@ export interface MoDefinitionInterface {
 	createFieldDefs: () => void
   initFieldDef: (fd: FieldDefinitionInterface<any>) => void
 	addFieldDefsFromNames: (fieldnames: string[]) => void
-  addMoFieldDefFromName: (name: string, params?: moFieldParameters) => MoFieldDefinition
-  addMoArrayFieldDefFromName: (name: string, params?: moFieldParameters) => MoFieldDefinition
+  addMoFieldDefFromName: (name: string) => MoFieldDefinition
+  addMoArrayFieldDefFromName: (name: string) => MoFieldDefinition
 	// deriveMoItemDefFromMoArrayDef: (moArryDef: MoFieldDefinition) => MoFieldDefinition
 	deriveFieldDefsFromMo: () => FieldDefinitionInterface<any>[]
 	deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[]

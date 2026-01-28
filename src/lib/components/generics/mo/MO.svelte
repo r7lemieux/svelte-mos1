@@ -10,9 +10,9 @@
 
 	initMoTransport()
   let {mo}: {mo:MoInterface} = $props()
-	let moDef = mo.moMeta.moDef;
-	const title = toDisplayString(moDef.name);
-  const moDefMo = new MoDefinitionMo(moDef)
+	let moDef = $derived(mo._moMeta.moDef)
+	const title = $derived(toDisplayString(moDef.name))
+  const moDefMo = $derived(new MoDefinitionMo(moDef))
 </script>
 <Init/>
 <svelte:head>

@@ -6,11 +6,11 @@ import {HeapDataSource} from '../../services/db/Heap.dataSource.js'
 import {MoMetaMo} from './MoMetaMo.js'
 
 const moMetaMoDef = new MoDefinition('moMeta')
-moMetaMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('name'))
-const moDefFieldDef = from(CommonFieldDefs.mo).chainSetName('moDef')
+moMetaMoDef.addFieldDef(from(BaseFieldDefs.Name).setName('name'))
+const moDefFieldDef = from(CommonFieldDefs.mo).setName('moDef')
 moDefFieldDef.itemValueType = 'object'
 moMetaMoDef.addFieldDef(moDefFieldDef)
-const dataSourceFieldDef = from(BaseFieldDefs.Object).chainSetName('dataSource')
+const dataSourceFieldDef = from(BaseFieldDefs.Object).setName('dataSource')
 dataSourceFieldDef.itemValueType = 'object'
 moMetaMoDef.addFieldDef(dataSourceFieldDef)
 Object.assign(moMetaMoDef, {

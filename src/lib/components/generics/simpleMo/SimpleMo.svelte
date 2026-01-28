@@ -31,15 +31,16 @@
   openPathList.forEach((openPath) => openPaths[openPath] = true)
   setContext('openPaths', openPaths)
   let viewMode: MoViewModeEnum = $state(extractViewMode())
-  let moMeta = $derived(mo.moMeta)
+  let moMeta = $derived(mo._moMeta)
   let title = $derived(toDisplayString(moMeta.moDef.name))
   let fieldDefs: FieldDefinitionInterface<any>[] = $derived(Array.from(moMeta.moDef.fieldDefs.values()) as FieldDefinition<any>[])
   let showFieldDefs = $derived(moMeta.moDef.showFieldnames.map(fn => fieldDefs.find(fd => fd.name === fn))) as FieldDefinition<any>[]
   let formElm: HTMLFormElement
   let sfetchError = $state(OK)
   let fetchError = $derived(() => sfetchError)
-  const uiPath = $derived([...parentUiPath, mo.moMeta.name + '-' + mo.id])
+  const uiPath = $derived([...parentUiPath, mo._moMeta.name + '-' + mo.id])
   setContext('currentMo', mo)
+  
   const showDelete = () => moMeta.moDef.deletePermission !== DeletePermission.no
   
   const onChange = (fieldId: string, val: any): void => {
@@ -195,7 +196,7 @@
     {#each showFieldDefs as fieldDef}
       {@const value = mo[fieldDef?.name]}
       {#key value}
-        <Field {fieldDef} {value} {viewMode} {onChange} {onMoRemove} parentUiPath={uiPath} level={0}/>
+        <Field {fieldDef} {value} {mo} {viewMode} {onChange} {onMoRemove} parentUiPath={uiPath} level={0}/>
       {/key}
     {/each}
   </div>

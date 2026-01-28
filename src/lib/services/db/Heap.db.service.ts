@@ -16,20 +16,20 @@ export class HeapDbService implements DbService {
   saveMo = async (mo: Mo) => {
     if (!mo) throw new Rezult(ErrorName.missing_param)
     if (!mo.id) throw new Rezult(ErrorName.missing_id)
-    this.records[mo.moMeta.name][mo.id] = mo
+    this.records[mo._moMeta.name][mo.id] = mo
     return mo
   }
 
   updateMo = async (mo: Mo) => {
     if (!mo) throw new Rezult(ErrorName.missing_param)
     if (!mo.id) throw new Rezult(ErrorName.missing_id)
-    this.records[mo.moMeta.dbName][mo.id] = mo
+    this.records[mo._moMeta.dbName][mo.id] = mo
     return mo
   }
 
   addMo = async (mo) => {
     if (!mo) throw new Rezult(ErrorName.missing_param)
-    this.records[mo.moMeta.dbName][mo.id] = mo
+    this.records[mo._moMeta.dbName][mo.id] = mo
     return mo
   }
 
@@ -44,7 +44,7 @@ export class HeapDbService implements DbService {
   saveMos = async (givenMos: Mo[]): Promise<Mo[]> => {
     for (const mo of givenMos) {
       if (!mo.id) throw new Rezult(ErrorName.missing_id)
-      this.records[mo.moMeta.dbName][mo.id] = mo
+      this.records[mo._moMeta.dbName][mo.id] = mo
     }
     return givenMos
   }
@@ -66,7 +66,7 @@ export class HeapDbService implements DbService {
     //   }
     // }
     //
-    // delete this.records[mo.moMeta.dbName][mo.id]
+    // delete this.records[mo._moMeta.dbName][mo.id]
   }
 }
 

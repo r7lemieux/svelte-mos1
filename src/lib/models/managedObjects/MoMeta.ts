@@ -81,7 +81,7 @@ export class MoMeta implements MoMetaInterface {
    */
   newMo = () => {
     const mo: MoInterface = this.moDef.newMo()
-    mo.moMeta = this
+    mo._moMeta = this
     return mo
   }
   moToObj = (mo: MoInterface): any => this.moDef.moToObj(mo)

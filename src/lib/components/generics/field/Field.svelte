@@ -13,10 +13,12 @@
   import Init from '../../common/Init.svelte'
   import type {FieldDefinitionInterface} from '../../../models/fields/FieldDefinition.interface.js'
   import type {FieldMo} from '../../../models/fields/FieldMo.js'
+  import type {MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
   
   let {
     fieldDef,
     value,
+    mo,
     viewMode = extractViewMode(),
     level,
     onChange,
@@ -25,6 +27,7 @@
   }: {
     fieldDef: FieldDefinitionInterface<any>,
     value: any,
+    mo: MoidInterface,
     viewMode: MoViewModeEnum,
     level: number,
     onChange: (fieldId: string, val: any) => void,
@@ -32,6 +35,7 @@
     onMoRemove?: (fieldMo: FieldMo) => void,
   } = $props()
   const d_value = $derived(value)
+  const parentMo = $derived(mo)
   // export let fieldDef: FieldDefinition<any>
   // export let value: string
   // export let viewMode: MoViewModeEnum = extractViewMode()
@@ -54,11 +58,11 @@
 {#if fd.type === 'array'}
   <ArrayField {fieldDef} {value} {viewMode} {level} {onChange} />
 {:else if fd.type === 'moArray'}
-  <MoArrayField fieldname={fieldDef.name} {fieldDef} value={d_value} {viewMode} {level} {onChange} parentUiPath={uiPath} {onMoRemove} />
+  <MoArrayField fieldname={fieldDef.name} {fieldDef} value={d_value} {parentMo} {viewMode} {level} {onChange} parentUiPath={uiPath} {onMoRemove} />
 {:else if fd.type === 'map'}
   <MapField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else if fd.type === 'mo'}
-  <MoField fieldname={fieldDef.name} {fieldDef} value={d_value} {viewMode} {level} parentUiPath={uiPath} {onChange} />
+  <MoField fieldname={fieldDef.name} {fieldDef} value={d_value} {parentMo} {viewMode} {level} parentUiPath={uiPath} {onChange} />
 {:else if fd.type === 'object' }
   <ObjectField {fieldDef} {value} {viewMode} {level} {onChange}/>
 {:else if fd.type === 'enum' }

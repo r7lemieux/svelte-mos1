@@ -109,8 +109,7 @@ export class MoListModel {
         const fieldDef = fieldDefArray[i]
         if (fieldDef) {
           try {
-            const field1 = fieldDef.parse(field0)
-            row[fieldDef.name] = field1
+            row[fieldDef.name] = fieldDef.parse(field0)
           } catch (ex) {
             if (ex && ex instanceof Rezult) {
               (ex as Rezult).context = `parsing line:${l}, field:${i}`
@@ -163,8 +162,7 @@ export class MoListModel {
         const fieldDef = fieldDefs[i]
         if (fieldDef) {
           try {
-            const field1 = fieldDef.parse(field0)
-            row[fieldDef.name] = field1
+            row[fieldDef.name] = fieldDef.parse(field0)
           } catch (ex) {
             if (ex && ex instanceof Rezult) {
               (ex as Rezult).context = `parsing line:${l}, field:${i}`

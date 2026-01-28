@@ -1,10 +1,8 @@
-import {DbService} from  './db.service.js'
-import type {Mo} from '../../models/managedObjects/Mo.js'
-import type {DataSourceInterface} from './DataSource.interface.js'
+import type {DataSourceInterface, DeleteMoParams, DeleteResult} from './DataSource.interface.js'
 import type {MoInterface} from '../../models/managedObjects/MoInterface.js'
 import type {MoidInterface} from '../../models/managedObjects/MoidInterface.js'
 
-export class ProxyDataSource<M extends MoInterface> implements DataSourceInterface<M> {
+export class ProxyDataSource<M extends MoInterface> implements DataSourceInterface<MoInterface> {
   next: DataSourceInterface<M>
   target: any
 
@@ -19,17 +17,15 @@ export class ProxyDataSource<M extends MoInterface> implements DataSourceInterfa
   getMoid = async (id: any): Promise<MoidInterface> => {
     return this.next.getMoid(id)
   }
-  saveMo = async (mo) => {
-    return this.next.saveMo(mo)
+  saveMo = async (mo: MoInterface) => {
+    return this.next.saveMo(mo as M)
   }
 
-  updateMo = async (mo) => {
-    return this.next.updateMo(mo)
-  }
+  updateMo = async (mo: MoInterface) => {
+    return this.next.updateMo(mo as M)  }
 
-  addMo = async (mo) => {
-    return this.next.addMo(mo)
-  }
+  addMo = async (mo: MoInterface) => {
+    return this.next.addMo(mo as M)  }
 
   getMos = async (): Promise<M[]> => {
     return this.next.getMos()
@@ -39,11 +35,12 @@ export class ProxyDataSource<M extends MoInterface> implements DataSourceInterfa
     return this.next.getMoids()
   }
 
-  saveMos = async (givenMos: M[]): Promise<M[]> => {
-    return this.next.saveMos(givenMos)
+  saveMos = async (givenMos: MoInterface[]): Promise<M[]> => {
+    return this.next.saveMos(givenMos as M[]) as Promise<M[]>
   }
-  deleteMo = async (id) => {
-    return this.next.deleteMo(id)
+
+  deleteMo = async (id: number | string, params?: DeleteMoParams): Promise<DeleteResult> => {
+    return this.next.deleteMo(id, params)
   }
 }
 

@@ -28,7 +28,7 @@
 //
 //   moMetas[name] = moMeta
 //
-// 	const moMetaMo = new MoMetaMo(MoMetaMo.moMeta)
+// 	const moMetaMo = new MoMetaMo(MoMetaMo._moMeta)
 // 	moMetaMo.id = moMetaMo.id || nextId++
 // 	// moMetaMo.name = moMetaMo.name || moMetaMo.id
 // 	moMetaMo.moDef = moDefMo

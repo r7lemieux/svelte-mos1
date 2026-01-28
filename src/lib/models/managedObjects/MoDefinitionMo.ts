@@ -6,7 +6,6 @@ import {
     type DeletePermissionEnum,
     type MoDefinitionInterface,
 } from './MoDefinitionInterface.js'
-import {type moFieldParameters} from '../fields/MoFieldDefinition.js'
 import type {MoMetaInterface} from './MoMetaInterface.js'
 import {MoMeta} from './MoMeta.js'
 import {MoDefinition} from './MoDefinition.js'
@@ -47,11 +46,10 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
     createFieldDefs: () => void = () => { }
     initFieldDef: (fd: FieldDefinitionInterface<any>) => void = () => {}
     addFieldDefsFromNames: (fieldnames: string[]) => void = (fn: string[]) => {}
-    addMoFieldDefFromName: (name: string, params?: moFieldParameters) => MoFieldDefinition = (name: string, params?: moFieldParameters) => new MoFieldDefinition(name)
-    addMoArrayFieldDefFromName: (name: string, params?: moFieldParameters) => MoFieldDefinition = (name: string, params?: moFieldParameters) => new MoFieldDefinition(name)
+    addMoFieldDefFromName: (name: string) => MoFieldDefinition = (name: string) => new MoFieldDefinition(name)
+    addMoArrayFieldDefFromName: (name: string) => MoFieldDefinition = (name: string) => new MoFieldDefinition(name)
     deriveFieldDefsFromMo: () => FieldDefinitionInterface<any>[] = () => []
     deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[] = (fd: string[]) => []
-    deriveMoItemDefFromMoArrayDef: (moArryDef: MoFieldDefinition) => MoFieldDefinition = (moArrayDef) => new MoFieldDefinition('')
     extractFieldnamesFromMo: () => string[] = () => []
     newMo: (moMeta?: MoMetaInterface) => MoInterface = () => new Mo()
     objToMoid: (obj: object, params?: objectToMoParameters) => Promise<MoidInterface> = (o: object) => Promise.resolve(new Mo())
@@ -59,8 +57,9 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
     moToObj: (mo: MoidInterface) => object = (mo: MoidInterface) => { return {}}
     moToDocument: (mo: MoInterface) => any = (mo: MoInterface) => {}
     documentToMo: (doc: any) => MoInterface = () => new Mo()
-    moToMoid: (mo: MoInterface) => MoidInterface = (mo: MoInterface) => new Moid(mo.moMeta, mo.id!, mo.getDisplayName())
+    moToMoid: (mo: MoInterface) => MoidInterface = (mo: MoInterface) => new Moid(mo._moMeta, mo.id!, mo.getDisplayName())
     assumeIsSameAs = (moDef: MoDefinitionInterface) => null
+    toShortStr = () => this._moMeta.name + '-' + this.id.toString()
 
     moDef: MoDefinitionInterface
 
@@ -77,19 +76,19 @@ export class MoDefinitionMo extends Mo implements MoDefinitionInterface {
 }
 
 export const moDefMoDef = new MoDefinition('moDef', {} as MoInterface)
-moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('name'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.Id).chainSetName('id'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('name'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('dbName'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('displayName'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.Array).chainSetName('keyFieldnames'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.Array).chainSetName('gridFieldnames'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.NullableBoolean).chainSetName('hasId'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('idType'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.UrlPath).chainSetName('gdriveFilePath'))
-moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('gdriveFileId'))
-const moClassFieldDef = from(BaseFieldDefs.Name).chainSetName('moClass')
-const fieldDefsFieldDef = from(BaseFieldDefs.Map).chainSetName('fieldDefs')
+moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).setName('name'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.Id).setName('id'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).setName('name'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).setName('dbName'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).setName('displayName'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.Array).setName('keyFieldnames'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.Array).setName('gridFieldnames'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.NullableBoolean).setName('hasId'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).setName('idType'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.UrlPath).setName('gdriveFilePath'))
+moDefMoDef.addFieldDef(from(BaseFieldDefs.Name).setName('gdriveFileId'))
+const moClassFieldDef = from(BaseFieldDefs.Name).setName('moClass')
+const fieldDefsFieldDef = from(BaseFieldDefs.Map).setName('fieldDefs')
 // fieldDefsFieldDef.itemValueType = 'object'
 moDefMoDef.addFieldDef(fieldDefsFieldDef)
 moClassFieldDef.gridColDef = {

@@ -17,7 +17,7 @@ import type {RelationMeta} from './RelationMeta.js'
 import type {RelationDefinition} from './RelationDefinition.js'
 
 export class MoMetaMo implements MoidInterface, MoMetaInterface {
-  moMeta: MoMeta
+  _moMeta: MoMeta
   id: number = 0
   displayName: string = ''
   name: string
@@ -29,7 +29,7 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
   relationDefsByFieldname: {[fieldName: string]: RelationDefinition} = {}
 
   constructor(moMeta: MoMetaInterface) {
-    this.moMeta = MoMetaMo.moMeta
+    this._moMeta = MoMetaMo.moMeta
     this.moDef = moMeta.moDef
     this.dataSource = moMeta.dataSource
     this.name = moMeta.name
@@ -40,8 +40,8 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
   setName = (name?: string): MoMetaInterface => {return this}
   isSameAs = (mo: any) => {
     if (!mo) return false
-    if (!mo.moMeta) return false
-    return this.moMeta.name === mo.moMeta.name && this.id === mo.id
+    if (!mo._moMeta) return false
+    return this._moMeta.name === mo._moMeta.name && this.id === mo.id
   }
 
   newMo = (): MoInterface => {
@@ -65,6 +65,8 @@ export class MoMetaMo implements MoidInterface, MoMetaInterface {
     }
     return mo
   }
+  toShortStr = () => this._moMeta.name + '-' + this.id.toString()
+
   moToObj = (mo: any): any => this.moDef.moToObj(mo)
   moToDocument = mo => this.moDef.moToDocument(mo)
   // moidToMo = (moid: MoidInterface): Promise<MoInterface> => this.dataSource.getMo(moid.id)

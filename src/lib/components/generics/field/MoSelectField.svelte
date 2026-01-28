@@ -50,7 +50,7 @@
   let loading = false
   let loaded = false
   const currentMo = getContext('currentMo') as MoInterface
-  const relation = currentMo.moMeta.relations[moFieldDef.name]
+  const relation = currentMo._moMeta.relations[moFieldDef.name]
   const isSelected = (moid: MoidInterface) => !!moSelected?.isSameAs(moid)
   // let inputFormEl: HTMLInputElement
   // let inputUiEl: HTMLInputElement

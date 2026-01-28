@@ -5,6 +5,8 @@
     import {Icon} from 'svelte-icons-pack'
 
     let {error}: { error?: any } = $props()
+    let close = $state(false)
+    let show = $derived(!close && error?.status !== RezultStatus.ok )
     let status: string = $derived((error instanceof Rezult) ? error.status : RezultStatus.error)
     // let d_err = $derived(error)
     // let d_message = $derived(error?.message)
@@ -20,7 +22,7 @@
     //     return ''
     // }
     const onClose = () => {
-        status = error.ok
+        close = true
     }
     // let statusText = $derived(httpCodeToStatusText(page.status))
     let statusLine = $state('')
@@ -38,7 +40,7 @@
     <meta name="description" content="metas"/>
 </svelte:head>
 
-<div class="statusBox {status}">
+<div class="statusBox {status} {show?'show':'hide'}">
     <span class="status {status}">{statusLine}</span>
     <button class="close" onclick={onClose}>
                 <Icon src={AiOutlineCloseCircle}></Icon>
@@ -59,9 +61,13 @@
         @media (max-width: 800px) {
             margin: 0 0.4rem;
         }
-       
+        &.hide {
+          visibility: hidden;
+        }
+        &.show {
+          visibility: visible;
+        }
         &.ok {
-            visibility: hidden;
             background-color: var(--ok-background-color);
             border: var(--ok-color);
             /*.status {*/
@@ -70,7 +76,6 @@
         }
 
         &.warning {
-            visibility: visible;
             background-color: var(--warning-background-color);
             border: var(--warning-color);
             /*.status {*/
@@ -79,7 +84,6 @@
         }
 
         &.error {
-            visibility: visible;
             background-color: var(--error-background-color);
             border: var(--error-color);
             .status {

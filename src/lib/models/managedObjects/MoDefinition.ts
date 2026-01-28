@@ -11,16 +11,16 @@ import {
     type DeletePermissionEnum,
     type MoDefinitionInterface,
 } from './MoDefinitionInterface.js'
-import {type moFieldParameters} from '../fields/MoFieldDefinition.js'
 import type {MoInterface} from './MoInterface.js'
 import {objectToMo, objectToMoid} from '../../services/mo/moTransport.implementation.js'
-import type {MoFieldDefinition} from '../fields/MoFieldDefinition.js'
+import {MoFieldDefinition} from '../fields/MoFieldDefinition.js'
 import {type objectToMoParameters} from '../../services/mo/moTransport.js'
 import type {MoidInterface} from './MoidInterface.js'
 import type {FieldDefinitionInterface} from '../fields/FieldDefinition.interface.js'
 import {pluralize, singularize} from "inflection";
 import type {Difference} from "../../services/common/util/mo.utils.js";
 import type {RelationDefinition} from './RelationDefinition.js'
+import type {RelationDefinitionInterface} from './RelationDefinitionInterface.js'
 // import { defaultMoMeta } from './moMetaInstances.js'
 // import type { MoMetaInterface } from './MoMetaInterface.js'
 // import { defaultMoMeta } from './MoMeta.js'
@@ -56,7 +56,7 @@ export class MoDefinition implements MoDefinitionInterface {
         this.displayName = toDisplayString(pluralName)
         this.moClass = moClass || {} as MoInterface
         this.showFieldnames = []
-        // if (this.name !== 'moDef') this.moMeta = moDefMeta
+        // if (this.name !== 'moDef') this._moMeta = moDefMeta
         this.init()
     }
 
@@ -122,20 +122,19 @@ export class MoDefinition implements MoDefinitionInterface {
     }
 
 
-    addMoFieldDefFromName(name: string, params?: moFieldParameters): MoFieldDefinition {
-        const moFieldDef = CommonFieldDefs.mo.clone() as MoFieldDefinition
+    addMoFieldDefFromName(fieldname: string): MoFieldDefinition {
+        const moFieldDef = new MoFieldDefinition(fieldname)
         moFieldDef.type = 'mo'
-        moFieldDef.name = name
-        // moFieldDef.twoWays = !!params?.twoWays
-        // moFieldDef.reverseFieldName = params?.reverseFieldName || this.name
-        // moFieldDef.moName = params?.moname || name
-        this.fieldDefs.set(name, moFieldDef)
+        moFieldDef.name = fieldname
+        this.fieldDefs.set(fieldname, moFieldDef)
         return moFieldDef
     }
 
-    addMoArrayFieldDefFromName(name: string, params?: moFieldParameters): MoFieldDefinition {
-        const moFieldDef = this.addMoFieldDefFromName(name, params)
+    addMoArrayFieldDefFromName(fieldname: string): MoFieldDefinition {
+        const moFieldDef = new MoFieldDefinition(fieldname) as MoFieldDefinition
         moFieldDef.type = 'moArray'
+        moFieldDef.name = fieldname
+        this.fieldDefs.set(fieldname, moFieldDef)
         return moFieldDef
     }
 
@@ -154,7 +153,7 @@ export class MoDefinition implements MoDefinitionInterface {
           .filter(fn => !fn.startsWith('_'))
           .map(getClosestFieldName)
           .map(buildFieldDef)
-          .map((fd, i) => fd.chainSetName(fieldnames[i]))
+          .map((fd, i) => fd.setName(fieldnames[i]))
         // .map((fd, i) => from(fd, {name: fieldnames[i]}))  // Why this. the fieldDef is already clones in buildFieldDef
     }
 
@@ -278,20 +277,20 @@ let moDefDef: MoDefinitionInterface
 export const initMoDefDef = () => {
 // const moDefDef = new MoDefinition('MoDefinition')
     const moDefDef = new MoDefinition('moDef')
-    moDefDef.addFieldDef(from(BaseFieldDefs.Id).chainSetName('id'))
-    moDefDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('name'))
-    moDefDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('dbName'))
-    moDefDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('displayName'))
-    moDefDef.addFieldDef(from(BaseFieldDefs.Array).chainSetName('keyFieldnames'))
-    moDefDef.addFieldDef(from(BaseFieldDefs.Array).chainSetName('gridFieldnames'))
-    moDefDef.addFieldDef(from(BaseFieldDefs.NullableBoolean).chainSetName('hasId'))
-    moDefDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('idType'))
-    moDefDef.addFieldDef(from(BaseFieldDefs.UrlPath).chainSetName('gdriveFilePath'))
-    moDefDef.addFieldDef(from(BaseFieldDefs.Name).chainSetName('gdriveFileId'))
-    const fieldDefsFieldDef = from(BaseFieldDefs.Map).chainSetName('fieldDefs')
+    moDefDef.addFieldDef(from(BaseFieldDefs.Id).setName('id'))
+    moDefDef.addFieldDef(from(BaseFieldDefs.Name).setName('name'))
+    moDefDef.addFieldDef(from(BaseFieldDefs.Name).setName('dbName'))
+    moDefDef.addFieldDef(from(BaseFieldDefs.Name).setName('displayName'))
+    moDefDef.addFieldDef(from(BaseFieldDefs.Array).setName('keyFieldnames'))
+    moDefDef.addFieldDef(from(BaseFieldDefs.Array).setName('gridFieldnames'))
+    moDefDef.addFieldDef(from(BaseFieldDefs.NullableBoolean).setName('hasId'))
+    moDefDef.addFieldDef(from(BaseFieldDefs.Name).setName('idType'))
+    moDefDef.addFieldDef(from(BaseFieldDefs.UrlPath).setName('gdriveFilePath'))
+    moDefDef.addFieldDef(from(BaseFieldDefs.Name).setName('gdriveFileId'))
+    const fieldDefsFieldDef = from(BaseFieldDefs.Map).setName('fieldDefs')
     fieldDefsFieldDef.itemValueType = 'object'
     moDefDef.addFieldDef(fieldDefsFieldDef)
-    const moClassFieldDef = from(BaseFieldDefs.Name).chainSetName('moClass')
+    const moClassFieldDef = from(BaseFieldDefs.Name).setName('moClass')
     moClassFieldDef.gridColDef = {
         field: undefined,
         valueGetter: params => params.data.moClass.name
@@ -320,7 +319,7 @@ export const initMoDefDef = () => {
     })
 // const moDefDefDef = new MoDefinition('moDefDef')
 // const moDefDefMeta =  new MoMeta(moDefDefDef)
-// moDefDef.moMeta = moDefDefMeta
+// moDefDef._moMeta = moDefDefMeta
 // moDefMeta.documentToMo  = doc => {
 //   const moDef = new MoDefinition('moDef', MoDefinition)
 //   const obj = JSON.parse(doc.json)

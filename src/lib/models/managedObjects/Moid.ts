@@ -8,14 +8,14 @@ import {page} from '$app/state'
 
 export class Moid implements MoidInterface {
 
-  moMeta: MoMetaInterface
+  _moMeta: MoMetaInterface
   id: number | string
   displayName: string
   _isLoaded = false
 
   constructor(moMeta: MoMetaInterface, id: string | number, displayName?: string) {
-    // super(Moid.moMeta)
-    this.moMeta = moMeta || getDefaultMoMeta()
+    // super(Moid._moMeta)
+    this._moMeta = moMeta || getDefaultMoMeta()
     this.id = id
     this.displayName = displayName || ''
     this.init()
@@ -29,12 +29,12 @@ export class Moid implements MoidInterface {
 
   toMo=  async (params?: ToMoParams) => {
     if (browser) {
-      const url = `${page.url.origin}/api/mo/${this.moMeta.name}/${this.id}`
+      const url = `${page.url.origin}/api/mo/${this._moMeta.name}/${this.id}`
       return fetch(url)
         .then(response => response.json())
-        .then(this.moMeta.objToMo)
+        .then(this._moMeta.objToMo)
     } else {
-      return this.moMeta.dataSource.getMo(this.id)
+      return this._moMeta.dataSource.getMo(this.id)
     }
   }
 
@@ -43,7 +43,9 @@ export class Moid implements MoidInterface {
 
   isSameAs = (mo: any) => {
     if (!mo) return false
-    if (!mo.moMeta) return false
-    return this.moMeta.name === mo.moMeta.name && this.id === mo.id
+    if (!mo._moMeta) return false
+    return this._moMeta.name === mo._moMeta.name && this.id === mo.id
   }
+
+  toShortStr = () => this._moMeta.name + '-' + this.id.toString()
 }

@@ -38,7 +38,7 @@ export interface FieldDefinitionInterface<T> {
   init: (props: any) => void
   validate: () => void
   clone: () => FieldDefinitionInterface<T>
-  chainSetName: (name: string) => FieldDefinitionInterface<T>
+  setName: (name: string) => FieldDefinitionInterface<T>
   gridToString: (gridFields: []) => string
   getDisplayName: () => string
   getColumnName: () => string

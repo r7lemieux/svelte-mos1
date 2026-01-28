@@ -55,7 +55,7 @@ export class Rezult extends Error {
 
   static ok = (): Rezult => new Rezult(ErrorName.ok)
 
-  static toMessage = (name, data) => {
+  static toMessage = (name: any, data) => {
     return this.dataToString(data)
   }
 

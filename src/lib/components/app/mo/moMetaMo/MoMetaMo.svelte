@@ -12,9 +12,9 @@
   let {mo} = $props()
   let viewMode: MoViewModeEnum = $derived(extractViewMode())
   let disabled = $derived(viewMode)
-  let moMeta = mo //.moMeta
+  let moMeta = mo //._moMeta
   const title = toDisplayString(moMeta.name)
-  const fieldDefs: FieldDefinition<any>[] = Array.from(mo.moMeta.moDef.fieldDefs.values()) as unknown as FieldDefinition<any>[]
+  const fieldDefs: FieldDefinition<any>[] = Array.from(mo._moMeta.moDef.fieldDefs.values()) as unknown as FieldDefinition<any>[]
   const ui = {}
 
   const onChange = (fieldId: string, val: any) => {

@@ -1,6 +1,11 @@
 import {Rezult} from '../common/message/rezult.js'
 import {ErrorName} from '../common/message/errorName.js'
-import type {DataSourceInterface, DeleteResult} from './DataSource.interface.js'
+import type {
+    DataSourceInterface,
+    DeleteMoParams,
+    DeleteResult,
+    SaveMoParams
+} from './DataSource.interface.js'
 import type {MoDefinitionInterface} from '../../models/managedObjects/MoDefinitionInterface.js'
 import type {MoInterface} from '../../models/managedObjects/MoInterface.js'
 import type {MoidInterface} from '../../models/managedObjects/MoidInterface.js'
@@ -39,7 +44,7 @@ export class CacheDataSource<M extends MoInterface> implements DataSourceInterfa
     }
   }
 
-  saveMo = async (mo: M) => {
+  saveMo = async (mo: M, params?: SaveMoParams) => {
     if (!mo) throw new Rezult(ErrorName.missing_param)
     return this.ds.saveMo(mo)
       .then(mo => {
@@ -94,7 +99,7 @@ export class CacheDataSource<M extends MoInterface> implements DataSourceInterfa
     return savedMos
   }
 
-  deleteMo = async (id: string | number): Promise<DeleteResult> => {
+  deleteMo = async (id: number | string, params: DeleteMoParams = {pendingDeletes:[], pendingUpdates:[]}): Promise<DeleteResult> => {
     try {
       const mo: M = await this.ds.getMo(id)
       if (!mo) return { errors: [new Rezult(ErrorName.db_notFound)] }

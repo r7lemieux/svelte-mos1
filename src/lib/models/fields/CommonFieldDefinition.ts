@@ -1,5 +1,5 @@
 import {FieldDefinition, from} from './FieldDefinition.js'
-import { MoFieldDefinition } from './MoFieldDefinition.js'
+import {fromMoField, MoFieldDefinition} from './MoFieldDefinition.js'
 import {EnumFieldDefinition} from './EnumFieldDefinition.js'
 // import { MoFieldDefinition } from './MoFieldDefinition.js'
 //ref some regex from https://owasp.org/www-community/OWASP_Validation_Regex_Repository
@@ -143,8 +143,16 @@ export const BaseFieldDefs: { [name: string]: FieldDefinition<any> } = {
     },
   }),
   MoArray: new MoFieldDefinition('Mo', {
-    type: 'moArray'
-  }),
+    type: 'moArray',
+    gridColDef: {
+      cellRenderer: params => {
+         if (params.value) {
+             const arr = params.value as Array<any>
+             return arr.join(', ')
+         }
+         return ''
+      }
+    }}),
   Array: new FieldDefinition({
     type: 'array'
   }),
@@ -217,8 +225,8 @@ export const CommonFieldDefs = {
   month: from(BaseFieldDefs.Integer),
   day: from(BaseFieldDefs.Integer),
   link: from(BaseFieldDefs.URL),
-  mo: from(BaseFieldDefs.Mo),
-  moArray: from(BaseFieldDefs.MoArray),
+  mo: fromMoField(BaseFieldDefs.Mo),
+  moArray: fromMoField(BaseFieldDefs.MoArray),
   id: from(BaseFieldDefs.Id),
   url: from(BaseFieldDefs.URL),
   icon: from(BaseFieldDefs.Icon),

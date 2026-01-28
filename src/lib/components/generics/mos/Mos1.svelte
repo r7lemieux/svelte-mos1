@@ -22,15 +22,10 @@
     topButtons?: boolean,
     height?: string
   } = $props()
-  if (!mos) {
-    throw new Rezult(ErrorName.argument_null, {name: 'mos'})
-  }
-  let smoMeta = $state(moMeta)
+  let smoMeta = $derived(moMeta)
   // smoMeta = moMeta || mos[0]?._isLoaded
   const dmoMeta = $derived(smoMeta)
-  let stitle = $state(title)
-  let sname = $state(smoMeta.name)
-  let dtitle = $derived(stitle || sname)
+  let dtitle = $derived(title || smoMeta.name)
   const gridId = 'grid'
   let gridApi: GridApi
   let smos= $state([] as Mo[])
@@ -42,7 +37,7 @@
   let eGridDiv
   onMount(() => {
     displayName = moMeta.moDef?.getDisplayName()
-    // names = mos.map(m => `moMeta: ${m.moMeta.name} moDef ${m.moMeta.moDef?.name} dataSource ${m.moMeta.dataSource?.constructor.name}`)
+    // names = mos.map(m => `moMeta: ${m._moMeta.name} moDef ${m._moMeta.moDef?.name} dataSource ${m._moMeta.dataSource?.constructor.name}`)
     eGridDiv = window.document.getElementById(gridId)
     if (!eGridDiv) throw new Rezult(ErrorName.missing_value)
     gridApi = createGrid(eGridDiv, gridOptions)
@@ -80,7 +75,7 @@
     gridApi?.sizeColumnsToFit()
   }
   
-  const goToView = (mo) => goto(`/mo/${mo.moMeta.name}/${mo.id}`)
+  const goToView = (mo) => goto(`/mo/${mo._moMeta.name}/${mo.id}`)
   
   const buildGridOptions = (model): GridOptions<any> => {
     let gridFieldDefs: FieldDefinition<any>[] = []
@@ -119,7 +114,7 @@
   
   let gridOptions: GridOptions = $derived(buildGridOptions(listModel))
 
-  let etitle = title
+  let etitle = $derived(title)
   let emos: Mo[] = []
  $effect(() => {
    Promise.all(mos)
@@ -134,10 +129,8 @@
       gridApi.setGridOption('rowData', gridOptions.rowData);
     }})
    
-    etitle = title
-    stitle = title || sname
     displayName = moMeta?.moDef.getDisplayName()
-    // console.log(`==> Mos.svelte:116 title s d e`, title, stitle, dtitle, etitle);
+    // console.log(`==> Mos.svelte:116 title s d e`, title, dtitle, etitle);
   })
 </script>
 
@@ -148,8 +141,8 @@
   <Init />
 <div class="grid-top">
   {#if title}
-<!--    s {stitle} d {dtitle} e {etitle}-->
-    <h2 class="title">{stitle}</h2>
+<!--    s {dtitle} d {dtitle} e {etitle}-->
+    <h2 class="title">{dtitle}</h2>
   {/if}
   <span class="button-bar">
   {#if moMeta?.moDef.canCreate && topButtons}

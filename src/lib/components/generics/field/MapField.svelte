@@ -1,6 +1,4 @@
 <script lang="ts">
-  import type {MoViewMode} from '../../../constants/ui.js'
-  import type {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
   import MapValueField from './MapValueField.svelte'
   import {onMount} from 'svelte'
   import {sizeLabels} from '../../../services/common/util/dom.utils.js'
@@ -13,19 +11,17 @@
     onChange,
     viewMode = 'view'
   } = $props()
-  let disabled = $derived(!!viewMode)
-  const fd = fieldDef
-  const fname = fieldDef.name
-  const size = (Array.from(value.keys())).length
-  const ui = {}
-  const valueType = fieldDef.itemValueType
+  const fd = $derived(fieldDef)
+  const fname = $derived(fieldDef.name)
+  const size = $derived((Array.from(value.keys())).length)
+  const valueType = $derived(fieldDef.itemValueType)
   let changed = event => {
     const fieldId = event.srcElement.id
     const value = event.srcElement.value
     onChange(fieldId, value)
   }
   let showDetails = $state(false)
-  const toogle = () => {
+  const toggle = () => {
     showDetails = !showDetails
     sizeLabels()
   }
@@ -44,14 +40,14 @@
 </script>
 <div class="field MapField">
   <label for={fname}>{fd.getDisplayName()} </label>
-  <span class=" tree-line {showDetails?'open':'closed'}" onclick={toogle} onkeydown={toogle} role="button"
+  <span class=" tree-line {showDetails?'open':'closed'}" onclick={toggle} onkeydown={toggle} role="button"
         tabindex="0">
 <!--    <span class="top tree-line1"/>-->
 <!--    <span class="arrow {showDetails?'open':'closed'}"/>-->
 <!--    <span class="bot {showDetails?'open tree-line':'closed'}"/>-->
   </span>
   <span class="value">
-      <span class="count" onclick={toogle} onkeydown={toogle} role="button" tabindex="0">
+      <span class="count" onclick={toggle} onkeydown={toggle} role="button" tabindex="0">
         <span>{size}</span>
           <span class="detail-icon detail-arrow {showDetails?'open':'closed'}">
         </span>

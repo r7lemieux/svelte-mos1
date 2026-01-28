@@ -5,7 +5,7 @@ import type {objectToMoParameters} from '../../services/mo/moTransport.js'
 export interface MoidInterface {
 
 
-  moMeta: MoMetaInterface
+  _moMeta: MoMetaInterface
   id: number | string
   displayName: string
   getDisplayName: () => string
@@ -15,7 +15,7 @@ export interface MoidInterface {
   toMo: (params?: ToMoParams) => Promise<MoInterface>
   toObj: () => any
   isSameAs: (any) => boolean
-
+  toShortStr: () => string
   // setDisplayName: (displayName: string) => MoidInterface
   // setProps: (props: any) => MoInterface
   //
