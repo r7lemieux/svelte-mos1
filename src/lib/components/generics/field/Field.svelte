@@ -72,15 +72,4 @@
 {/if}
 
 <style>
-  /*// @use 'field'*/
-  /*//.tree-indicator*/
-  /*//  border-left: 4px solid #888*/
-  /*//  display: block*/
-  /*//  content: ''*/
-  /*//  height: 2.5rem*/
-  /*//.count, .array-value, .array-item, .simple-value, .map-value*/
-  /*//  display: inline-block*/
-  /*//  height: 2.5rem*/
-  /*//  width: 100%*/
-
 </style>

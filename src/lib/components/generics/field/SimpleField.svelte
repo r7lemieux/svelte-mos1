@@ -18,7 +18,7 @@
     viewMode: MoViewModeEnum,
     onChange: (fieldId: string, any) => void
   } = $props()
-  
+  const val = 5
   // export let fieldDef: FieldDefinition<any>
   // export let value
   // export let level: number = 1
@@ -38,22 +38,15 @@
     const ele = document.querySelector('.field') as HTMLElement
     height = ele!.offsetHeight
   })
- 
+  const fn = 'fname' + Math.floor(Math.random() * 10000)
 </script>
 <div class="field SimpleField" data-fdtype={fieldDef.type} style="margin-left:{level*12}px;">
-  <label for={fname}>{labelText}</label>
-<!--  <label for={fname}>{fd.getDisplayName()}</label>-->
+  <label for={fn}>{labelText}</label>
   <span class=" tree-line"></span>
   <span class="value simple-value">
+<!--      <input type={fd.inputType} name={fn} id={fn} value={val} {onchange} {disabled} />-->
       <input type={fd.inputType} name={fname} id={fname} value={fd.valueToString(value) || ''} {onchange} {disabled} />
   </span>
 </div>
-{#if false}
-  <div class="field tree-line open">
-    <div class="detail-icon count tree-line open tree-branch delete-x array-value single map-detail-icon">
-      <input class="array-item detail-arrow open empty-value"/>
-    </div>
-  </div>
-{/if}
 <style>
 </style>

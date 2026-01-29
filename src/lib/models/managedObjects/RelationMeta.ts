@@ -128,6 +128,6 @@ export const addRelation = (moMeta1: MoMetaInterface, moMeta2: MoMetaInterface, 
         relMeta.createReverse()
             .register()
     }
-    console.log(`==>RelationMeta.ts:103 relMeta ${moMeta1.name}.${fieldname1}, ${moMeta2.name}.${fieldname2}`)
+    // console.log(`==>RelationMeta.ts:103 relMeta ${moMeta1.name}.${fieldname1}, ${moMeta2.name}.${fieldname2}`)
     return relMeta
 }

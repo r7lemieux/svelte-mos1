@@ -137,13 +137,10 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
         if (params.pendingDeletes.includes(moStr)) return Promise.resolve({})
         params.pendingDeletes.push(mo.toShortStr())
 
-        // const moFieldDefs = Array.from(moMeta.moDef.fieldDefs.values()).filter(fd => fd.type === 'mo')
-        // const moArrayFieldDefs = Array.from(moMeta.moDef.fieldDefs.values()).filter(fd => fd.type === 'moArray')
         const moFieldDefs = this.moDef.getFieldDefs({type: 'mo'}) as MoFieldDefinition[]
         const moArrayFieldDefs = this.moDef.getFieldDefs({type: 'moArray'}) as MoFieldDefinition[]
 
         // no Delete
-        // const noDeleteMoFields = this.moDef.getFieldDefs({deleteCascade: DeleteCascade.noDelete}).filter(fd => !!mo[fd.name])
         const noDeleteMoFields = moFieldDefs.filter(fd => fd.relation.deleteCascade1 === DeleteCascade.noDelete && !!mo[fd.name])
         const noDeleteMoArrayFields = moArrayFieldDefs.filter(fd => fd.relation.deleteCascade1 === DeleteCascade.noDelete && !!mo[fd.name])
         const noDeleteMos = {}

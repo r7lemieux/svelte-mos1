@@ -10,7 +10,8 @@
   import type {MoFieldDefinition} from '../../../models/fields/MoFieldDefinition.js'
   import MoField from './MoField.svelte'
   import type {FieldMo} from '../../../models/fields/FieldMo.js'
-  import {getContext} from 'svelte'
+  import {getContext, setContext} from 'svelte'
+  import {goto} from '$app/navigation'
 
   let {
     fieldDef,
@@ -39,7 +40,7 @@
   // let values = $state(value as Array<MoidInterface> | [] as Array<MoidInterface>)
   let fieldsMoToRemove: FieldMo[] = $state([])
   let mos = $derived(value.filter((v: MoidInterface) => !fieldsMoToRemove.find((m:FieldMo) => m.mo.id === v.id)))
-  const fd: MoFieldDefinition = $state(fieldDef as MoFieldDefinition)
+  const fd: MoFieldDefinition = $derived(fieldDef as MoFieldDefinition)
   const inArray = true
   const moItemFieldDef = $derived(fieldDef as MoFieldDefinition)
   // moItemFieldDef.type = 'mo'
@@ -62,7 +63,19 @@
   let showDetails = $derived(showDetailToggle || !!openPaths[uiPath.join('_')])
   const toggle = () => {
     showDetailToggle = !showDetailToggle
-    openPaths[uiPath.join('_')] = showDetailToggle
+    if (showDetailToggle) {
+      openPaths[uiPath.join('_')] = true
+    } else {
+      delete openPaths[uiPath.join('_')]
+    }
+    const queryParams = buildQueryParams()
+    goto(queryParams)
+  }
+  const buildQueryParams = ():string => {
+    if (openPaths) {
+      return '?' + Object.keys(openPaths).filter(k => !!openPaths[k]).map(k => `openPath=${k}`).join('&')
+    }
+    return ''
   }
  
   const onRemove = (fieldMo: FieldMo) => {
