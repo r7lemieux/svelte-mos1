@@ -46,6 +46,7 @@ export class Moid implements MoidInterface {
     if (!mo._moMeta) return false
     return this._moMeta.name === mo._moMeta.name && this.id === mo.id
   }
+  cloneMo = (): MoidInterface => new Moid(this._moMeta, this.id, this.displayName)
 
   toShortStr = () => this._moMeta.name + '-' + this.id.toString()
 }

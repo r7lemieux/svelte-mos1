@@ -157,8 +157,8 @@ export class MoDefinition implements MoDefinitionInterface {
         // .map((fd, i) => from(fd, {name: fieldnames[i]}))  // Why this. the fieldDef is already clones in buildFieldDef
     }
 
-    extractFieldnamesFromMo() {
-        const mo: MoInterface = this.newMo()
+    extractFieldnamesFromMo(sampleMo?: MoInterface): string[] {
+        const mo: MoInterface = sampleMo || this.newMo()
         return Object.getOwnPropertyNames(mo).filter(n => typeof mo[n] !== 'function' && n !== 'moMeta' && !n.startsWith('_'))
     }
 

@@ -27,6 +27,7 @@ export interface DeleteResult {
 }
 
 export interface SaveMoParams {
-    datafill?: boolean,
-    pending?: string[]
+    datafill?: boolean,  // do not throw when reverse mo is missing
+    pending?: string[],  // other mo operations in the same call stack. used to avoid update and delete loops.
+    skipRelations?: boolean, // used to avoid loop where relation updates the initial back
 }

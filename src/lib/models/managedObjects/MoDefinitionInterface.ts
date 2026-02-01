@@ -50,7 +50,7 @@ export interface MoDefinitionInterface {
 	// deriveMoItemDefFromMoArrayDef: (moArryDef: MoFieldDefinition) => MoFieldDefinition
 	deriveFieldDefsFromMo: () => FieldDefinitionInterface<any>[]
 	deriveFieldDefsFromFieldnames: (fieldnames: string[]) => FieldDefinitionInterface<any>[]
-	extractFieldnamesFromMo: () => string[]
+	extractFieldnamesFromMo: (mo?: MoInterface) => string[]
 	/*  --
 	 *  Mo
 	 *  --

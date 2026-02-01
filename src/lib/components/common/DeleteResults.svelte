@@ -2,8 +2,8 @@
   import {page} from '$app/state'
   
   let {results} = $props()
-  const deletedMos = results.deleted
-  const errors = results.errors
+  const deletedMos = $derived(results.deleted)
+  const errors = $derived(results.errors)
 </script>
 <svelte:head>
   <title>MoDefs</title>

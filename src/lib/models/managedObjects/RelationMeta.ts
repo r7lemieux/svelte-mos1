@@ -81,7 +81,6 @@ const createReverses = () => {
 }
 
 const linkMoMetas = () => {
-    console.log(`==>RelationMeta.ts:89`)
     for (const [moname, relMetas] of Object.entries(RelationMetas)) {
         const moMeta = getMoMeta(moname)
         moMeta.relations = relMetas

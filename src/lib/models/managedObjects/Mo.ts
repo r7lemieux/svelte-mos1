@@ -44,6 +44,8 @@ export class Mo implements MoInterface {
     }
     return this
   }
+  toShortStr = () => this._moMeta.name + '-' + this.id.toString()
+
   toObj = () => moToObject(this)
 
   toDocument = () => {
@@ -67,7 +69,7 @@ export class Mo implements MoInterface {
     return this
   }
   hydrateUntrusted = async (partial: Partial<Mo>)=> {
-    this._moMeta.moDef.objToMo(partial, {mo:this, trusted: false})
+    await this._moMeta.moDef.objToMo(partial, {mo:this, trusted: false})
     this.init()
     return this
   }
@@ -76,7 +78,22 @@ export class Mo implements MoInterface {
     if (!mo._moMeta) return false
     return this._moMeta.name === mo._moMeta.name && this.id === mo.id
   }
-    toShortStr = () => this._moMeta.name + '-' + this.id.toString()
+  cloneMo = (): MoidInterface => {
+   const newMo = this._moMeta.newMo()
+   for (const [fieldname, fieldDef] of this._moMeta.moDef.fieldDefs.entries()) {
+       const fieldValue = this[fieldname]
+       if (fieldDef.type === 'mo') {
+           const innerMo = fieldValue as MoidInterface
+           newMo[fieldname] = innerMo.toMoid().cloneMo()
+       } else if (fieldDef.type === 'moArray') {
+           const innerMo = fieldValue as MoidInterface[]
+           newMo[fieldname] = innerMo.map(m => m.toMoid().cloneMo())
+       } else {
+           newMo[fieldname] = structuredClone(fieldValue)
+       }
+   }
+   return newMo
+  }
 
 }
 

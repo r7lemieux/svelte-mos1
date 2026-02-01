@@ -39,7 +39,7 @@
   let sfetchError = $state(OK)
   let fetchError = $derived(() => sfetchError)
   const uiPath = $derived([...parentUiPath, mo._moMeta.name + '-' + mo.id])
-  setContext('currentMo', mo)
+  setContext('currentMo', (()=>mo)())
   
   const showDelete = () => moMeta.moDef.deletePermission !== DeletePermission.no
   

@@ -150,7 +150,7 @@ export const idToMoid = async (id: string, moname: string): Promise<MoidInterfac
         throw new Rezult(ErrorName.moMeta_notFound, {moname, method: 'idToMoid'})
     }
     const moid = await moMeta.dataSource.getMoid(id)
-    console.log(`==>moTransport.implementation.ts:151 moid`, moid)
+    // console.log(`==>moTransport.implementation.ts:151 moid`, moid.toShortStr())
     return moid
 }
 
@@ -183,6 +183,7 @@ export const objectToMoid = async (obj: any, params?: objectToMoParameters): Pro
                 mo[fname] = fDef.valueToField ? fDef.valueToField(value, {trusted: params?.trusted}) : await valueToField(moMeta, fDef, value, params)
             }
         }
+        // if (mo.supplement) console.log(`==>moTransport.implementation.ts:186  mo`, mo.toShortStr())
         return mo
     }
 }

@@ -4,7 +4,7 @@ import {Rezult} from '../common/message/rezult.js'
 import {ErrorName} from '../common/message/errorName.js'
 import type {DataSourceInterface, DeleteMoParams, DeleteResult, SaveMoParams} from './DataSource.interface.js'
 import {type MoFieldDefinition} from '../../models/fields/MoFieldDefinition.js'
-import type {MoidInterface} from '../../models/managedObjects/MoidInterface.js'
+import type {ID, MoidInterface} from '../../models/managedObjects/MoidInterface.js'
 import {RelationMetas} from '../../models/managedObjects/RelationMeta.js'
 import {DeleteCascade} from '../../models/managedObjects/RelationDefinitionInterface.js'
 
@@ -24,88 +24,137 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
     }
 
     getMo = async (key: any): Promise<M> => {
-        return this.records[key]
+        return this.records[key].cloneMo() as M
     }
 
     getMoid = async (key: any): Promise<MoidInterface> => {
-        return this.records[key]?.toMoid()
+        return this.records[key]?.toMoid().cloneMo()
+    }
+
+    removeReferenceFromArrayRelation(mos: MoidInterface[], removedMo: MoidInterface | null): MoidInterface[] {
+        if (removedMo) {
+            const removeIndex = mos.findIndex(m => m.id === removedMo.id)
+            if (removeIndex > -1) {
+                delete mos[removeIndex]
+            }
+        }
+        return mos
+    }
+
+    addReferenceToArrayRelation(mos: MoidInterface[], addedMo: MoidInterface | null): MoidInterface[] {
+        if (addedMo) {
+            const existingIndex = mos.findIndex(m => m.id === addedMo.id)
+            if (existingIndex !== -1) {
+                mos[existingIndex] = addedMo
+            } else {
+                mos.push(addedMo)
+            }
+        }
+        return mos
+    }
+
+    findRemovedMos(oldMos: MoidInterface[] | null, newMos: MoidInterface[] | null): MoidInterface[] {
+        oldMos = oldMos || []
+        newMos = newMos || []
+        return oldMos.filter(oldMo => !newMos.find(newMo => newMo.isSameAs(oldMo)))
+    }
+
+    findAddedMos(oldMos: MoidInterface[] | null, newMos: MoidInterface[] | null): MoidInterface[] {
+        oldMos = oldMos || []
+        newMos = newMos || []
+        return newMos.filter(newMo => !oldMos.find(oldMo => newMo.isSameAs(oldMo)))
     }
 
     saveMo = async (mo: M, params?: SaveMoParams) => {
         // console.log(`==>Heap.dataSource.ts:saveMo mo.id`, mo.id, this.nextId)
         if (!mo) throw new Rezult(ErrorName.missing_param)
-        const oldMo = this.records[mo.id]
-        const moMeta = mo._moMeta
-        this.records[mo[this.keyname!]] = mo
-        const relations = RelationMetas[moMeta.name]
-        if (!relations) {
-            console.log(`==>Heap.dataSource.ts.saveMo:40 No relations for ${this.moDef?.name} `)
-        }
-        // console.log(`==>Heap.dataSource.js:32  relations`, relations)
-        const twoWaysRelation = Object.values(RelationMetas[moMeta.name]).filter(rel => !!rel.reverse)
-        for (const relation of twoWaysRelation) {
-            const relationDef = relation.relationDef
-            const fieldname1 = relationDef.fieldDef1.name
-            const fieldname2 = relationDef.fieldDef2!.name
+        const oldMo1 = this.records[mo.id]
+        const newMo1 = mo
+        const newMoid1 = mo.toMoid()
+        const moMeta1 = newMo1._moMeta
+        const moname1 = moMeta1.name
+        if (!params?.skipRelations) {
+            const relations = RelationMetas[moMeta1.name]
+            // console.log(`==>Heap.dataSource.js:32  relations`, relations)
+            const twoWaysRelations = Object.values(RelationMetas[moname1]).filter(rel => !!rel.reverse)
 
-            if (relationDef.max1 < 2) {
-                // console.log(`==>Heap.dataSource.ts.saveMo:38 ${fieldname} reverseName`, reverseFieldname)
-                const relMoid = mo[fieldname1]
-                if (!relMoid && relationDef.min1 > 0) {
-                    // Cannot turn that check on until I resolve 1:1 creation
-                    // throw new Rezult(ErrorName.missing_value, {
-                    //     moDef: this.moDef?.name,
-                    //     id: mo.id,
-                    //     displayName: mo.displayName,
-                    //     field: fieldname
-                    // }, 'HeapDataSource.saveMo missing value for relation min')
-                }
-                if (relMoid) {
-                    const mo2id = mo[fieldname1].id
-                    if (oldMo[fieldname1].id === mo2id) continue
-                    const fieldDef2 = relationDef.fieldDef2!
-                    const reverseMo = await relation.moMeta2.dataSource.getMo(mo2id)
-                    if (!reverseMo) {
-                        if (!params?.datafill) {
-                            throw new Rezult(ErrorName.missing_reverse_mo, {
-                                moDef: this.moDef?.name,
-                                id: mo.id,
-                                field: fieldname1,
-                                reverseId: mo2id,
-                                reverseField: fieldname2
-                            })
+            for (const relation of twoWaysRelations) {
+                const relationDef = relation.relationDef
+                const fieldDef1 = relationDef.fieldDef1
+                const fieldDef2 = relationDef.fieldDef2!
+                const fieldname1 = fieldDef1.name
+                const fieldname2 = fieldDef2!.name
+
+                if (relationDef.max1 === 1) {
+                    const oldMo2id: ID = oldMo1[fieldname1].id
+                    const newMo2id: ID = newMo1[fieldname1].id
+                    if (!newMo2id && relationDef.min1 > 0 && relationDef.min2 === 0) {
+                        //todo handle creation of min1:min1 or min1:min-n
+                        throw new Rezult(ErrorName.missing_value, {moDef: this.moDef?.name, id: mo.id, displayName: mo.displayName, fieldname1}, 'HeapDataSource.saveMo missing value for relation min')
+                    }
+                    if (newMo2id) {
+                        const oldMo2 = await relation.moMeta2.dataSource.getMo(oldMo2id)
+                        const newMo2 = await relation.moMeta2.dataSource.getMo(newMo2id)
+                        if (!oldMo2 && !params?.datafill) throw new Rezult(ErrorName.missing_reverse_mo, {moDef: this.moDef?.name, oldMo2id, fieldname1, newMo2id, fieldname2}, 'HeapDataSource.saveMo missing oldMo2')
+                        if (!newMo2 && !params?.datafill) throw new Rezult(ErrorName.missing_reverse_mo, {moDef: this.moDef?.name, oldMo2id, fieldname1, newMo2id, fieldname2}, 'HeapDataSource.saveMo missing newMo2')
+                        if (relationDef.max2 === 1) {
+                            if (oldMo2id === newMo2id) continue // No change to this relation to record
+                            oldMo2[fieldname2] = undefined
+                            newMo2[fieldname2] = newMoid1
+                        } else {
+                            const oldMos2: MoidInterface[] = oldMo2[fieldname2]
+                            const newMos2: MoidInterface[] = newMo2[fieldname2]
+                            if (oldMo2) {
+                                this.removeReferenceFromArrayRelation(oldMos2, oldMo1)
+                            }
+                            if (newMo2) {
+                                this.addReferenceToArrayRelation(newMos2, newMoid1)
+                            }
+                            if (!newMo2 && !params?.datafill) throw new Rezult(ErrorName.missing_reverse_mo, {moDef: this.moDef?.name, oldMo2id, fieldname1, newMo2id, fieldname2}, 'HeapDataSource.saveMo missing newMo2')
+                        }
+                        oldMo2?._moMeta.dataSource.saveMo(oldMo2)
+                        newMo2?._moMeta.dataSource.saveMo(newMo2)
+                    }
+                } else {
+                    const oldMos2: MoidInterface[] = oldMo1[fieldname2]
+                    const newMos2: MoidInterface[] = newMo1[fieldname2]
+                    const delMoid2s = this.findRemovedMos(oldMos2, newMos2)
+                    const addMoid2s = this.findAddedMos(oldMos2, newMos2)
+                    if (relationDef.max2 === 1) {
+                        for (const delMoid2 of delMoid2s) {
+                            const delMo2 = await relation.moMeta2.dataSource.getMo(delMoid2)
+                            delMo2[fieldname2] = undefined
+                            delMo2._moMeta.dataSource.saveMo(delMo2)
+                        }
+                        for (const addMoid2 of addMoid2s) {
+                            const addMo2 = await relation.moMeta2.dataSource.getMo(addMoid2)
+                            addMo2[fieldname2] = newMoid1
+                            addMo2._moMeta.dataSource.saveMo(addMo2)
+
                         }
                     } else {
-                        if (fieldDef2.type === 'mo') {
-                            reverseMo[fieldname2] = mo.toMoid()
-                        } else if (fieldDef2.type === 'moArray') {
-                            const reverseMoFields = reverseMo[fieldname2] as MoidInterface[]
-                            if (!reverseMoFields) {
-                                reverseMo[fieldname2] = [mo.toMoid()]
-                            } else {
-                                const index = reverseMoFields.findIndex(m => m.id === mo.id)
-                                if (index >= 0) {
-                                    reverseMo[fieldname2][index] = mo.toMoid()
-                                } else {
-                                    reverseMo[fieldname2].push(mo.toMoid())
-                                }
-                            }
+                        for (const delMoid2 of delMoid2s) {
+                            const delMo2 = await relation.moMeta2.dataSource.getMo(delMoid2)
+                            this.removeReferenceFromArrayRelation(delMo2[fieldname2], newMoid1)
+                            delMo2._moMeta.dataSource.saveMo(delMo2)
+
                         }
+                        for (const addMoid2 of addMoid2s) {
+                            const addMo2 = await relation.moMeta2.dataSource.getMo(addMoid2)
+                            this.removeReferenceFromArrayRelation(addMo2[fieldname2], newMoid1)
+                            addMo2._moMeta.dataSource.saveMo(addMo2)
+                        }
+
                     }
                 }
             }
         }
+        this.records[newMo1[this.keyname!]] = newMo1
         return Promise.resolve(this.records[mo[this.keyname!]])
     }
 
     updateMo = async (mo: M) => {
-        if (!mo) throw new Rezult(ErrorName.missing_param)
-        this.records[mo[this.keyname!]] = mo
-        const twoWayFieldDefs = this.moDef.getFieldDefs({type: 'mo', twoWays: true})
-        for (const fd of twoWayFieldDefs) {
-            console.log(`==>Heap.dataSource.ts.saveMo:38 fd`, fd)
-        }
-        return Promise.resolve(this.records[mo[this.keyname!]])
+        return this.saveMo(mo)
     }
 
     addMo = async (mo: M) => {
@@ -131,7 +180,7 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
         return givenMos
     }
 
-    deleteMo = async (id: number | string, params: DeleteMoParams = {pendingDeletes:[], pendingUpdates:[]}): Promise<DeleteResult> => {
+    deleteMo = async (id: number | string, params: DeleteMoParams = {pendingDeletes: [], pendingUpdates: []}): Promise<DeleteResult> => {
         const mo: M = this.records[id]
         const moStr = mo.toShortStr()
         if (params.pendingDeletes.includes(moStr)) return Promise.resolve({})
@@ -185,16 +234,16 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
                 // const rezult = new Rezult(rezultName, results)
                 return results
             })
-            .then((results: DeleteResult) => {
+            .then( (results: DeleteResult) => {
                 const twoWayRelations = Object.values(mo._moMeta.relations).filter(rel => rel.relationDef.fieldDef2)
                 //const depMoToUpdate: Promise<MoInterface>[] = twoWayRelations.map(rel => mo[rel.relationDef.fieldDef1.name])
                 const depMoToUpdate: Promise<MoInterface>[] = twoWayRelations.map(rel => {
                     const relDef = rel.relationDef
                     let mosToUpdate: MoidInterface[] = (relDef.max1 > 1) ? mo[relDef.fieldDef1.name] : [mo[relDef.fieldDef1.name]]
-                    mosToUpdate = mosToUpdate.filter(m => !params.pendingUpdates.includes(m.toShortStr()+'_'+moStr))
+                    mosToUpdate = mosToUpdate.filter(m => !params.pendingUpdates.includes(m.toShortStr() + '_' + moStr))
                     mosToUpdate.forEach(m => {
-                        params.pendingUpdates.push(moStr+'_'+m.toShortStr())
-                        params.pendingUpdates.push(m.toShortStr()+'_'+moStr)
+                        params.pendingUpdates.push(moStr + '_' + m.toShortStr())
+                        params.pendingUpdates.push(m.toShortStr() + '_' + moStr)
                     })
                     return mosToUpdate.map(m => {
                         return rel.moMeta2.dataSource.getMo(m.id)
