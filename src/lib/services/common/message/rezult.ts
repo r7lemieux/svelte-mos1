@@ -50,17 +50,16 @@ export class Rezult extends Error {
     if (obj.message && rezult.name === ErrorName.not_rezult) rezult.message = obj.message
     return rezult
   }
-  serialize = () => JSON.stringify(this.toObj())
+  // serialize = () => JSON.stringify(this.toObj())
   toString = () => this.toDisplayString()
 
   static ok = (): Rezult => new Rezult(ErrorName.ok)
 
-  static toMessage = (name: any, data) => {
-    return this.dataToString(data)
+  static toMessage = (error: ErrorEnum, data) => {
+    return this.dataToString({error, ...data})
   }
 
   static dataToString = (data:any): string => {
-    let dataStr: string
     if (data == undefined) {
       return ''
     } else {
@@ -82,9 +81,6 @@ export class Rezult extends Error {
   }
 
   toDisplayString = () => {
-    // let str = Rezult.dataToString(this.data)
-    // const dataStr = (str !== undefined)? ': '+str : ''
-
     return `${this.status} ${this.context || ''}: ${this.name} ${this.message} `
   }
 
@@ -97,16 +93,9 @@ export class Rezult extends Error {
   }
 
   ok = () => this.status === RezultStatus.ok
-  static stringifyOneLevel = obj => JSON.stringify(obj, function (k, v) { return k && v && typeof v !== "number" ? (Array.isArray(v) ? "[object Array]" : "" + v) : v; });
+  static stringifyOneLevel = (obj: any) => JSON.stringify(obj, function (k, v) { return k && v && typeof v !== "number" ? (Array.isArray(v) ? "[object Array]" : "" + v) : v; });
 
-  print = (str: string) => {
-    this.context = str
-    // if (!process.env.testing) {
-    //   console.log(this.toString())
-    // }
-  }
-
-  static build = (err, data?:any, context?:any): Rezult => {
+  static build = (err: Error, data?:any, context?:any): Rezult => {
     if (err && err instanceof Rezult) return err
     const rezult = new Rezult(ErrorName.type5_error)
     console.trace(`==>rezult.ts:78 rezult`, rezult)

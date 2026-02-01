@@ -17,72 +17,109 @@ import type {RelationMeta} from './RelationMeta.js'
 import type {RelationDefinition} from './RelationDefinition.js'
 
 export class MoMetaMo implements MoidInterface, MoMetaInterface {
-  _moMeta: MoMeta
-  id: number = 0
-  displayName: string = ''
-  name: string
-  dbName: string
-  moDef: MoDefinitionInterface
-  dataSource: DataSourceInterface<MoInterface>
-  _isLoaded = true
-  relations: {[fieldname: string]: RelationMeta} = {}
-  relationDefsByFieldname: {[fieldName: string]: RelationDefinition} = {}
+    _moMeta: MoMeta
+    id: number = 0
+    displayName: string = ''
+    name: string
+    dbName: string
+    moDef: MoDefinitionInterface
+    dataSource: DataSourceInterface<MoInterface>
+    _isLoaded = true
+    relations: {
+        [fieldname: string]: RelationMeta
+    } = {}
+    relationDefsByFieldname: {
+        [fieldName: string]: RelationDefinition
+    } = {}
 
-  constructor(moMeta: MoMetaInterface) {
-    this._moMeta = MoMetaMo.moMeta
-    this.moDef = moMeta.moDef
-    this.dataSource = moMeta.dataSource
-    this.name = moMeta.name
-    this.displayName = toDisplayString(this.name)
-    this.dbName = moMeta.dbName || this.name
-  }
-  init = () => this
-  setName = (name?: string): MoMetaInterface => {return this}
-  isSameAs = (mo: any) => {
-    if (!mo) return false
-    if (!mo._moMeta) return false
-    return this._moMeta.name === mo._moMeta.name && this.id === mo.id
-  }
-
-  newMo = (): MoInterface => {
-    const moClass: MoInterface = this.moDef.moClass || Mo
-    const mo: MoInterface = new (moClass as unknown as typeof Mo)(this)
-    // const mo: Mo = new moClass({moDef: this} as MoMetaInterface)
-    return mo
-  }
-  objToMoid = (obj: any, mo?:MoInterface): Promise<MoidInterface> => {
-    const newMo = this.newMo().setProps(obj)
-    return Promise.resolve(newMo)
-  }
-  objToMo = (obj: any, mo?:MoInterface): Promise<MoInterface> => {
-    const newMo = this.newMo().setProps(obj)
-    return Promise.resolve(newMo)
-  }
-  documentToMo = (doc: any): MoInterface => {
-    const mo = this.newMo()
-    for (const [fname, fDef] of Array.from(this.moDef.fieldDefs.entries())) {
-      mo[fname] = fDef.documentToValue(doc[fname])
+    constructor(moMeta: MoMetaInterface) {
+        this._moMeta = MoMetaMo.moMeta
+        this.moDef = moMeta.moDef
+        this.dataSource = moMeta.dataSource
+        this.name = moMeta.name
+        this.displayName = toDisplayString(this.name)
+        this.dbName = moMeta.dbName || this.name
     }
-    return mo
-  }
-  toShortStr = () => this._moMeta.name + '-' + this.id.toString()
 
-  moToObj = (mo: any): any => this.moDef.moToObj(mo)
-  moToDocument = mo => this.moDef.moToDocument(mo)
-  // moidToMo = (moid: MoidInterface): Promise<MoInterface> => this.dataSource.getMo(moid.id)
-  // moToMoid = (mo: MoInterface): MoidInterface => mo
-  moidToMo = (moid: MoidInterface): Promise<MoInterface> => this.dataSource.getMo(moid.id)
-  moToMoid = (mo: MoInterface): MoidInterface => mo
-  toMoid = () => new Moid(this as MoMeta,0)
-  toMo = (params?: ToMoParams): Promise<MoInterface> => Promise.resolve(new Mo(this as MoMeta))
-  toDocument =  () => ''
-  toObj = () => {}
-  static fromMoDef = (moDef: MoDefinitionInterface) => new MoMeta(moDef)
-  static moMeta = {} as MoMeta // taking a wild chance expecting MoMetaMoDef to fill it before anyone uses it.
+    init = () => this
+    setProps = (props: any) => this as MoInterface
 
-  /*  ---------
-   *  Accessors
-   *  ---------
-   */
-  getDisplayName = () => this.moDef.getDisplayName()
+    setName = (name?: string): MoMetaInterface => {return this}
+    isSameAs = (mo: any) => {
+        if (!mo) return false
+        if (!mo._moMeta) return false
+        return this._moMeta.name === mo._moMeta.name && this.id === mo.id
+    }
+
+    newMo = (): MoInterface => {
+        const moClass: MoInterface = this.moDef.moClass || Mo
+        const mo: MoInterface = new (moClass as unknown as typeof Mo)(this)
+        // const mo: Mo = new moClass({moDef: this} as MoMetaInterface)
+        return mo
+    }
+    objToMoid = (obj: any, mo?: MoInterface): Promise<MoidInterface> => {
+        const newMo = this.newMo().setProps(obj)
+        return Promise.resolve(newMo)
+    }
+    objToMo = (obj: any, mo?: MoInterface): Promise<MoInterface> => {
+        const newMo = this.newMo().setProps(obj)
+        return Promise.resolve(newMo)
+    }
+    documentToMo = (doc: any): MoInterface => {
+        const mo = this.newMo()
+        for (const [fname, fDef] of Array.from(this.moDef.fieldDefs.entries())) {
+            mo[fname] = fDef.documentToValue(doc[fname])
+        }
+        return mo
+    }
+    toShortStr = () => this._moMeta.name + '-' + this.id.toString()
+
+    moToObj = (mo: any): any => this.moDef.moToObj(mo)
+    moToDocument = mo => this.moDef.moToDocument(mo)
+    // moidToMo = (moid: MoidInterface): Promise<MoInterface> => this.dataSource.getMo(moid.id)
+    // moToMoid = (mo: MoInterface): MoidInterface => mo
+    moidToMo = (moid: MoidInterface): Promise<MoInterface> => this.dataSource.getMo(moid.id)
+    moToMoid = (mo: MoInterface): MoidInterface => mo
+    toMoid = () => new Moid(this as MoMeta, 0)
+    toMo = (params?: ToMoParams): Promise<MoInterface> => Promise.resolve(new Mo(this as unknown as MoMeta))
+    toDocument = () => ''
+    toObj = () => {}
+    hydrate = async (partial: Partial<Mo>) => {
+        await this._moMeta.moDef.objToMo(partial, {mo: this, trusted: true})
+        this.init()
+        return this
+    }
+    hydrateUntrusted = async (partial: Partial<Mo>) => {
+        await this._moMeta.moDef.objToMo(partial, {mo: this, trusted: false})
+        this.init()
+        return this
+    }
+    cloneMo = (): MoidInterface => {
+        const newMo = this._moMeta.newMo()
+        for (const [fieldname, fieldDef] of this._moMeta.moDef.fieldDefs.entries()) {
+            const fieldValue = this[fieldname]
+            if (fieldDef.type === 'mo') {
+                const innerMo = fieldValue as MoidInterface
+                newMo[fieldname] = innerMo.toMoid().cloneMo()
+            } else if (fieldDef.type === 'moArray') {
+                const innerMo = fieldValue as MoidInterface[]
+                newMo[fieldname] = innerMo.map(m => m.toMoid().cloneMo())
+            } else {
+                newMo[fieldname] = structuredClone(fieldValue)
+            }
+        }
+        return newMo
+    }
+
+    save = () => this._moMeta.dataSource.saveMo(this as MoInterface)
+    delete = () => this._moMeta.dataSource.deleteMo(this.id)
+
+    static fromMoDef = (moDef: MoDefinitionInterface) => new MoMeta(moDef)
+    static moMeta = {} as MoMeta // taking a wild chance expecting MoMetaMoDef to fill it before anyone uses it.
+
+    /*  ---------
+     *  Accessors
+     *  ---------
+     */
+    getDisplayName = () => this.moDef.getDisplayName()
 }

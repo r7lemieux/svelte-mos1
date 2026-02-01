@@ -74,9 +74,9 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
         const moMeta1 = newMo1._moMeta
         const moname1 = moMeta1.name
         if (!params?.skipRelations) {
-            const relations = RelationMetas[moMeta1.name]
+            const relations = RelationMetas[moname1]
             // console.log(`==>Heap.dataSource.js:32  relations`, relations)
-            const twoWaysRelations = Object.values(RelationMetas[moname1]).filter(rel => !!rel.reverse)
+            const twoWaysRelations = Object.values(relations).filter(rel => !!rel.reverse)
 
             for (const relation of twoWaysRelations) {
                 const relationDef = relation.relationDef
@@ -124,25 +124,25 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
                         for (const delMoid2 of delMoid2s) {
                             const delMo2 = await relation.moMeta2.dataSource.getMo(delMoid2)
                             delMo2[fieldname2] = undefined
-                            delMo2._moMeta.dataSource.saveMo(delMo2)
+                            await delMo2._moMeta.dataSource.saveMo(delMo2)
                         }
                         for (const addMoid2 of addMoid2s) {
                             const addMo2 = await relation.moMeta2.dataSource.getMo(addMoid2)
                             addMo2[fieldname2] = newMoid1
-                            addMo2._moMeta.dataSource.saveMo(addMo2)
+                            await addMo2._moMeta.dataSource.saveMo(addMo2)
 
                         }
                     } else {
                         for (const delMoid2 of delMoid2s) {
                             const delMo2 = await relation.moMeta2.dataSource.getMo(delMoid2)
                             this.removeReferenceFromArrayRelation(delMo2[fieldname2], newMoid1)
-                            delMo2._moMeta.dataSource.saveMo(delMo2)
+                            await delMo2._moMeta.dataSource.saveMo(delMo2)
 
                         }
                         for (const addMoid2 of addMoid2s) {
                             const addMo2 = await relation.moMeta2.dataSource.getMo(addMoid2)
                             this.removeReferenceFromArrayRelation(addMo2[fieldname2], newMoid1)
-                            addMo2._moMeta.dataSource.saveMo(addMo2)
+                            await addMo2._moMeta.dataSource.saveMo(addMo2)
                         }
 
                     }
@@ -234,7 +234,7 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
                 // const rezult = new Rezult(rezultName, results)
                 return results
             })
-            .then( (results: DeleteResult) => {
+            .then( async (results: DeleteResult) => {
                 const twoWayRelations = Object.values(mo._moMeta.relations).filter(rel => rel.relationDef.fieldDef2)
                 //const depMoToUpdate: Promise<MoInterface>[] = twoWayRelations.map(rel => mo[rel.relationDef.fieldDef1.name])
                 const depMoToUpdate: Promise<MoInterface>[] = twoWayRelations.map(rel => {
@@ -245,9 +245,9 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
                         params.pendingUpdates.push(moStr + '_' + m.toShortStr())
                         params.pendingUpdates.push(m.toShortStr() + '_' + moStr)
                     })
-                    return mosToUpdate.map(m => {
+                    return mosToUpdate.map( async(m) => {
                         return rel.moMeta2.dataSource.getMo(m.id)
-                            .then(mo2 => {
+                            .then(async(mo2: MoInterface): Promise<MoInterface> => {
                                 const fieldname2 = relDef.fieldDef2!.name
                                 if (relDef.max2 > 1) {
                                     const field2Value: MoidInterface[] = mo2[fieldname2]

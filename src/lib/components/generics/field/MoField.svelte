@@ -111,7 +111,7 @@
     sizeLabels()
     const rel = currentMo._moMeta.relations[moFieldDef.name]
     if (!rel) {
-      console.log(`==>MoField.svelte:111  currentMo`, currentMo)
+      console.log(`==>MoField.svelte:111 no relations for `, currentMo)
     }
     
   })

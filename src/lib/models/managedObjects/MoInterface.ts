@@ -1,6 +1,7 @@
 import type {MoMetaInterface} from './MoMetaInterface.js'
 import type {MoidInterface, ToMoParams} from './MoidInterface.js'
 import type {objectToMoParameters} from '../../services/mo/moTransport.js'
+import type {DeleteResult} from '../../services/db/DataSource.interface.js'
 
 export interface MoInterface extends MoidInterface {
 
@@ -18,4 +19,7 @@ export interface MoInterface extends MoidInterface {
   hydrateUntrusted(partial: Partial<MoInterface>): Promise<MoInterface>
 
   toDocument: () => {}
+
+  save: () => Promise<MoInterface>
+  delete: () => Promise<DeleteResult>
 }

@@ -94,7 +94,8 @@ export class Mo implements MoInterface {
    }
    return newMo
   }
-
+  save = () => this._moMeta.dataSource.saveMo(this)
+  delete = () => this._moMeta.dataSource.deleteMo(this.id)
 }
 
 

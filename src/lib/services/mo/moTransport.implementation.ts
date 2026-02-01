@@ -6,7 +6,6 @@ import {ErrorName} from '../common/message/errorName.js'
 import {Rezult} from '../common/message/rezult.js'
 import type {FieldDefinitionInterface} from '../../models/fields/FieldDefinition.interface.js'
 import {type objectToMoParameters, transp} from './moTransport.js'
-import type {MoFieldDefinition} from '../../models/fields/MoFieldDefinition.js'
 import {isSubclass} from '../common/util/ts.utils.js'
 import {browser} from '$app/environment'
 import type {MoMetaInterface} from '../../models/managedObjects/MoMetaInterface.js'
@@ -149,9 +148,8 @@ export const idToMoid = async (id: string, moname: string): Promise<MoidInterfac
     if (!moMeta) {
         throw new Rezult(ErrorName.moMeta_notFound, {moname, method: 'idToMoid'})
     }
-    const moid = await moMeta.dataSource.getMoid(id)
-    // console.log(`==>moTransport.implementation.ts:151 moid`, moid.toShortStr())
-    return moid
+    return await moMeta.dataSource.getMoid(id)
+
 }
 
 export const objectToMoid = async (obj: any, params?: objectToMoParameters): Promise<MoidInterface> => {
@@ -230,7 +228,6 @@ export const valueToField = async (moMeta: MoMetaInterface, fDef: FieldDefinitio
                 if (v ! instanceof Date) return handleError('not date')
                 return v
             case 'mo':
-                const mofDef = fDef as MoFieldDefinition
                 const relationMeta = moMeta.relations[fDef.name]
                 const relationDef = relationMeta?.relationDef
                 if (!relationDef) return handleError('no relationDef')
@@ -498,7 +495,6 @@ export const valueToFieldSync = (moMeta: MoMetaInterface, fDef: FieldDefinitionI
                 if (v ! instanceof Date) return handleError('not date')
                 return v
             case 'mo':
-                const mofDef = fDef as MoFieldDefinition
                 const relationMeta = moMeta.relations[fDef.name]
                 const moMeta2 = relationMeta.moMeta2
                 if (!relationMeta) return handleError('no relationMeta')
@@ -519,7 +515,7 @@ export const valueToFieldSync = (moMeta: MoMetaInterface, fDef: FieldDefinitionI
             case 'array':
                 if (!Array.isArray(v)) v = [v] //return handleError('not array')
                 if (fDef.itemValueFieldDef) {
-                    return v.map(item => {
+                    return v.map((item: MoidInterface) => {
                         if (fDef.itemValueFieldDef?.valueToField) {
                             return fDef.itemValueFieldDef.valueToField(item, {trusted: params?.trusted})
                         } else {
@@ -532,7 +528,7 @@ export const valueToFieldSync = (moMeta: MoMetaInterface, fDef: FieldDefinitionI
             case 'moArray': {
                 if (!Array.isArray(v)) v = [v] // return handleError('not array')
                 const mofDef = fDef // as MoFieldDefinition
-                return v.map((item) => objectToMoidSync(item, {_moname: mofDef['moName']}))
+                return v.map((item: MoidInterface) => objectToMoidSync(item, {_moname: mofDef['moName']}))
             }
             case 'map': {
                 if (typeof v === 'object') {

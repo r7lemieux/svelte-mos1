@@ -89,7 +89,7 @@
     if (model.moDef.gridFieldnames) {
       gridFieldDefs = model.moDef.gridFieldnames.map(fn => {
         const fd = model.moDef.fieldDefs.get(fn)
-        if (!fd) console.log(`==> Mos.svelte:93 missing ${moMeta.name} field definition for `, fn);
+        if (!fd) console.log(`==> Mos.svelte:93 missing ${moMeta.name} field definition for`, fn);
         return fd
       }).filter(fd => !!fd)
     } else {
