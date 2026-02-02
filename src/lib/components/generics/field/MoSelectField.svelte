@@ -32,13 +32,11 @@
     onMoChange?: (smo: MoidInterface | undefined) => void,
   } = $props()
   
-  const fd = moFieldDef
-  const fname = moFieldDef.name
-  // const relationMeta = RelationMetas[]
-  let s_options = $state(!!mosOptions.length? mosOptions: moSelected? [moSelected] : [] )
-  // moItemFieldDef.type = 'mo' // delete
-  const uiPath = parentUiPath
-  let sSelected: MoidInterface | undefined = $state(moSelected)
+  const fd = $derived(moFieldDef)
+  const fname = $derived(moFieldDef.name)
+  let s_options = $state((()=>!!mosOptions.length? mosOptions: moSelected? [moSelected] : [] )())
+  const uiPath = (()=>parentUiPath)()
+  let sSelected: MoidInterface | undefined = $state((() =>moSelected)())
   
   let openPaths = getContext('openPaths') as string[]
   let showDetails = $derived(!!openPaths[uiPath.join('_')])
@@ -50,10 +48,9 @@
   let loading = false
   let loaded = false
   const currentMo = getContext('currentMo') as MoInterface
-  const relation = currentMo._moMeta.relations[moFieldDef.name]
+  const relation = $derived(currentMo._moMeta.relations[fname])
   const isSelected = (moid: MoidInterface) => !!moSelected?.isSameAs(moid)
-  // let inputFormEl: HTMLInputElement
-  // let inputUiEl: HTMLInputElement
+
   const loadOptions = () => {
     if (loading || loaded) return
     loading = true

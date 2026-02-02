@@ -43,7 +43,7 @@
   
   const showDelete = () => moMeta.moDef.deletePermission !== DeletePermission.no
   
-  const onChange = (fieldId: string, val: any): void => {
+  const onChange = async (fieldId: string, val: any): void => {
     if (autoSave) {
       const fieldPathNames = fieldId.split('.')
       let targetObj: any = mo
@@ -59,7 +59,7 @@
         targetObj = targetObj[pathval]
       }
       targetObj[fname] = val
-      save()
+      return save()
     }
   }
   const onMoRemove = (fieldMo: FieldMo) => {
@@ -113,7 +113,7 @@
         console.error('Error:', err)
       })
   }
-  const create = () => {
+  const create = async () => {
     // const form = document.getElementById('myForm');
     const formData = new FormData(formElm)
     // const uri = formElm.baseURI.split('/').slice(0, -1).join('/') + '/save'
@@ -131,7 +131,7 @@
         // newMo.hydrate(fields)
         // mo = newMo
         let url = `/mo/${moMeta.name}/${id}`
-        goto(url)
+        return goto(url)
       })
       .catch(err => {
         console.error('Error:', err)

@@ -79,7 +79,7 @@
     loading = false
   }
   
-  async function toggle() {
+  async function toggleShowDetails() {
     showDetails = !showDetails
     if (showDetails && !fullMo) {
       await fetchDetails()
@@ -119,11 +119,11 @@
 </script>
 <div class="field moField" data-fdtype={moFieldDef.type} style="margin-left:{level*12}px;">
   <label for={fieldname}>{label}</label>
-  <span class="tree-line {showDetails?'open':'closed'}" onclick={toggle} onkeydown={toggle} role="button"
+  <span class="tree-line {showDetails?'open':'closed'}" onclick={toggleShowDetails} onkeydown={toggleShowDetails} role="button"
         tabindex="-2">
   </span>
   <span class="value">
-      <span class="count" onclick={toggle} onkeydown={toggle} role="button" tabindex="-2">
+      <span class="count" onclick={toggleShowDetails} onkeydown={toggleShowDetails} role="button" tabindex="-2">
 <!--        <span>{size}</span>-->
           <span class="detail-icon detail-arrow {showDetails?'open':'closed'}"></span>
       </span>
