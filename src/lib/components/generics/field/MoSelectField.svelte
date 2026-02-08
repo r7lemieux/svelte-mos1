@@ -86,13 +86,13 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
 </svelte:head>
 
-<span class="value">
-  {#if relation.relationDef.max1 > 1}
-    <span class="count" onclick={toggle} onkeydown={toggle} role="button" tabindex="0">
-      <span class="detail-icon detail-arrow {showDetails?'open':'closed'}">
-      </span>
-     </span>
-  {/if}
+<span class="MoSelectField value ">
+  <!--{#if relation.relationDef.max1 > 1}-->
+  <!--  <span class="count" onclick={toggle} onkeydown={toggle} role="button" tabindex="0">-->
+  <!--    <span class="detail-icon detail-arrow {showDetails?'open':'closed'}">-->
+  <!--    </span>-->
+  <!--   </span>-->
+  <!--{/if}-->
   
   <!--  <input name={fname} id={fname} bind:this={inputFormEl} />-->
   <select class="value" name={fname} onclick={loadOptions} onmouseover={loadOptions} onfocus={loadOptions} {onchange}

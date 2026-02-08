@@ -12,9 +12,9 @@
   let {mo} = $props()
   let viewMode: MoViewModeEnum = $derived(extractViewMode())
   let disabled = $derived(viewMode)
-  let moMeta = mo //._moMeta
-  const title = toDisplayString(moMeta.name)
-  const fieldDefs: FieldDefinition<any>[] = Array.from(mo._moMeta.moDef.fieldDefs.values()) as unknown as FieldDefinition<any>[]
+  let moMeta = $derived(mo) //._moMeta
+  const title = (()=> toDisplayString(moMeta.name))()
+  const fieldDefs: FieldDefinition<any>[] = (() => Array.from(mo._moMeta.moDef.fieldDefs.values()) as unknown as FieldDefinition<any>[])()
   const ui = {}
 
   const onChange = (fieldId: string, val: any) => {
@@ -28,8 +28,8 @@
     for (const pathName of fieldPathNames) {
       // for (let i=0; i<fieldPathNames.length -1 ; i++) {
       //   const pathName = fieldPathNames[i]
-      const pathval = (Array.isArray(pathName)) ? Number.parseInt(pathName) : pathName
-      targetObj = targetObj[pathval]
+      const pathVal = (Array.isArray(pathName)) ? Number.parseInt(pathName) : pathName
+      targetObj = targetObj[pathVal]
     }
     targetObj[fname] = val
   }
@@ -68,7 +68,7 @@
     {#each fieldDefs as fieldDef}
       {@const fname=fieldDef.name}
       {@const value=mo[fieldDef.name]}
-      <Field {fieldDef} {value} {viewMode} {onChange} level={0} />
+      <Field {mo} {fieldDef} {value} {viewMode} {onChange} level={0} />
     {/each}
   </div>
   <div class="button-bar">

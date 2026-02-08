@@ -81,7 +81,7 @@ export const ErrorDef: {
     db_fail_fetchRange: {},
     db_fail_update: {},
     db_invalid_digit: {},
-    db_invalid_key: {},
+    db_invalid_key: {httpCode: 404},
     db_notFound: {},
     db_unexpected_multiple: {},
     mo_mismatch: {httpCode: 400},

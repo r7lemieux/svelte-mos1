@@ -69,7 +69,7 @@
   //   const value = event.srcElement.value
   //   onChange(fieldId, value)
   // }
-
+  const subViewMode = $derived((viewMode === MoViewMode.edit)?MoViewMode.subEdit:viewMode)
   async function fetchDetails() {
     loading = true
     const url = `/api/mo/${moName}/${moid?.id}`
@@ -94,10 +94,12 @@
     }
   }
   const onLinkClick = () => {
+      console.log(`==>MoField.svelte..onLinkClick:97 viewMode`, viewMode)
     if (viewMode === MoViewMode.view) {
       goto(`/mo/${moName}/${moid.id}`, {replaceState: true})
     }
   }
+  const href = $derived(`/mo/${moName}/${moid.id}`)
   
   const onRemoveClick = () => {
     if (!onRemove || !moid?.id) {
@@ -117,7 +119,7 @@
   })
   const moSelected = $derived(moid as MoInterface)
 </script>
-<div class="field moField" data-fdtype={moFieldDef.type} style="margin-left:{level*12}px;">
+<div class="MoField field " data-fdtype={moFieldDef.type} style="margin-left:{level*12}px;">
   <label for={fieldname}>{label}</label>
   <span class="tree-line {showDetails?'open':'closed'}" onclick={toggleShowDetails} onkeydown={toggleShowDetails} role="button"
         tabindex="-2">
@@ -128,8 +130,9 @@
           <span class="detail-icon detail-arrow {showDetails?'open':'closed'}"></span>
       </span>
     {#if viewMode === MoViewMode.view || viewMode === MoViewMode.subEdit}
-      <button type="button" onclick={onLinkClick} class='name linkButton' aria-label={moid?.displayName}
-              disabled={!moid?.id}> {moid?.id} {moid?.displayName}</button>
+<!--      <button type="button" onclick={onLinkClick} class='name linkButton' aria-label={moid?.displayName}-->
+<!--              disabled={!moid?.id}> {moid?.id} {moid?.displayName}</button>-->
+        <a {href} class='name mo-link'> {moid?.id} {moid?.displayName}</a>
     {/if}
     {#if viewMode === MoViewMode.create || viewMode === MoViewMode.edit}
       <MoSelect {moFieldDef} {fieldname} {moSelected} {mosOptions} {level} {viewMode} {parentUiPath} {onMoChange} />
@@ -148,7 +151,7 @@
       <!--    <p>showFieldDefs {showFieldDefs}</p>-->
       <!--    <p>{moMeta.moDef.fieldDefs.keys()}</p>-->
       {#each showFieldDefs as fd}
-        <Field fieldDef={fd} value={d_fullMo[fd.name]} mo={d_fullMo} viewMode={MoViewMode.subEdit} {onChange} parentUiPath={uiPath} level={level + 1 } />
+        <Field fieldDef={fd} value={d_fullMo[fd.name]} mo={d_fullMo} viewMode={subViewMode} {onChange} parentUiPath={uiPath} level={level + 1 } />
       {/each}
     {/if}
   {/if}

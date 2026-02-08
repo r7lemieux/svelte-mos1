@@ -36,7 +36,6 @@
 </script>
 
 <svelte:head>
-    <title>Status</title>
     <meta name="description" content="metas"/>
 </svelte:head>
 

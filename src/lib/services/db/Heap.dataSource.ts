@@ -24,10 +24,12 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
     }
 
     getMo = async (key: any): Promise<M> => {
+        if (!this.records[key]) throw new Rezult(ErrorName.db_invalid_key, {moDef:this.moDef.name, id:key})
         return this.records[key].cloneMo() as M
     }
 
     getMoid = async (key: any): Promise<MoidInterface> => {
+        if (!this.records[key]) throw new Rezult(ErrorName.db_invalid_key, {moDef:this.moDef.name, id:key})
         return this.records[key]?.toMoid().cloneMo()
     }
 
@@ -206,7 +208,7 @@ export class HeapDataSource<M extends MoInterface> implements DataSourceInterfac
         for (const fd of cascadeMoFields) depMoToDelete.push((mo[fd.name] as MoidInterface).toMoid())
         for (const fd of cascadeMoArrayFields) depMoToDelete.push(...(mo[fd.name].map((dmf: MoidInterface) => dmf.toMoid())))
         depMoToDelete = depMoToDelete.filter(m => !params.pendingDeletes.includes(m.toShortStr()))
-        depMoToDelete.forEach(m => params.pendingDeletes.push(m.toShortStr()))
+        // depMoToDelete.forEach(m => params.pendingDeletes.push(m.toShortStr()))
 
         const results: DeleteResult = {deleted: [], errors: []}
         return Promise.allSettled(depMoToDelete.map(dmo => dmo._moMeta.dataSource.deleteMo(dmo.id, params)))

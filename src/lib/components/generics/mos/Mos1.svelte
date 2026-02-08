@@ -135,7 +135,6 @@
 </script>
 
 <svelte:head>
-  <title>Mos</title>
   <meta name='description' content={displayName}/>
 </svelte:head>
   <Init />

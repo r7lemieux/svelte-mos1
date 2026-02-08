@@ -54,7 +54,7 @@
   }
   const seTreeLineHeight = (ele: Element) => ele?.parentElement?.offsetHeight
   
-  const keys = value ? (Object.keys(value).filter(k => typeof value[k] !== 'function')) : []
+  const keys = (() => value ? (Object.keys(value).filter(k => typeof value[k] !== 'function')) : [])()
 </script>
 
 <div class="field ObjectField">

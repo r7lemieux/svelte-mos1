@@ -22,10 +22,10 @@
     viewMode = MoViewMode.view,
   } = $props()
   let disabled = $derived(!!viewMode)
-  const fd = fieldDef
-  const fname = fieldDef.name
+  const fd = (() => fieldDef)()
+  const fname = (() => fieldDef.name)()
   let showDetails = $state(false)
-  let toogle = () => showDetails = !showDetails
+  let toggleShowDetails = () => showDetails = !showDetails
 
   const del = () => deleteItem(key)
   let changed = (event) => {
@@ -51,11 +51,11 @@
 
   <span class="value">
     {#if valueType === 'mo'}
-      <span class="count" onclick={toogle} onkeydown={toogle} role="button" tabindex="0">
+      <span class="count" onclick={toggleShowDetails} onkeydown={toggleShowDetails} role="button" tabindex="0">
         <span class="detail-icon detail-arrow {showDetails?'open':'closed'}"> </span>
       </span>
     {:else if valueType === 'object'}
-      <span class="count" onclick={toogle} onkeydown={toogle} role="button" tabindex="0">
+      <span class="count" onclick={toggleShowDetails} onkeydown={toggleShowDetails} role="button" tabindex="0">
         <span class="detail-icon detail-arrow {showDetails?'open':'closed'}"> </span>
       </span>
     {:else}

@@ -146,10 +146,14 @@
         color: var(--tree-line-color)
     }
     
-    .linkButton {
-        background: var(--link-button-color);
-        border-radius: var(--link-button-radius);
-        border: var(--link-button-border-color) solid 1px;
+    .mo-link {
+        background: var(--mo-link-color);
+        border-radius: var(--mo-link-radius);
+        border: var(--mo-link-border-color) solid 1px;
+        text-decoration: none;
+        align-self: center;
+        color: var(--text-color);
+        padding: 0.4rem 0.8rem;
       &:disabled {
         color: var(--field-value-color);
       }

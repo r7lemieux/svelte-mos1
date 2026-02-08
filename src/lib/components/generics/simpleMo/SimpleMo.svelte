@@ -1,22 +1,22 @@
 <script lang="ts">
-  import type {Mo} from '../../../models/managedObjects/Mo.js'
-  import {toDisplayString} from '../../../services/common/util/string.utils.js'
-  import {type MoViewModeEnum} from '../../../constants/ui.js'
+  import type {Mo} from '$lib/models/managedObjects/Mo.js'
+  import {toDisplayString} from '$lib/services/common/util/string.utils.js'
+  import {type MoViewModeEnum} from '$lib/constants/ui.js'
   import {goto} from '$app/navigation'
-  import {OK, Rezult} from '../../../services/common/message/rezult.js'
-  import {ErrorName} from '../../../services/common/message/errorName.js'
-  import {FieldDefinition} from '../../../models/fields/FieldDefinition.js'
+  import {OK, Rezult} from '$lib/services/common/message/rezult.js'
+  import {ErrorName} from '$lib/services/common/message/errorName.js'
+  import {FieldDefinition} from '$lib/models/fields/FieldDefinition.js'
   import Field from '../field/Field.svelte'
-  import {extractViewMode, formDataToObj} from '../../../services/common/util/dom.utils.js'
+  import {extractViewMode, formDataToObj} from '$lib/services/common/util/dom.utils.js'
   import Init from '../../common/Init.svelte'
   import Status from '../../common/Status.svelte'
-  import {DeletePermission} from '../../../models/managedObjects/MoDefinitionInterface.js'
-  import type {FieldDefinitionInterface} from '../../../models/fields/FieldDefinition.interface.js'
-  import type {FieldMo} from '../../../models/fields/FieldMo.js'
-  import type {MoidInterface} from '../../../models/managedObjects/MoidInterface.js'
+  import {DeletePermission} from '$lib/models/managedObjects/MoDefinitionInterface.js'
+  import type {FieldDefinitionInterface} from '$lib/models/fields/FieldDefinition.interface.js'
+  import type {FieldMo} from '$lib/models/fields/FieldMo.js'
+  import type {MoidInterface} from '$lib/models/managedObjects/MoidInterface.js'
   import {setContext} from 'svelte'
   import {page} from '$app/state'
-  
+
   let {
     mo,
     autoSave = false,
@@ -30,20 +30,22 @@
   const openPaths = {}
   openPathList.forEach((openPath) => openPaths[openPath] = true)
   setContext('openPaths', openPaths)
-  let viewMode: MoViewModeEnum = $state(extractViewMode())
+  let viewMode: MoViewModeEnum = $derived(extractViewMode())
   let moMeta = $derived(mo._moMeta)
+  let d_mo = $derived(mo)
   let title = $derived(toDisplayString(moMeta.moDef.name))
   let fieldDefs: FieldDefinitionInterface<any>[] = $derived(Array.from(moMeta.moDef.fieldDefs.values()) as FieldDefinition<any>[])
   let showFieldDefs = $derived(moMeta.moDef.showFieldnames.map(fn => fieldDefs.find(fd => fd.name === fn))) as FieldDefinition<any>[]
+  let uiPath = $derived([...parentUiPath, mo._moMeta.name + '-' + mo.id])
+  let fetchError = $derived(() => sfetchError)
+  setContext('currentMo', (mo))
   let formElm: HTMLFormElement
   let sfetchError = $state(OK)
-  let fetchError = $derived(() => sfetchError)
-  const uiPath = $derived([...parentUiPath, mo._moMeta.name + '-' + mo.id])
-  setContext('currentMo', (()=>mo)())
+
   
   const showDelete = () => moMeta.moDef.deletePermission !== DeletePermission.no
   
-  const onChange = async (fieldId: string, val: any): void => {
+  const onChange = async (fieldId: string, val: any): Promise<void> => {
     if (autoSave) {
       const fieldPathNames = fieldId.split('.')
       let targetObj: any = mo
@@ -194,7 +196,7 @@
   </div>
   <div class="fields">
     {#each showFieldDefs as fieldDef}
-      {@const value = mo[fieldDef?.name]}
+      {@const value = d_mo[fieldDef?.name]}
       {#key value}
         <Field {fieldDef} {value} {mo} {viewMode} {onChange} {onMoRemove} parentUiPath={uiPath} level={0}/>
       {/key}

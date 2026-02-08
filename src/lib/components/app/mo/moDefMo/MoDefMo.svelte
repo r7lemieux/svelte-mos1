@@ -10,12 +10,12 @@
   import Field from '../../../generics/field/Field.svelte'
   
   let {moDefMo}: {moDefMo:MoDefinitionMo} = $props()
-  const mo = moDefMo
+  const mo = $derived(moDefMo)
   let viewMode: MoViewModeEnum = $derived(extractViewMode())
   let disabled = $derived(viewMode === 'view')
-  let moDef = mo.moDef
+  let moDef = (()=> mo.moDef)()
   const title = toDisplayString(moDef.name)
-  const fieldDefs = Array.from(mo._moMeta.moDef.fieldDefs.values())
+  const fieldDefs = (()=> Array.from(mo._moMeta.moDef.fieldDefs.values()))()
   const ui = {}
 
   const onChange = (fieldId: string, val: any) => {
@@ -29,8 +29,8 @@
     for (const pathName of fieldPathNames) {
       // for (let i=0; i<fieldPathNames.length -1 ; i++) {
       //   const pathName = fieldPathNames[i]
-      const pathval = (Array.isArray(pathName)) ? Number.parseInt(pathName) : pathName
-      targetObj = targetObj[pathval]
+      const pathVal = (Array.isArray(pathName)) ? Number.parseInt(pathName) : pathName
+      targetObj = targetObj[pathVal]
     }
     targetObj[fname] = val
   }
@@ -64,9 +64,8 @@
 <div class="mo">
   <div class="fields">
     {#each fieldDefs as fieldDef}
-      {@const fname=fieldDef.name}
       {@const value=mo[fieldDef.name]}
-      <Field {fieldDef} {value} {viewMode} {onChange} level={0} />
+      <Field {mo} {fieldDef} {value} {viewMode} {onChange} level={0} />
     {/each}
   </div>
   <div class="button-bar">

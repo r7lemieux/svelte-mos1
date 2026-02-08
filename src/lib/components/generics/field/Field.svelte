@@ -42,8 +42,8 @@
   // export let level: number = 1
   // export let onChange: (fieldId: string, value: any) => void
   // viewMode = extractViewMode() // = view
-  const fd = fieldDef
-  const uiPath = [...parentUiPath, fieldDef.name]
+  const fd = $derived(fieldDef)
+  const uiPath = (()=> [...parentUiPath, fieldDef.name])()
   function extractViewMode(): MoViewModeEnum {
     const pathParts = page.url.pathname.split('/')
     const pathTail = pathParts[pathParts.length - 1]

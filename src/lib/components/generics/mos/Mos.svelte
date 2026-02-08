@@ -22,7 +22,7 @@
     topButtons?: boolean,
     height?: string
   } = $props()
-  if (!mos) {
+  if (!(()=>mos)()) {
     throw new Rezult(ErrorName.argument_null, {name: 'mos'})
   }
   let d_moMeta = $derived(moMeta)
@@ -37,14 +37,14 @@
   const createMo = () => goto(`/mo/${d_moMeta.name}/create`)
 
   // let names: string[] = $state([])
-  let eGridDiv
+  let eGridDiv: HTMLElement
   onMount(() => {
     displayName = moMeta.moDef?.getDisplayName()
     // names = mos.map(m => `moMeta: ${m._moMeta.name} moDef ${m._moMeta.moDef?.name} dataSource ${m._moMeta.dataSource?.constructor.name}`)
-    eGridDiv = window.document.getElementById(gridId)
+    eGridDiv = window.document.getElementById(gridId)!
     if (!eGridDiv) throw new Rezult(ErrorName.missing_value)
     const gridOptions: GridOptions = $derived(buildGridOptions(listModel))
-    gridApi = createGrid(eGridDiv, gridOptions)
+    gridApi = (()=> createGrid(eGridDiv, gridOptions))()
   })
   
   /* ------------
@@ -116,7 +116,7 @@
     return {defaultColDef, columnDefs, rowData, onFirstDataRendered, onGridSizeChanged, components}
   }
   
-  let etitle = title
+  let etitle = (()=> title)()
  $effect(() => {
     if (gridApi && mos) {
       // createGrid(eGridDiv, gridOptions)
@@ -133,11 +133,10 @@
 </script>
 
 <svelte:head>
-  <title>Mos</title>
   <meta name='description' content={displayName}/>
 </svelte:head>
   <Init />
-<div class="grid-top">
+<div class="Mos grid-top">
   {#if title}
 <!--    s {d_title} d {dtitle} e {etitle}-->
     <h2 class="title">{d_title}</h2>

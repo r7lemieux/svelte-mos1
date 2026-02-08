@@ -80,7 +80,7 @@
  
   const onRemove = (fieldMo: FieldMo) => {
     if (!onMoRemove) return {}
-    const index = value.indexOf(mo => !mo.isSameAs(fieldMo.mo) )
+    const index = value.findIndex(mo => mo.isSameAs(fieldMo.mo) )
     value.splice(index, 1)
     fieldsMoToRemove = [...fieldsMoToRemove, fieldMo]
     // console.log(`==>MoArrayField.svelte:74 fieldsMoToRemove`, fieldsMoToRemove.map(fm => `${fm.fieldname}.${fm.mo.displayName}`))
@@ -93,7 +93,7 @@
   })
 
 </script>
-<div class="field ArrayField MoArrayField" data-fieldtype={fd.type} style="margin-left:{level*12}px;">
+<div class="MoArrayField field " data-fieldtype={fd.type} style="margin-left:{level*12}px;">
   <span class="label">{fd.getDisplayName()}</span>
   <span class=" tree-line {showDetails?'open':'closed'}"></span>
   <span class="value">
